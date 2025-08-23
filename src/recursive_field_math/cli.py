@@ -1,8 +1,10 @@
-import argparse, json
+import argparse
+import json
 from .field import r_theta
 from .lucas import L
 from .fibonacci import F
-from .ratios import ratio, ratio_error_bounds
+from .ratios import ratio
+from .ratios import ratio_error_bounds
 from .continued_fraction import lucas_ratio_cfrac
 from .egyptian_fraction import egypt_4_7_11
 from .signatures import signature_summary
