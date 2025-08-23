@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env
+.env.*
+dist/
+build/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+.mypy_cache/
+.pytype/
+
+# OS
+.DS_Store
+
+# Data cache
+data/**/*.tmp
