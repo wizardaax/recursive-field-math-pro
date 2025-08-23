@@ -1,6 +1,6 @@
 import math
 from .lucas import L
-from .constants import PHI, PSI
+from .constants import PSI
 
 
 def ratio(n: int) -> float:
