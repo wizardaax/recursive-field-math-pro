@@ -20,5 +20,13 @@ jobs:
           pip install pytest ruff
       - name: Lint
         run: ruff check .
+      - name: Check for prohibited patterns
+        run: |
+          # Check for result_normal.ok pattern that should use dictionary access instead
+          if grep -r "\bresult_normal\.ok\b" . --include="*.py" -n; then
+            echo "Error: Found result_normal.ok pattern. Use result_normal[\"ok\"] instead for dictionary access."
+            exit 1
+          fi
+          echo "✓ No prohibited patterns found"
       - name: Test
         run: pytest -q

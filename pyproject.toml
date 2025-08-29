@@ -18,3 +18,17 @@ rfm = "recursive_field_math.cli:main"
 [tool.pytest.ini_options]
 addopts = "-q"
 pythonpath = ["src"]
+
+[tool.ruff]
+target-version = "py39"
+
+[tool.ruff.lint]
+# Additional rules to catch potential issues with attribute vs dictionary access
+extend-select = ["B", "SIM"]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings  
+    "F",  # pyflakes
+    "B",  # flake8-bugbear
+    "SIM", # flake8-simplify
+]
