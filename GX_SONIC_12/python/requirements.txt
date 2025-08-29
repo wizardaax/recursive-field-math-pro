@@ -1,0 +1,2 @@
+numpy
+PyNaCl
