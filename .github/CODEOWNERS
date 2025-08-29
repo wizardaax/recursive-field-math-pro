@@ -1,0 +1,9 @@
+# Default owner
+*       @wizardaax
+
+# Docs
+/docs/  @wizardaax
+/mkdocs.yml  @wizardaax
+
+# Workflows
+/.github/workflows/  @wizardaax
