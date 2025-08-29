@@ -80,6 +80,50 @@ pytest -q
 - CI: `.github/workflows/ci.yml` runs lint & tests on push
 - `my_recursive_ai.py` provides keyword → function routing for agent mode
 
+## Codex Entropy-Pump Feature
+
+**Pull request:** [Add Codex entropy-pump feature with golden refraction for game analysis](https://github.com/wizardaax/recursive-field-math-pro/pull/2)  
+**Status:** Merged by @wizardaax (2025-08-29)
+
+### What’s Inside
+
+- Golden ratio refraction formula for variance reduction in chess game evaluations
+- Core implementation in `scripts/codex_entropy_pump.py`
+- PGN analysis harness: processes chess games, generates plots, metrics, and summary artifacts
+- Lucas weights for resonance adjustment
+- Results: Up to ~92% variance reduction on classic games (Kasparov, Fischer, Carlsen)
+- Artifacts: Curve plots, φ-clamp histograms, JSON/TSV summaries
+- Comprehensive tests for invariants, edge cases, and Lucas weights
+
+### Quick Usage
+
+```bash
+python -m scripts.run_entropy_pump_harness
+# Artifacts appear in the out/ directory: *_curve.png, *_clamp.png, *.json, *.tsv
+```
+
+### Quick Run (One-Click)
+[⚡ Run Codex Agent](https://github.com/wizardaax/recursive-field-math-pro/issues/new?title=Entropy+pump+run+on+sample+PGNs&body=%2Fagent+run)
+
+That link opens a new issue with the title prefilled (Entropy pump run on sample PGNs) and the comment body /agent run. You just hit Submit new issue and the workflow kicks off.
+
+### What Happens
+- The **codex-agent** workflow runs.
+- It generates:
+  - `entropy_pump_summary_*.json` / `.tsv`
+  - Plots (`*_curve.png`, `*_clamp.png`)
+- It posts a **summary comment** back on the issue:
+  - Variance reduction %
+  - MAE delta %
+  - φ-clamp peak (target 38.2° ± 2°)
+  - Lucas weights
+- Verdict: ✅ PASS (meets thresholds) or ⚠️ CHECK
+
+### Acceptance Rules
+- Variance reduction ≥ **20%**
+- MAE delta ≥ **2%**
+- φ-clamp peak within **±2° of 38.2°**
+
 ## Layout
 ```
 recursive-field-math-pro/
