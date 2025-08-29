@@ -8,6 +8,12 @@
 
 <!--- Link any related issues or pull requests here. -->
 
+## Docs Preview
+
+Once CI runs, a bot comment will post a **Docs preview URL** for this PR.
+- [ ] I opened the preview and checked formatting/layout
+- [ ] Screenshots (if relevant): …
+
 ## Checklist
 
 - [ ] I have read the [contributing guidelines](CONTRIBUTING.md) and followed them.
