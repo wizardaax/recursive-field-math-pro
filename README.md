@@ -3,6 +3,20 @@
 > **Repo:** `wizardaax/recursive-field-math-pro`  
 > **Focus:** Radial–angular recursive field + Lucas/Fibonacci backbone, with agent-ready CLI, tests, docs, data hooks, and CI.
 
+## Status
+
+[![Codex Agent](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/codex-agent.yml/badge.svg)](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/codex-agent.yml)
+[![Docs](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/docs.yml/badge.svg)](https://wizardaax.github.io/recursive-field-math-pro/)
+[![Docs Preview](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/docs-preview.yml/badge.svg)](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/docs-preview.yml)
+[![Release](https://img.shields.io/github/v/release/wizardaax/recursive-field-math-pro?logo=github)](https://github.com/wizardaax/recursive-field-math-pro/releases)
+[![License](https://img.shields.io/github/license/wizardaax/recursive-field-math-pro)](LICENSE)
+
+- 📘 **Docs**: [GitHub Pages](https://wizardaax.github.io/recursive-field-math-pro/)
+- 🚀 **Latest Release**: [Releases tab](https://github.com/wizardaax/recursive-field-math-pro/releases)
+- ⚡ **CI/CD**: [Actions dashboard](https://github.com/wizardaax/recursive-field-math-pro/actions)
+
+> **Docs Previews:** Open a PR against `main`. The **docs-preview** workflow deploys a temporary site and comments the preview URL on your PR automatically.
+
 ## Geometric Field (Seed)
 - Radial growth: \( r_n = 3\sqrt{n} \)  
 - Angular phase: \( \theta_n = n\varphi \), where \( \varphi = \frac{1+\sqrt{5}}{2} \)  
