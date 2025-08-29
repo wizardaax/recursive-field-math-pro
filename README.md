@@ -2,6 +2,8 @@
 
 > **Repo:** `wizardaax/recursive-field-math-pro`  
 > **Focus:** Radial–angular recursive field + Lucas/Fibonacci backbone, with agent-ready CLI, tests, docs, data hooks, and CI.
+> **Family name:** snellman
+> **Given name:** adam a
 
 ## Status
 
