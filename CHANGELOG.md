@@ -8,8 +8,12 @@ The format loosely follows:
 
 ## [Unreleased]
 
+### (no changes yet)
+
+## [v0.1.1] - 2025-08-30
+
 ### Docs
-- Clarify provenance of the “Hashing Extensions (Dual Hash Mode)” section and mark it with a conventional docs(gxsonic) commit for tooling traceability (commit 4d3250e8).
+- Clarify provenance of the “Hashing Extensions (Dual Hash Mode)” section and mark it with a conventional docs(gxsonic) commit for tooling traceability (commit 4d3250e8). (No functional changes.)
 
 ## [v0.1.0] - 2025-08-29
 (Adjust this version/date if different in your repository.)
@@ -33,18 +37,12 @@ The format loosely follows:
 
 ## Guidance
 
-When you cut the next release:
-1. Update the Unreleased section into a new version block with date.
-2. Add a fresh Unreleased placeholder above it.
+For the next release:
+1. Add changes under Unreleased.
+2. On release, promote them into a new version section with date.
+3. Regenerate compare links.
 
-Example:
-## [v0.1.1] - 2025-09-02
-### Docs
-- Clarify README dual-hash section placement (4d3250e8)
-
-Then reset Unreleased.
-
-## Compare Links (optional to add once tags exist)
-You can append links like:
+## Compare Links
+[Unreleased]: https://github.com/wizardaax/recursive-field-math-pro/compare/v0.1.1...HEAD
+[v0.1.1]: https://github.com/wizardaax/recursive-field-math-pro/compare/v0.1.0...v0.1.1
 [v0.1.0]: https://github.com/wizardaax/recursive-field-math-pro/releases/tag/v0.1.0
-[Unreleased]: https://github.com/wizardaax/recursive-field-math-pro/compare/v0.1.0...HEAD
