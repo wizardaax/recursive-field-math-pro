@@ -154,3 +154,77 @@ recursive-field-math-pro/
 ├─ LICENSE
 └─ README.md
 ```
+
+### 🔒 Hashing Extensions (Dual Hash Mode)
+
+Canonical hashing (spec 0.1):
+- Every glyph descriptor includes `audio_chunk_hash` (BLAKE2b-256 hex, 64 chars)
+- The manifest’s `audio_merkle_root` is built from BLAKE2b (no alternative roots yet)
+- Verification chain: raw audio bytes → BLAKE2b → descriptor → descriptor hash → Merkle inclusion
+
+Why dual hash?
+- BLAKE2b remains stable + widely available
+- BLAKE3 offers speed + incremental benefits
+- We expose BLAKE3 as an opt-in extension without altering canonical commitments
+
+Enabling dual-hash:
+```
+pip install blake3
+python -m gxsonic.cli --n-start 1 --n-end 2 --out out_dual --dual-hash
+```
+
+Descriptor (dual-hash mode) adds:
+```
+"audio_chunk_hash": "<blake2b>",
+"audio_chunk_hashes": {
+  "blake2b": "<blake2b>",
+  "blake3": "<blake3>"
+},
+"hash_extensions": { "blake3": true }
+```
+
+Manifest adds (only when dual enabled):
+```
+"hash_extensions": { "blake3": true }
+```
+
+Backward compatibility:
+- Older v0.1 readers parse `audio_chunk_hash` exactly as before
+- Unknown fields (`audio_chunk_hashes`, `hash_extensions`) are ignored per typical permissive parsing
+- Merkle root unchanged (BLAKE2b-only commitment)
+
+Graceful downgrade:
+- If `--dual-hash` is requested but `blake3` is missing:
+  - CLI prints a warning
+  - Output omits extension fields (pure canonical mode)
+  - Exit code still 0 (non-fatal)
+
+Quick smoke test:
+```
+pip install blake3
+python -m gxsonic.cli --n-start 7 --n-end 8 --out test_dual --dual-hash
+jq '.audio_chunk_hash,.audio_chunk_hashes.blake3' test_dual/descriptors/glyph_000007.json
+```
+
+Basic verifier sketch (Python):
+```python
+import json, hashlib, pathlib
+
+d = json.loads(pathlib.Path("test_dual/descriptors/glyph_000007.json").read_text())
+raw = pathlib.Path("test_dual/audio/glyph_000007.wav").read_bytes()
+b2 = hashlib.blake2b(raw, digest_size=32).hexdigest()
+assert b2 == d["audio_chunk_hash"]
+if "audio_chunk_hashes" in d and "blake3" in d["audio_chunk_hashes"]:
+    import blake3
+    b3 = blake3.blake3(raw).hexdigest()
+    assert b3 == d["audio_chunk_hashes"]["blake3"]
+print("OK")
+```
+
+Future directions (non-breaking ideas):
+- Optional `audio_merkle_root_blake3`
+- Negotiated hash set in a future OFFER variant
+- Streaming/incremental validation path using BLAKE3 chunk state
+
+Security note:
+Dual-hash is additive; it does not “mix” digests. Canonical authenticity still hinges on BLAKE2b + signatures (if present).
