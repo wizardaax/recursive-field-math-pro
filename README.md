@@ -228,3 +228,5 @@ Future directions (non-breaking ideas):
 
 Security note:
 Dual-hash is additive; it does not “mix” digests. Canonical authenticity still hinges on BLAKE2b + signatures (if present).
+
+Note: This section was first introduced in commit b5b6dbe8 with a generic message; this clarifier adds conventional docs(gxsonic) traceability (no functional changes).
