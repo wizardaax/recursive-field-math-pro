@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "recursive-field-math"
 version = "0.1.0"
-description = "Projex X1 — Recursive field math (Lucas 4–7–11) with CLI, docs, tests."
+description = "Recursive Field Math Pro - Exploring Lucas sequences, Fibonacci, and golden ratio patterns in code for students, researchers, and developers."
 readme = "README.md"
 license = {text = "MIT License"}
 authors = [{name="Commander X (Wizard)"}]
