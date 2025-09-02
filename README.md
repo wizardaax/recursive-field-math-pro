@@ -72,6 +72,7 @@ rfm lucas 0 10           # L_n for n in [0,10]
 rfm ratio 5              # L_{n+1}/L_n, error bounds
 rfm egypt                # 1/4+1/7+1/11 decomposition check
 rfm sig                  # signature triple summary
+rfm eval results.json    # evaluate entropy pump results
 
 # [C] tests
 pytest -q
@@ -101,7 +102,17 @@ pytest -q
 
 ```bash
 python -m scripts.run_entropy_pump_harness
-# Artifacts appear in the out/ directory: *_curve.png, *_clamp.png, *.json, *.tsv
+# Artifacts appear in the out/ directory: *_curve.png, *_clamp.png, *.json, *.tsv, *.md
+```
+
+**New:** The harness now automatically evaluates results against acceptance rules and generates summary reports:
+
+```bash
+# Evaluate existing results
+rfm eval out/entropy_pump_summary_*.json --markdown
+
+# Or use the standalone tool
+python scripts/evaluate_results.py out/entropy_pump_summary_*.json
 ```
 
 ### Quick Run (One-Click)
