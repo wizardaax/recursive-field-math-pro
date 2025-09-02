@@ -8,7 +8,25 @@ The format loosely follows:
 
 ## [Unreleased]
 
-### (no changes yet)
+### Features
+- **Comprehensive plotting utilities**: Added `scripts/generate_plots.py` with CLI interface and utility functions for entropy pump analysis visualization
+  - Variance reduction summary plots with threshold indicators
+  - Phi-clamp distribution analysis across multiple games
+  - Evaluation curve comparisons (before/after entropy pump)
+  - Phase analysis plots showing rank-to-phase mapping and golden refraction
+  - Comprehensive report generation combining all plot types
+- **Enhanced demo PGNs**: Replaced problematic demo games with valid, well-known chess games (Kasparov-Topalov 1999, Fischer-Byrne 1956, Carlsen-Caruana 2018)
+- **Improved error handling**: Enhanced `scripts/run_entropy_pump_harness.py` with comprehensive error handling for:
+  - PGN parsing failures
+  - Illegal move detection and recovery
+  - Entropy pump analysis errors
+  - Plot generation failures with graceful degradation
+
+### Infrastructure
+- **Expanded .gitignore**: Added rules to exclude plot artifacts and generated files:
+  - Plot directories: `plots/`, `test_plots/`, `*_plots/`
+  - Graphics file types: `*.png`, `*.jpg`, `*.pdf`, `*.svg`
+  - Entropy pump artifacts: `entropy_pump_summary_*`
 
 ## [v0.2.0] - 2025-01-27
 

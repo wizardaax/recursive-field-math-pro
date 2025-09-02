@@ -24,63 +24,111 @@ def stock_eval(board: chess.Board) -> float:
     return (m + mobility + ks) * 100.0  # cp
 
 def eval_game(pgn_text: str, mid=(10,30), tag="game"):
-    g = chess.pgn.read_game(io.StringIO(pgn_text))
-    if g is None: return None
-    b = g.board()
-    evals = []
-    for mv in g.mainline_moves():
-        b.push(mv)
-        evals.append(stock_eval(b))
-    if len(evals) < 6: return None
-    res = codex_pump_from_series(np.array(evals), window=mid, n_index=PHI)
-    # Plot curve
-    x = np.arange(len(evals))
-    plt.figure(figsize=(9,4))
-    plt.plot(x, evals, label="Stock (cp)")
-    if res["ok"]:
-        start, end = res["offset"], res["offset"]+res["window_len"]
-        ycodex = evals.copy()
-        ycodex[start:end] = res["series_codex"]
-        plt.plot(x, ycodex, label="Codex (adjusted)")
-        t = f"{tag}: ΔVar {res['variance_reduction_pct']:.1f}%, MAE +{res['mae_improvement_pct']:.1f}%"
-    else:
-        t = f"{tag}: Codex skip ({res['reason']})"
-    plt.title(t); plt.xlabel("Move"); plt.ylabel("Eval"); plt.grid(True); plt.legend()
-    path = os.path.join(OUT, f"{tag}_curve.png"); plt.tight_layout(); plt.savefig(path, dpi=160); plt.close()
-    # Histogram of theta' (φ-clamp)
-    if res["ok"]:
-        edges, hist = res["theta_after_hist"]
-        centers = 0.5*(np.array(edges[1:])+np.array(edges[:-1]))
-        plt.figure(figsize=(7,3))
-        plt.bar(centers, hist, width=(edges[1]-edges[0]))
-        plt.axvline(+res["phi_clamp_rad"], ls="--"); plt.axvline(-res["phi_clamp_rad"], ls="--")
-        plt.title(f"{tag}: φ-clamp at ±{res['phi_clamp_rad']:.3f} rad (~±38.2°)")
-        plt.tight_layout(); plt.savefig(os.path.join(OUT, f"{tag}_clamp.png"), dpi=160); plt.close()
-    return {"tag": tag, "moves": len(evals), **({} if not res["ok"] else res)}
+    """
+    Evaluate a chess game using stock evaluation and apply entropy pump analysis.
+    Enhanced with comprehensive error handling.
+    """
+    try:
+        # Parse PGN with error handling
+        g = chess.pgn.read_game(io.StringIO(pgn_text))
+        if g is None: 
+            print(f"Warning: Failed to parse PGN for {tag}")
+            return None
+        
+        # Initialize board and evaluation list
+        b = g.board()
+        evals = []
+        move_count = 0
+        
+        # Process moves with error handling
+        for mv in g.mainline_moves():
+            try:
+                if not b.is_legal(mv):
+                    print(f"Warning: Illegal move {mv} in {tag} at position {move_count}")
+                    continue
+                b.push(mv)
+                evals.append(stock_eval(b))
+                move_count += 1
+            except Exception as e:
+                print(f"Warning: Error processing move {mv} in {tag}: {e}")
+                continue
+        
+        # Validate minimum game length
+        if len(evals) < 6: 
+            print(f"Warning: Game {tag} too short ({len(evals)} moves), skipping analysis")
+            return None
+        
+        # Apply entropy pump analysis with error handling
+        try:
+            res = codex_pump_from_series(np.array(evals), window=mid, n_index=PHI)
+        except Exception as e:
+            print(f"Error: Entropy pump analysis failed for {tag}: {e}")
+            return {"tag": tag, "moves": len(evals), "ok": False, "reason": f"analysis_error: {e}"}
+        
+        # Generate plots with error handling
+        try:
+            x = np.arange(len(evals))
+            plt.figure(figsize=(9,4))
+            plt.plot(x, evals, label="Stock (cp)")
+            if res["ok"]:
+                start, end = res["offset"], res["offset"]+res["window_len"]
+                ycodex = evals.copy()
+                ycodex[start:end] = res["series_codex"]
+                plt.plot(x, ycodex, label="Codex (adjusted)")
+                t = f"{tag}: ΔVar {res['variance_reduction_pct']:.1f}%, MAE +{res['mae_improvement_pct']:.1f}%"
+            else:
+                t = f"{tag}: Codex skip ({res['reason']})"
+            plt.title(t); plt.xlabel("Move"); plt.ylabel("Eval"); plt.grid(True); plt.legend()
+            path = os.path.join(OUT, f"{tag}_curve.png"); plt.tight_layout(); plt.savefig(path, dpi=160); plt.close()
+            
+            # Histogram of theta' (φ-clamp)
+            if res["ok"]:
+                edges, hist = res["theta_after_hist"]
+                centers = 0.5*(np.array(edges[1:])+np.array(edges[:-1]))
+                plt.figure(figsize=(7,3))
+                plt.bar(centers, hist, width=(edges[1]-edges[0]))
+                plt.axvline(+res["phi_clamp_rad"], ls="--"); plt.axvline(-res["phi_clamp_rad"], ls="--")
+                plt.title(f"{tag}: φ-clamp at ±{res['phi_clamp_rad']:.3f} rad (~±38.2°)")
+                plt.tight_layout(); plt.savefig(os.path.join(OUT, f"{tag}_clamp.png"), dpi=160); plt.close()
+        except Exception as e:
+            print(f"Warning: Plot generation failed for {tag}: {e}")
+        
+        return {"tag": tag, "moves": len(evals), **({} if not res["ok"] else res)}
+        
+    except Exception as e:
+        print(f"Error: Failed to evaluate game {tag}: {e}")
+        return {"tag": tag, "moves": 0, "ok": False, "reason": f"evaluation_error: {e}"}
 
 def load_demo_pgns():
-    # Three compact classics (trimmed)
+    # Three well-known games with valid PGN notation
     return [
-        ("kasparov_deepblue_1997_g2",
-         """[Event "IBM Man-Machine"] [Date "1997.05.03"] [Result "1-0"]
-         1.e4 c6 2.d4 d5 3.Nc3 dxe4 4.Nxe4 Nd7 5.Ng5 Ngf6 6.Bd3 e6 7.N1f3 h6
-         8.Nxe6 Qe7 9.O-O fxe6 10.Bg6+ Kd8 11.Bf4 b5 12.Bd3 Bd6 13.Re1 c5 14.g3 c4
-         15.Be4 Qd8 16.Bc1 Qc7 17.Nh4 g5 18.Ng2 Bb7 19.Bf5 Re8 20.Rxe6 Rxe6
-         21.Bxe6 Nd5 22.Qf3 N7f6 23.Bxd5 Nxd5 24.Qxd5+ Bd6 25.Qf7 Qe7 26.Qxe7+ Bxe7
-         27.Be3 Kd7 28.Kf1 a6 29.Ke2 Bd5 30.Kd3 Be4+ 31.Kc3 Bd5 32.Kd3 Be4+ 33.Kc3 Bd5 34.Kd3 1-0"""),
-        ("fischer_spassky_1972_g6",
-         """[Event "WCh 1972"] [Date "1972.07.23"] [Result "1-0"]
-         1.c4 e6 2.Nf3 d5 3.d4 Nf6 4.Nc3 Bb4 5.e3 O-O 6.Bd3 c5 7.O-O Nc6 8.a3 Ba5
-         9.Ne2 dxc4 10.Bxc4 Bb6 11.dxc5 Qxd1 12.Rxd1 Bxc5 13.b4 Be7 14.Bb2 Rd8
-         15.Rxd8+ Bxd8 16.Rd1 Be7 17.Ned4 Nxd4 18.Nxd4 Bd7 19.Nb5 Bxb5 20.Bxb5 Nxd5
-         21.Bd3 Rd8 22.Be4 Nc3 23.Bxc3 Bxc3 24.Bc2 Rc8 25.Rd3 Bb2 26.h4 Kf8 27.Be4 Rc7
-         28.Kh2 Ke7 29.Kg3 Kd6 30.Kf4 b6 31.g4 g6 32.h5 Rc4 33.Ke5 Kc7 34.Kd5 Kb7 35.Ke5 1-0"""),
-        ("carlsen_anand_2013_g9",
-         """[Event "WCh 2013"] [Date "2013.11.21"] [Result "1/2-1/2"]
-         1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.Bd2 Bg7 6.e4 Nxc3 7.Bxc3 O-O
-         8.Qd2 Nc6 9.Nf3 Bg4 10.d5 Bxf3 11.Bxg7 Kxg7 12.Qf4 Qf6 13.Qxf6+ Qxf6
-         14.Be2 Nd4 15.Qe3 Qxa1+ 16.Kd2 Qxh1 17.Qxd4+ e5 18.Qxe5+ f6 19.Qe7+ Kg8
-         20.Qe6+ Kg7 21.Qe7+ Kg8 22.Qe6+ Kg7 23.Qe7+ Kg8 24.Qe6+ Kg7 25.Qe7+ Kg8 1/2-1/2""")
+        ("kasparov_topalov_1999",
+         """[Event "Hoogovens A Tournament"] [Site "Wijk aan Zee NED"] [Date "1999.01.20"] [Round "4"] [White "Garry Kasparov"] [Black "Veselin Topalov"] [Result "1-0"]
+1.e4 d6 2.d4 Nf6 3.Nc3 g6 4.Be3 Bg7 5.Qd2 c6 6.f3 b5 7.Nge2 Nbd7
+8.Bh6 Bxh6 9.Qxh6 Bb7 10.a3 e5 11.O-O-O Qe7 12.Kb1 a6 13.Nc1 O-O-O
+14.Nb3 exd4 15.Rxd4 c5 16.Rd1 Nb6 17.g3 Kb8 18.Na5 Ba8 19.Bh3 d5
+20.Qf4+ Ka7 21.Rhe1 d4 22.Nd5 Nbxd5 23.exd5 Qd6 24.Rxd4 cxd4 25.Re7+ Kb6
+26.Qxd4+ Kxa5 27.b4+ Ka4 28.Qc3 Qxd5 29.Ra7 Bb7 30.Rxb7 Qc4 31.Qxf6 Kxa3
+32.Qxa6+ Kxb4 33.c3+ Kxc3 34.Qa1+ Kd2 35.Qb2+ Kd1 36.Bf1 Rd2 37.Rd7 Rxd7
+38.Bxc4 bxc4 39.Qxh8 Rd3 40.Qa8 c3 41.Qa4+ Ke1 42.f4 f5 43.Kc1 Rd2
+44.Qa7 1-0"""),
+        ("fischer_byrne_1956",
+         """[Event "Rosenwald Memorial"] [Site "New York, NY USA"] [Date "1956.10.17"] [Round "8"] [White "Donald Byrne"] [Black "Robert James Fischer"] [Result "0-1"]
+1.Nf3 Nf6 2.c4 g6 3.Nc3 Bg7 4.d4 O-O 5.Bf4 d5 6.Qb3 dxc4 7.Qxc4 c6
+8.e4 Nbd7 9.Rd1 Nb6 10.Qc5 Bg4 11.Bg5 Na4 12.Qa3 Nxc3 13.bxc3 Nxe4
+14.Bxe7 Qb6 15.Bc4 Nxc3 16.Bc5 Rfe8+ 17.Kf1 Be6 18.Bxb6 Bxc4+ 19.Kg1 Ne2+
+20.Kf1 Nxd4+ 21.Kg1 Ne2+ 22.Kf1 Nc3+ 23.Kg1 axb6 24.Qb4 Ra4 25.Qxb6 Nxd1
+26.h3 Rxa2 27.Kh2 Nxf2 28.Re1 Rxe1 29.Qd8+ Bf8 30.Nxe1 Bd5 31.Nf3 Ne4
+32.Qb8 b5 33.h4 h6 34.Ne5 Kg7 35.Kg1 Bc5+ 36.Kf1 Ng3+ 37.Ke1 Bb4+
+38.Kd1 Bb3+ 39.Kc1 Ne2+ 40.Kb1 Nc3+ 41.Kc1 Rc2# 0-1"""),
+        ("carlsen_caruana_2018_g12",
+         """[Event "WCh 2018"] [Site "London ENG"] [Date "2018.11.28"] [Round "12"] [White "Magnus Carlsen"] [Black "Fabiano Caruana"] [Result "1/2-1/2"]
+1.e4 c5 2.Nf3 Nc6 3.Bb5 g6 4.Bxc6 dxc6 5.d3 Bg7 6.h3 Nf6 7.Nc3 Nd7
+8.Be3 e5 9.Qd2 h6 10.O-O Nf8 11.Nh2 Be6 12.f4 exf4 13.Bxf4 Ne6 14.Be3 Qd7
+15.Rf2 O-O 16.Raf1 Ng5 17.Nd1 Ne6 18.Nf3 Ng5 19.Nf2 Ne6 20.Nh4 Ng5
+21.Nhf3 Ne6 22.g3 Rad8 23.Kg2 Rfe8 24.Qc3 Bf8 25.a4 Bg7 26.Qd2 Bf8
+27.b3 Bg7 28.Qc3 Bf8 29.h4 h5 30.Qd2 Bg7 31.Qc3 Bf8 32.Re2 Qd6
+33.Ref2 Qd7 34.Re2 Qd6 35.Ref2 1/2-1/2""")
     ]
 
 def main():

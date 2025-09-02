@@ -21,3 +21,18 @@ data/**/*.tmp
 
 # Entropy pump output
 out/
+
+# Plot artifacts and generated files
+plots/
+test_plots/
+*_plots/
+
+# Graphics file types
+*.png
+*.jpg
+*.jpeg
+*.pdf
+*.svg
+
+# Entropy pump summary artifacts
+entropy_pump_summary_*
