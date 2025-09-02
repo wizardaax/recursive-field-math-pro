@@ -1,3 +1,7 @@
+[![CI](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/ci.yml/badge.svg)](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/ci.yml)
+[![PyPI version](https://img.shields.io/pypi/v/recursive-field-math-pro.svg)](https://pypi.org/project/recursive-field-math-pro/)
+[![codecov](https://codecov.io/gh/wizardaax/recursive-field-math-pro/branch/main/graph/badge.svg)](https://codecov.io/gh/wizardaax/recursive-field-math-pro)
+
 # Projex X1 — Original Formula (Lucas 4–7–11)
 
 > **Repo:** `wizardaax/recursive-field-math-pro`  
