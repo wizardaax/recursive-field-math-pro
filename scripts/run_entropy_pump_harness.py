@@ -85,10 +85,12 @@ def load_demo_pgns():
 
 def main():
     mid = (10, 30)
+    lucas_weights = (4, 7, 11)  # Default Lucas weights
     rows = []
     for tag, pgn in load_demo_pgns():
         r = eval_game(pgn, mid=mid, tag=tag)
         if r: rows.append(r)
+    
     # Write summary JSON + CSV-like TSV
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     js = os.path.join(OUT, f"entropy_pump_summary_{ts}.json")
@@ -100,7 +102,22 @@ def main():
         for r in rows:
             if not r.get("ok"): continue
             f.write("\t".join(str(r.get(k,"")) for k in hdr)+"\n")
+    
+    # Generate and display results summary
+    from .results_evaluator import generate_summary_comment
+    summary = generate_summary_comment(rows, lucas_weights)
+    
+    # Write summary to file
+    summary_file = os.path.join(OUT, f"entropy_pump_summary_{ts}.md")
+    with open(summary_file, "w", encoding="utf-8") as f:
+        f.write(summary)
+    
     print(f"OK — wrote {js} and {tsv} and plots in {OUT}/")
+    print(f"Summary written to {summary_file}")
+    print("\n" + "="*60)
+    print("RESULTS SUMMARY")
+    print("="*60)
+    print(summary)
 
 if __name__ == "__main__":
     main()
