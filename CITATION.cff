@@ -1,8 +1,8 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 title: "Projex X1: Recursive Field Math (Lucas 4–7–11)"
-version: 0.1.0
-date-released: 2025-08-29
+version: 0.1.1
+date-released: 2025-08-30
 authors:
   - family-names: "Wizardaax"
     given-names: ""

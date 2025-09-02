@@ -170,7 +170,7 @@ Why dual hash?
 Enabling dual-hash:
 ```
 pip install blake3
-python -m gxsonic.cli --n-start 1 --n-end 2 --out out_dual --dual-hash
+python -m recursive_field_math.cli --n-start 1 --n-end 2 --out out_dual --dual-hash
 ```
 
 Descriptor (dual-hash mode) adds:
@@ -202,7 +202,7 @@ Graceful downgrade:
 Quick smoke test:
 ```
 pip install blake3
-python -m gxsonic.cli --n-start 7 --n-end 8 --out test_dual --dual-hash
+python -m recursive_field_math.cli --n-start 7 --n-end 8 --out test_dual --dual-hash
 jq '.audio_chunk_hash,.audio_chunk_hashes.blake3' test_dual/descriptors/glyph_000007.json
 ```
 
@@ -229,4 +229,4 @@ Future directions (non-breaking ideas):
 Security note:
 Dual-hash is additive; it does not “mix” digests. Canonical authenticity still hinges on BLAKE2b + signatures (if present).
 
-Note: This section was first introduced in commit b5b6dbe8 with a generic message; this clarifier adds conventional docs(gxsonic) traceability (no functional changes).
+Note: This section was first introduced in commit b5b6dbe8 with a generic message; this clarifier adds conventional docs traceability (no functional changes).
