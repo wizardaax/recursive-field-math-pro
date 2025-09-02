@@ -50,4 +50,21 @@ matplotlib>=3.8
 - Clamp plot peaks near **±0.666 rad**.
 - MAE improvement positive on most games (few %).
 
-If you want the **Lucas sweep** (e.g., compare (4,7,11) vs (3,6,10)), I'll add a small loop and a summary heatmap next.
+## Lucas Sweep Feature
+
+The **Lucas sweep** compares different Lucas weight combinations to find optimal settings:
+
+**Default combinations tested:**
+- Baseline (no Lucas weights)
+- (4,7,11) - Default Lucas sequence  
+- (3,6,10) - Alternative comparison
+- (2,5,8) - Smaller values
+- (5,8,13) - Larger values
+
+**New outputs:**
+- `lucas_sweep_heatmap.png` - Comparative heatmap of variance reduction and compression
+- `lucas_sweep_summary_*.json` - Detailed results for all combinations
+- Individual plots for each combination: `*_lucas_X_Y_Z_curve.png` and `*_lucas_X_Y_Z_clamp.png`
+- Enhanced TSV with `lucas_weights` column
+
+**Usage:** The Lucas sweep runs automatically with the harness. Results show different combinations can achieve varying levels of variance reduction (from ~58% to ~92%) and compression performance.

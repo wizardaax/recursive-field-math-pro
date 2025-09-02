@@ -54,3 +54,26 @@ def test_lucas_weights():
     # The compression and variance reduction should be different with Lucas weights
     assert result_lucas["compression"] != result_normal["compression"]
     assert result_lucas["variance_reduction_pct"] != result_normal["variance_reduction_pct"]
+
+def test_lucas_sweep_combinations():
+    # Test that different Lucas weight combinations produce different results
+    rng = np.random.default_rng(42)
+    evals = np.cumsum(rng.normal(0, 50, 50))
+    
+    combinations = [
+        None,         # baseline
+        (4, 7, 11),   # default Lucas
+        (3, 6, 10),   # alternative
+        (2, 5, 8),    # smaller values
+        (5, 8, 13),   # larger values
+    ]
+    
+    results = []
+    for combo in combinations:
+        result = codex_pump_from_series(evals, window=(5, 25), lucas_weights=combo)
+        assert result["ok"] == True
+        results.append(result)
+    
+    # Verify all results are different (at least variance reduction should differ)
+    variance_reductions = [r["variance_reduction_pct"] for r in results]
+    assert len(set(variance_reductions)) == len(variance_reductions), "All Lucas combinations should produce different results"

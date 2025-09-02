@@ -23,7 +23,7 @@ def stock_eval(board: chess.Board) -> float:
     ks = (shield(kW, chess.WHITE, +1) - shield(kB, chess.BLACK, -1))*0.5
     return (m + mobility + ks) * 100.0  # cp
 
-def eval_game(pgn_text: str, mid=(10,30), tag="game"):
+def eval_game(pgn_text: str, mid=(10,30), tag="game", lucas_weights=None):
     g = chess.pgn.read_game(io.StringIO(pgn_text))
     if g is None: return None
     b = g.board()
@@ -32,7 +32,12 @@ def eval_game(pgn_text: str, mid=(10,30), tag="game"):
         b.push(mv)
         evals.append(stock_eval(b))
     if len(evals) < 6: return None
-    res = codex_pump_from_series(np.array(evals), window=mid, n_index=PHI)
+    res = codex_pump_from_series(np.array(evals), window=mid, n_index=PHI, lucas_weights=lucas_weights)
+    
+    # Create tag suffix for Lucas weights
+    tag_suffix = f"_lucas_{'_'.join(map(str, lucas_weights))}" if lucas_weights else ""
+    plot_tag = f"{tag}{tag_suffix}"
+    
     # Plot curve
     x = np.arange(len(evals))
     plt.figure(figsize=(9,4))
@@ -42,11 +47,12 @@ def eval_game(pgn_text: str, mid=(10,30), tag="game"):
         ycodex = evals.copy()
         ycodex[start:end] = res["series_codex"]
         plt.plot(x, ycodex, label="Codex (adjusted)")
-        t = f"{tag}: ΔVar {res['variance_reduction_pct']:.1f}%, MAE +{res['mae_improvement_pct']:.1f}%"
+        lucas_info = f" Lucas({','.join(map(str, lucas_weights))})" if lucas_weights else ""
+        t = f"{tag}: ΔVar {res['variance_reduction_pct']:.1f}%, MAE +{res['mae_improvement_pct']:.1f}%{lucas_info}"
     else:
         t = f"{tag}: Codex skip ({res['reason']})"
     plt.title(t); plt.xlabel("Move"); plt.ylabel("Eval"); plt.grid(True); plt.legend()
-    path = os.path.join(OUT, f"{tag}_curve.png"); plt.tight_layout(); plt.savefig(path, dpi=160); plt.close()
+    path = os.path.join(OUT, f"{plot_tag}_curve.png"); plt.tight_layout(); plt.savefig(path, dpi=160); plt.close()
     # Histogram of theta' (φ-clamp)
     if res["ok"]:
         edges, hist = res["theta_after_hist"]
@@ -54,9 +60,14 @@ def eval_game(pgn_text: str, mid=(10,30), tag="game"):
         plt.figure(figsize=(7,3))
         plt.bar(centers, hist, width=(edges[1]-edges[0]))
         plt.axvline(+res["phi_clamp_rad"], ls="--"); plt.axvline(-res["phi_clamp_rad"], ls="--")
-        plt.title(f"{tag}: φ-clamp at ±{res['phi_clamp_rad']:.3f} rad (~±38.2°)")
-        plt.tight_layout(); plt.savefig(os.path.join(OUT, f"{tag}_clamp.png"), dpi=160); plt.close()
-    return {"tag": tag, "moves": len(evals), **({} if not res["ok"] else res)}
+        lucas_info = f" Lucas({','.join(map(str, lucas_weights))})" if lucas_weights else ""
+        plt.title(f"{tag}: φ-clamp at ±{res['phi_clamp_rad']:.3f} rad (~±38.2°){lucas_info}")
+        plt.tight_layout(); plt.savefig(os.path.join(OUT, f"{plot_tag}_clamp.png"), dpi=160); plt.close()
+    
+    result = {"tag": tag, "moves": len(evals), **({} if not res["ok"] else res)}
+    if lucas_weights:
+        result["lucas_weights"] = lucas_weights
+    return result
 
 def load_demo_pgns():
     # Three compact classics (trimmed)
@@ -83,24 +94,174 @@ def load_demo_pgns():
          20.Qe6+ Kg7 21.Qe7+ Kg8 22.Qe6+ Kg7 23.Qe7+ Kg8 24.Qe6+ Kg7 25.Qe7+ Kg8 1/2-1/2""")
     ]
 
+def lucas_sweep_analysis(pgns, mid=(10,30), lucas_combinations=None):
+    """Run Lucas sweep comparing different weight combinations."""
+    if lucas_combinations is None:
+        lucas_combinations = [
+            None,  # baseline (no Lucas weights)
+            (4, 7, 11),  # default Lucas sequence
+            (3, 6, 10),  # alternative comparison
+            (2, 5, 8),   # smaller values
+            (5, 8, 13),  # larger values
+        ]
+    
+    all_results = []
+    
+    for lucas_weights in lucas_combinations:
+        print(f"Running analysis with Lucas weights: {lucas_weights}")
+        for tag, pgn in pgns:
+            r = eval_game(pgn, mid=mid, tag=tag, lucas_weights=lucas_weights)
+            if r: 
+                all_results.append(r)
+    
+    return all_results
+
+def create_lucas_heatmap(results):
+    """Create a heatmap comparing Lucas weight performance."""
+    # Group results by game and Lucas weights
+    games = set(r["tag"] for r in results if r.get("ok"))
+    lucas_combos = []
+    for r in results:
+        if r.get("ok"):
+            lw = r.get("lucas_weights")
+            if lw not in lucas_combos:
+                lucas_combos.append(lw)
+    
+    # Create data matrix for heatmap
+    variance_matrix = []
+    compression_matrix = []
+    
+    combo_labels = []
+    for combo in lucas_combos:
+        if combo is None:
+            combo_labels.append("Baseline")
+        else:
+            combo_labels.append(f"({','.join(map(str, combo))})")
+    
+    for combo in lucas_combos:
+        var_row = []
+        comp_row = []
+        for game in sorted(games):
+            # Find result for this game/combo combination
+            game_result = None
+            for r in results:
+                if r["tag"] == game and r.get("lucas_weights") == combo and r.get("ok"):
+                    game_result = r
+                    break
+            
+            if game_result:
+                var_row.append(game_result["variance_reduction_pct"])
+                comp_row.append(game_result["compression"])
+            else:
+                var_row.append(0)  # fallback
+                comp_row.append(0)
+        
+        variance_matrix.append(var_row)
+        compression_matrix.append(comp_row)
+    
+    # Create heatmap plots
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+    
+    # Variance reduction heatmap
+    im1 = ax1.imshow(variance_matrix, cmap='YlOrRd', aspect='auto')
+    ax1.set_title('Variance Reduction % (Lucas Sweep)')
+    ax1.set_xlabel('Games')
+    ax1.set_ylabel('Lucas Weight Combinations')
+    ax1.set_xticks(range(len(games)))
+    ax1.set_xticklabels(sorted(games), rotation=45, ha='right')
+    ax1.set_yticks(range(len(combo_labels)))
+    ax1.set_yticklabels(combo_labels)
+    
+    # Add text annotations
+    for i in range(len(combo_labels)):
+        for j in range(len(games)):
+            text = ax1.text(j, i, f'{variance_matrix[i][j]:.1f}', 
+                           ha="center", va="center", color="black", fontsize=10)
+    
+    plt.colorbar(im1, ax=ax1, label='Variance Reduction %')
+    
+    # Compression heatmap
+    im2 = ax2.imshow(compression_matrix, cmap='Blues', aspect='auto')
+    ax2.set_title('Compression Coefficient (Lucas Sweep)')
+    ax2.set_xlabel('Games')
+    ax2.set_ylabel('Lucas Weight Combinations')
+    ax2.set_xticks(range(len(games)))
+    ax2.set_xticklabels(sorted(games), rotation=45, ha='right')
+    ax2.set_yticks(range(len(combo_labels)))
+    ax2.set_yticklabels(combo_labels)
+    
+    # Add text annotations
+    for i in range(len(combo_labels)):
+        for j in range(len(games)):
+            text = ax2.text(j, i, f'{compression_matrix[i][j]:.3f}', 
+                           ha="center", va="center", color="black", fontsize=10)
+    
+    plt.colorbar(im2, ax=ax2, label='Compression Coefficient')
+    
+    plt.tight_layout()
+    heatmap_path = os.path.join(OUT, "lucas_sweep_heatmap.png")
+    plt.savefig(heatmap_path, dpi=160, bbox_inches='tight')
+    plt.close()
+    
+    return heatmap_path
+
 def main():
     mid = (10, 30)
+    
+    # Load demo games
+    demo_pgns = load_demo_pgns()
+    
+    # Run Lucas sweep analysis
+    print("Running Lucas sweep analysis...")
+    lucas_results = lucas_sweep_analysis(demo_pgns, mid=mid)
+    
+    # Run baseline analysis for backward compatibility
+    print("Running baseline analysis...")
     rows = []
-    for tag, pgn in load_demo_pgns():
+    for tag, pgn in demo_pgns:
         r = eval_game(pgn, mid=mid, tag=tag)
         if r: rows.append(r)
+    
+    # Combine all results
+    all_rows = rows + lucas_results
+    
     # Write summary JSON + CSV-like TSV
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     js = os.path.join(OUT, f"entropy_pump_summary_{ts}.json")
-    with open(js, "w", encoding="utf-8") as f: f.write(json.dumps(rows, indent=2))
+    with open(js, "w", encoding="utf-8") as f: f.write(json.dumps(all_rows, indent=2))
+    
+    # Write TSV with Lucas weights column
     tsv = os.path.join(OUT, f"entropy_pump_summary_{ts}.tsv")
     with open(tsv, "w", encoding="utf-8") as f:
-        hdr = ["tag","moves","variance_reduction_pct","compression","mae_improvement_pct","phi_clamp_rad"]
+        hdr = ["tag","moves","variance_reduction_pct","compression","mae_improvement_pct","phi_clamp_rad","lucas_weights"]
         f.write("\t".join(hdr)+"\n")
-        for r in rows:
+        for r in all_rows:
             if not r.get("ok"): continue
-            f.write("\t".join(str(r.get(k,"")) for k in hdr)+"\n")
+            # Format lucas_weights for TSV
+            lw_str = str(r.get("lucas_weights", "")).replace("(", "").replace(")", "").replace(" ", "") if r.get("lucas_weights") else ""
+            row_data = [
+                r.get("tag", ""),
+                r.get("moves", ""),
+                r.get("variance_reduction_pct", ""),
+                r.get("compression", ""),
+                r.get("mae_improvement_pct", ""),
+                r.get("phi_clamp_rad", ""),
+                lw_str
+            ]
+            f.write("\t".join(str(x) for x in row_data)+"\n")
+    
+    # Create Lucas sweep heatmap
+    print("Creating Lucas sweep heatmap...")
+    heatmap_path = create_lucas_heatmap(lucas_results)
+    
+    # Write Lucas sweep summary
+    lucas_summary_path = os.path.join(OUT, f"lucas_sweep_summary_{ts}.json")
+    with open(lucas_summary_path, "w", encoding="utf-8") as f:
+        f.write(json.dumps(lucas_results, indent=2))
+    
     print(f"OK — wrote {js} and {tsv} and plots in {OUT}/")
+    print(f"Lucas sweep results in {lucas_summary_path}")
+    print(f"Lucas sweep heatmap: {heatmap_path}")
 
 if __name__ == "__main__":
     main()
