@@ -92,9 +92,10 @@ pytest -q
 - Golden ratio refraction formula for variance reduction in chess game evaluations
 - Core implementation in `scripts/codex_entropy_pump.py`
 - PGN analysis harness: processes chess games, generates plots, metrics, and summary artifacts
-- Lucas weights for resonance adjustment
+- Lucas weights for resonance adjustment with **Lucas sweep** feature
+- **Lucas sweep:** Compares different weight combinations (4,7,11) vs (3,6,10) vs others with heatmap visualization
 - Results: Up to ~92% variance reduction on classic games (Kasparov, Fischer, Carlsen)
-- Artifacts: Curve plots, φ-clamp histograms, JSON/TSV summaries
+- Artifacts: Curve plots, φ-clamp histograms, JSON/TSV summaries, Lucas sweep heatmap
 - Comprehensive tests for invariants, edge cases, and Lucas weights
 
 ### Quick Usage
@@ -102,6 +103,7 @@ pytest -q
 ```bash
 python -m scripts.run_entropy_pump_harness
 # Artifacts appear in the out/ directory: *_curve.png, *_clamp.png, *.json, *.tsv
+# New: lucas_sweep_heatmap.png, lucas_sweep_summary_*.json, *_lucas_*_*_*_curve.png
 ```
 
 ### Quick Run (One-Click)
