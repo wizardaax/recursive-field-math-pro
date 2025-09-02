@@ -1,1 +1,43 @@
-**Owner:** @wizardaax (Commander X)\n\n<!-- Please describe your issue here -->\n\n## Checklist\n- [ ] Item 1\n- [ ] Item 2\n\n## Additional Information\n- Additional info here...\n
+name: Social Campaign Checklist
+description: Track and execute the social media launch plan for a new release
+title: "Social Campaign Checklist: v{{ env.RELEASE_VERSION }}"
+labels: ["social", "launch"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Owner:** @wizardaax (Commander X)
+
+        ## 🚀 Social Campaign Checklist for v{{ env.RELEASE_VERSION }}
+        Use this issue to coordinate and track the launch sequence across all channels.
+
+  - type: checkboxes
+    attributes:
+      label: ✅ Assets
+      description: Prepare visual assets before posting.
+      options:
+        - label: Wide banner (PNG + SVG generated)
+        - label: Square badge (PNG + SVG generated)
+        - label: CLI screenshot captured
+
+  - type: checkboxes
+    attributes:
+      label: 📅 Posting Cadence
+      description: Follow the playbooks to maintain momentum.
+      options:
+        - label: Day 1 – Launch posts live (X, LinkedIn, Reddit, Discord)
+        - label: Day 2–3 – Demo follow-up published
+        - label: Day 4–7 – TL;DR tutorial published
+        - label: Launch tweet pinned
+
+  - type: input
+    attributes:
+      label: 🔗 Post Links
+      description: Add links to live posts.
+      placeholder: "https://twitter.com/yourpost..."
+
+  - type: textarea
+    attributes:
+      label: 🖼 Screenshots / Notes
+      description: Drop screenshots, metrics, or campaign notes here.
+      placeholder: "Attach images or notes..."
