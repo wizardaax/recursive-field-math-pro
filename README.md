@@ -5,6 +5,16 @@
 
 # Projex X1 — Original Formula (Lucas 4–7–11)
 
+## TL;DR
+
+🚀 **Quick Start**: A mathematical research tool for recursive field computations using Lucas numbers and golden ratio formulas, with built-in CLI commands, chess game analysis via entropy pump, and agent-ready workflows.
+
+**Key Features**: Lucas/Fibonacci sequences, field geometry, ratio calculations, Egyptian fractions, entropy-pump variance reduction for chess PGN analysis, and comprehensive CI/CD pipeline.
+
+**In 30 seconds**: `pip install -e . && rfm lucas 0 10 && rfm egypt && pytest -q`
+
+---
+
 > **Repo:** `wizardaax/recursive-field-math-pro`  
 > **Focus:** Radial–angular recursive field + Lucas/Fibonacci backbone, with agent-ready CLI, tests, docs, data hooks, and CI.
 > **Family name:** snellman
@@ -83,6 +93,20 @@ rfm eval results.json    # evaluate entropy pump results
 pytest -q
 ```
 
+## Who is this for?
+
+**🔬 Researchers & Mathematicians**: Explore Lucas number sequences, golden ratio properties, continued fractions, and recursive field mathematics with computational tools.
+
+**🎓 Students & Educators**: Learn about Fibonacci/Lucas relationships, Egyptian fractions, and generating functions through interactive CLI examples and comprehensive documentation.
+
+**💻 Developers & Engineers**: Integrate mathematical computations into applications, leverage agent-ready workflows, and utilize CI/CD-ready project structure.
+
+**🤖 AI Agents & Automation**: Use keyword-based function routing (`my_recursive_ai.py`), standardized CLI interfaces, and structured output formats for programmatic analysis.
+
+**♟️ Game Analysts**: Apply entropy-pump variance reduction techniques to chess PGN analysis with golden ratio refraction formulas.
+
+**📊 Data Scientists**: Process numerical sequences, generate plots and visualizations, and validate mathematical models with built-in acceptance criteria.
+
 ## Agent Hooks
 - Single command deploy: `scripts/deploy.sh` (edit `REMOTE=` to your GitHub SSH/HTTPS URL)
 - CI: `.github/workflows/ci.yml` runs lint & tests on push
@@ -160,6 +184,10 @@ recursive-field-math-pro/
 ├─ my_recursive_ai.py
 ├─ tests/
 │  └─ test_core.py
+├─ examples/
+│  ├─ sample.json (CLI usage examples)
+│  ├─ sample.md (quick demo guide)
+│  └─ sample.ipynb (interactive notebook)
 ├─ data/
 │  ├─ AEON-Gravyflyer.csv (placeholder)
 │  └─ Enhanced_Zeta_Analysis.csv (placeholder)

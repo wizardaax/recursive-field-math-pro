@@ -1,0 +1,19 @@
+{
+  "example": "basic_lucas_computation",
+  "description": "Demonstrates basic Lucas number computation and ratio analysis",
+  "commands": [
+    "rfm lucas 0 10",
+    "rfm ratio 5",
+    "rfm sig"
+  ],
+  "expected_output": {
+    "lucas_sequence": [2, 1, 3, 4, 7, 11, 18, 29, 47, 76, 123],
+    "ratio_convergence": "approaching golden ratio φ ≈ 1.618",
+    "signature_triple": [4, 7, 11]
+  },
+  "use_cases": [
+    "Mathematical research verification",
+    "Educational demonstrations",
+    "Automated testing workflows"
+  ]
+}
