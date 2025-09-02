@@ -1,9 +1,40 @@
-# Projex X1 — Original Formula (Lucas 4–7–11)
+# 🔷 Recursive Field Math Pro (Projex X1)
 
-> **Repo:** `wizardaax/recursive-field-math-pro`  
-> **Focus:** Radial–angular recursive field + Lucas/Fibonacci backbone, with agent-ready CLI, tests, docs, data hooks, and CI.
-> **Family name:** snellman
-> **Given name:** adam a
+> _Mapping recursive patterns from nature into code — for students, researchers, and curious developers_
+
+This project explores recursive mathematics and harmonic field structures inspired by Lucas 4-7-11, Fibonacci, and golden ratio frameworks.
+
+## What's Inside
+
+📐 **Core algorithms** for generating recursive field equations  
+🔁 **CLI tools and examples** to experiment with harmonic sequences  
+📊 **Tests, docs, and visualizations** of recursive structures  
+🧩 **Foundations** for extending into physics, geometry, and advanced research  
+
+## Why It Matters
+
+Recursive field patterns appear everywhere in nature, geometry, and advanced physics. This repo is an open-source attempt to map those patterns into code — so anyone can study, explore, and build on them.
+
+**Quick start:** `pip install -e .` then try `rfm lucas 0 5` or `rfm sig` (see [Quickstart](#quickstart) for more examples)
+
+## Examples
+
+```bash
+# Generate Lucas sequence (2, 1, 3, 4, 7, 11, ...)
+rfm lucas 0 5
+
+# Show the signature triple (4-7-11) analysis  
+rfm sig
+
+# Calculate recursive field coordinates
+rfm field 1 3
+```
+
+---
+
+## Technical Details (Projex X1 — Original Formula)
+
+> **Repository:** `wizardaax/recursive-field-math-pro` | **Author:** adam a snellman | **Focus:** Radial–angular recursive field + Lucas/Fibonacci backbone
 
 ## Status
 
