@@ -1,6 +1,7 @@
 # Codex entropy-pump: golden refraction + metrics
 # Uses rank->phase mapping so it's scale-free and robust.
-import math, numpy as np
+import math
+import numpy as np
 
 PHI = (1 + 5**0.5) / 2
 
@@ -76,7 +77,8 @@ def codex_pump_from_series(eval_series: np.ndarray,
 
     # Simple "baseline smoother" to compute MAE improvement (optional)
     def ma(x, k=5):
-        if len(x) < k+1: return x
+        if len(x) < k+1:
+            return x
         kernel = np.ones(k)/k
         pad = np.concatenate([np.repeat(x[0], k-1), x])
         sm = np.convolve(pad, kernel, mode="valid")
