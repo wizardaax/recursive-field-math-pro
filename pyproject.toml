@@ -7,7 +7,7 @@ name = "recursive-field-math"
 version = "0.2.0"
 description = "Projex X1 — Recursive field math (Lucas 4–7–11) with CLI, docs, tests."
 readme = "README.md"
-license = {text = "MIT License"}
+license = {text = "MIT"}
 authors = [{name="Commander X (Wizard)"}]
 requires-python = ">=3.9"
 dependencies = [

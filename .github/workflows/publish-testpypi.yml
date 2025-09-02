@@ -1,4 +1,4 @@
-name: Publish to PyPI (Trusted Publishing)
+name: Publish to TestPyPI (Trusted Publishing)
 
 on:
   release:
@@ -142,22 +142,23 @@ PY
         with:
           subject-path: "dist/*"
 
-      - name: Publish to PyPI (OIDC, no secrets)
+      - name: Publish to TestPyPI (OIDC, no secrets)
         if: ${{ !(github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true') }}
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
+          repository-url: https://test.pypi.org/legacy/
           verbose: true
 
-      - name: Post-publish smoke install (PyPI)
+      - name: Post-publish smoke install (TestPyPI)
         if: ${{ github.event_name == 'release' && !(github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true') }}
         run: |
           python -m venv /tmp/pkgtest
           . /tmp/pkgtest/bin/activate
           python -m pip install --upgrade pip
-          pip install --no-deps recursive-field-math
+          pip install --no-deps --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple recursive-field-math
           python - <<'PY'
 import recursive_field_math
-print("Imported recursive_field_math ok — version:", getattr(recursive_field_math, "__version__", "<?>"))
+print("Imported recursive_field_math ok (TestPyPI) — version:", getattr(recursive_field_math, "__version__", "<?>"))
 PY
           rfm --help || true
 
@@ -165,5 +166,5 @@ PY
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pypi-dist-${{ github.run_id }}
+          name: testpypi-dist-${{ github.run_id }}
           path: dist/*
