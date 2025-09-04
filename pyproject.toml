@@ -3,9 +3,9 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "recursive-field-math"
-version = "0.2.0"
-description = "Projex X1 — Recursive field math (Lucas 4–7–11) with CLI, docs, tests."
+name = "regen88-codex"
+version = "0.1.0"
+description = "Regen88 Codex — Cross-platform recursive field math with entropy-pump, Lucas sequences, and complete CI/CD"
 readme = "README.md"
 license = {text = "MIT License"}
 authors = [{name="Commander X (Wizard)"}]
@@ -21,4 +21,4 @@ rfm = "recursive_field_math.cli:main"
 
 [tool.pytest.ini_options]
 addopts = "-q"
-pythonpath = ["src"]
+pythonpath = ["src", "."]

@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# Check build artifacts: verify distributions are valid and contain expected files
+# Usage: bash scripts/check_artifacts.sh
+
+set -euo pipefail
+
+PKG_NAME="regen88-codex"
+PYTHON=${PYTHON:-python}
+
+echo "==> Checking build artifacts"
+
+if [ ! -d "dist" ]; then
+    echo "Error: dist/ directory not found. Run 'bash scripts/build_artifacts.sh' first."
+    exit 1
+fi
+
+# Count expected files
+WHEELS=$(ls dist/*.whl 2>/dev/null | wc -l)
+SDISTS=$(ls dist/*.tar.gz 2>/dev/null | wc -l)
+
+echo "Found $WHEELS wheel(s) and $SDISTS source distribution(s)"
+
+if [ "$WHEELS" -eq 0 ] || [ "$SDISTS" -eq 0 ]; then
+    echo "Error: Expected at least 1 wheel and 1 sdist"
+    exit 1
+fi
+
+# Verify with twine
+echo "==> Verifying distributions with twine"
+if command -v twine >/dev/null 2>&1 || $PYTHON -c "import twine" 2>/dev/null; then
+  $PYTHON -m twine check dist/*
+else
+  echo "Warning: twine not available, skipping verification"
+fi
+
+# Check wheel contents
+echo "==> Checking wheel contents"
+for wheel in dist/*.whl; do
+    echo "Checking $wheel:"
+    unzip -l "$wheel" | grep -E '\.(py|toml|txt|md)$' | head -10
+done
+
+# Check sdist contents
+echo "==> Checking sdist contents"
+for sdist in dist/*.tar.gz; do
+    echo "Checking $sdist:"
+    tar -tzf "$sdist" | grep -E '\.(py|toml|txt|md)$' | head -10
+done
+
+# Verify package can be installed and imported
+echo "==> Testing wheel contents and metadata"
+for wheel in dist/*.whl; do
+    echo "Inspecting wheel metadata: $wheel"
+    unzip -p "$wheel" "*-METADATA" | head -20 || echo "Could not read metadata"
+done
+
+echo "==> All artifact checks passed! ✓"

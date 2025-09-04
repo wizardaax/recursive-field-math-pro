@@ -1,6 +1,6 @@
 [![CI](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/ci.yml/badge.svg)](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/ci.yml)
-[![PyPI version](https://img.shields.io/pypi/v/recursive-field-math-pro.svg)](https://pypi.org/project/recursive-field-math-pro/)
-[![codecov](https://codecov.io/gh/wizardaax/recursive-field-math-pro/branch/main/graph/badge.svg)](https://codecov.io/gh/wizardaax/recursive-field-math-pro)
+[![PyPI version](https://img.shields.io/pypi/v/regen88-codex.svg)](https://pypi.org/project/regen88-codex/)
+[![Release](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/release.yml/badge.svg)](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/release.yml)
 ---
 
 # Projex X1 — Original Formula (Lucas 4–7–11)
@@ -11,7 +11,9 @@
 
 **Key Features**: Lucas/Fibonacci sequences, field geometry, ratio calculations, Egyptian fractions, entropy-pump variance reduction for chess PGN analysis, and comprehensive CI/CD pipeline.
 
-**In 30 seconds**: `pip install -e . && rfm lucas 0 10 && rfm egypt && pytest -q`
+**In 30 seconds**: `pip install regen88-codex && rfm lucas 0 10 && rfm egypt && python -m pytest`
+
+**Development**: `bash scripts/dev_bootstrap.sh && bash scripts/dev_check.sh`
 
 ---
 
@@ -33,6 +35,39 @@
 - ⚡ **CI/CD**: [Actions dashboard](https://github.com/wizardaax/recursive-field-math-pro/actions)
 
 > **Docs Previews:** Open a PR against `main`. The **docs-preview** workflow deploys a temporary site and comments the preview URL on your PR automatically.
+
+## Regen88 Codex — Development Workflow
+
+🚀 **Complete cross-platform build, test, and release setup**
+
+### Quick Setup
+```bash
+bash scripts/dev_bootstrap.sh    # Set up development environment  
+bash scripts/dev_check.sh        # Run linting, type checking, and tests
+bash scripts/build_artifacts.sh  # Build wheel and sdist packages
+bash scripts/check_artifacts.sh  # Verify build artifacts
+```
+
+### Release Workflow  
+```bash
+# Tag and release (triggers GitHub Actions)
+bash scripts/tag_and_push.sh v0.1.0 "Regen88 Codex v0.1.0"
+
+# Or complete workflow with verification
+bash scripts/release_all.sh v0.1.0 "Regen88 Codex v0.1.0"
+```
+
+### Features
+- **CI/CD**: Multi-Python version testing (3.9-3.12) across Linux, Windows, macOS
+- **Release Automation**: Tag-based releases with artifact uploads to GitHub
+- **PyPI Publishing**: Optional auto-publish on release (requires `PYPI_API_TOKEN` secret)
+- **Pre-commit Hooks**: Automated code quality checks with ruff, pytest
+- **Development Scripts**: Bootstrap, check, build, verify, tag, and release workflows
+
+### Artifacts  
+- **Wheel**: `regen88_codex-*.whl` (installable via pip)
+- **Source**: `regen88-codex-*.tar.gz` (source distribution)
+- **Release**: Automated GitHub releases with checksums
 
 ## Geometric Field (Seed)
 - Radial growth: \( r_n = 3\sqrt{n} \)  
