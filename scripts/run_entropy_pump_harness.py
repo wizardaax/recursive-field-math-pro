@@ -23,7 +23,7 @@ def stock_eval(board: chess.Board) -> float:
     ks = (shield(kW, chess.WHITE, +1) - shield(kB, chess.BLACK, -1))*0.5
     return (m + mobility + ks) * 100.0  # cp
 
-def eval_game(pgn_text: str, mid=(10,30), tag="game"):
+def eval_game(pgn_text: str, mid=(10,30), tag="game", enable_flame_correction=False, flame_params=None):
     g = chess.pgn.read_game(io.StringIO(pgn_text))
     if g is None: return None
     b = g.board()
@@ -32,7 +32,16 @@ def eval_game(pgn_text: str, mid=(10,30), tag="game"):
         b.push(mv)
         evals.append(stock_eval(b))
     if len(evals) < 6: return None
-    res = codex_pump_from_series(np.array(evals), window=mid, n_index=PHI)
+    
+    # Apply Codex entropy pump with optional Regen88 flame correction
+    res = codex_pump_from_series(
+        np.array(evals), 
+        window=mid, 
+        n_index=PHI,
+        enable_flame_correction=enable_flame_correction,
+        flame_correction_params=flame_params
+    )
+    
     # Plot curve
     x = np.arange(len(evals))
     plt.figure(figsize=(9,4))
@@ -42,7 +51,15 @@ def eval_game(pgn_text: str, mid=(10,30), tag="game"):
         ycodex = evals.copy()
         ycodex[start:end] = res["series_codex"]
         plt.plot(x, ycodex, label="Codex (adjusted)")
-        t = f"{tag}: ΔVar {res['variance_reduction_pct']:.1f}%, MAE +{res['mae_improvement_pct']:.1f}%"
+        
+        # Update title to include flame correction info
+        title_parts = [f"{tag}: ΔVar {res['variance_reduction_pct']:.1f}%, MAE +{res['mae_improvement_pct']:.1f}%"]
+        if enable_flame_correction and res.get('flame_correction_enabled'):
+            flames_count = res.get('flames_detected', 0)
+            title_parts.append(f"🔥{flames_count}")
+            if res.get('regen88_applied'):
+                title_parts.append("R88")
+        t = " ".join(title_parts)
     else:
         t = f"{tag}: Codex skip ({res['reason']})"
     plt.title(t); plt.xlabel("Move"); plt.ylabel("Eval"); plt.grid(True); plt.legend()
@@ -84,20 +101,55 @@ def load_demo_pgns():
     ]
 
 def main():
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Codex Entropy-Pump Harness with Regen88 Flame Correction")
+    parser.add_argument("--enable-flame-correction", action="store_true", 
+                       help="Enable Regen88 Codex Flame Correction Engine")
+    parser.add_argument("--flame-threshold", type=float, default=2.5,
+                       help="Flame detection threshold (std devs, default: 2.5)")
+    parser.add_argument("--regen-factor", type=float, default=88.0,
+                       help="Regen88 smoothing factor (default: 88.0)")
+    parser.add_argument("--regen-iterations", type=int, default=3,
+                       help="Number of Regen88 iterations (default: 3)")
+    
+    args = parser.parse_args()
+    
     mid = (10, 30)
     lucas_weights = (4, 7, 11)  # Default Lucas weights
+    
+    # Prepare flame correction parameters
+    flame_params = None
+    if args.enable_flame_correction:
+        flame_params = {
+            "flame_threshold": args.flame_threshold,
+            "regen_factor": args.regen_factor,
+            "iterations": args.regen_iterations
+        }
+        print(f"🔥 Regen88 Flame Correction Engine enabled:")
+        print(f"   - Flame threshold: {args.flame_threshold} std devs")
+        print(f"   - Regen factor: {args.regen_factor}")
+        print(f"   - Iterations: {args.regen_iterations}")
+        print()
+    
     rows = []
     for tag, pgn in load_demo_pgns():
-        r = eval_game(pgn, mid=mid, tag=tag)
+        r = eval_game(pgn, mid=mid, tag=tag, 
+                     enable_flame_correction=args.enable_flame_correction,
+                     flame_params=flame_params)
         if r: rows.append(r)
     
     # Write summary JSON + CSV-like TSV
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    js = os.path.join(OUT, f"entropy_pump_summary_{ts}.json")
+    suffix = "_flame" if args.enable_flame_correction else ""
+    js = os.path.join(OUT, f"entropy_pump_summary_{ts}{suffix}.json")
     with open(js, "w", encoding="utf-8") as f: f.write(json.dumps(rows, indent=2))
-    tsv = os.path.join(OUT, f"entropy_pump_summary_{ts}.tsv")
+    tsv = os.path.join(OUT, f"entropy_pump_summary_{ts}{suffix}.tsv")
     with open(tsv, "w", encoding="utf-8") as f:
+        # Extended header for flame correction data
         hdr = ["tag","moves","variance_reduction_pct","compression","mae_improvement_pct","phi_clamp_rad"]
+        if args.enable_flame_correction:
+            hdr.extend(["flame_correction_enabled", "flames_detected", "flame_correction_strength", "regen88_applied"])
         f.write("\t".join(hdr)+"\n")
         for r in rows:
             if not r.get("ok"): continue
@@ -108,14 +160,17 @@ def main():
     summary = generate_summary_comment(rows, lucas_weights)
     
     # Write summary to file
-    summary_file = os.path.join(OUT, f"entropy_pump_summary_{ts}.md")
+    summary_file = os.path.join(OUT, f"entropy_pump_summary_{ts}{suffix}.md")
     with open(summary_file, "w", encoding="utf-8") as f:
+        if args.enable_flame_correction:
+            f.write("# Codex Entropy-Pump Results (with Regen88 Flame Correction)\n\n")
         f.write(summary)
     
-    print(f"OK — wrote {js} and {tsv} and plots in {OUT}/")
+    flame_status = " (🔥 Regen88 enabled)" if args.enable_flame_correction else ""
+    print(f"OK — wrote {js} and {tsv} and plots in {OUT}/{flame_status}")
     print(f"Summary written to {summary_file}")
     print("\n" + "="*60)
-    print("RESULTS SUMMARY")
+    print(f"RESULTS SUMMARY{flame_status}")
     print("="*60)
     print(summary)
 
