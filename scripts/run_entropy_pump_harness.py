@@ -22,7 +22,8 @@ def stock_eval(board: chess.Board) -> float:
     # tiny king shield
     kW, kB = board.king(chess.WHITE), board.king(chess.BLACK)
     def shield(k, color, sgn): 
-        if k is None: return 0
+        if k is None:
+            return 0
         paw = chess.Piece(chess.PAWN, color)
         return sum(1 for d in (7,8,9) if 0 <= k+sgn*d < 64 and board.piece_at(k+sgn*d)==paw)
     ks = (shield(kW, chess.WHITE, +1) - shield(kB, chess.BLACK, -1))*0.5
@@ -30,13 +31,15 @@ def stock_eval(board: chess.Board) -> float:
 
 def eval_game(pgn_text: str, mid=(10,30), tag="game"):
     g = chess.pgn.read_game(io.StringIO(pgn_text))
-    if g is None: return None
+    if g is None:
+        return None
     b = g.board()
     evals = []
     for mv in g.mainline_moves():
         b.push(mv)
         evals.append(stock_eval(b))
-    if len(evals) < 6: return None
+    if len(evals) < 6:
+        return None
     res = codex_pump_from_series(np.array(evals), window=mid, n_index=PHI)
     # Plot curve
     x = np.arange(len(evals))
@@ -50,17 +53,27 @@ def eval_game(pgn_text: str, mid=(10,30), tag="game"):
         t = f"{tag}: ΔVar {res['variance_reduction_pct']:.1f}%, MAE +{res['mae_improvement_pct']:.1f}%"
     else:
         t = f"{tag}: Codex skip ({res['reason']})"
-    plt.title(t); plt.xlabel("Move"); plt.ylabel("Eval"); plt.grid(True); plt.legend()
-    path = os.path.join(OUT, f"{tag}_curve.png"); plt.tight_layout(); plt.savefig(path, dpi=160); plt.close()
+    plt.title(t)
+    plt.xlabel("Move")
+    plt.ylabel("Eval")
+    plt.grid(True)
+    plt.legend()
+    path = os.path.join(OUT, f"{tag}_curve.png")
+    plt.tight_layout()
+    plt.savefig(path, dpi=160)
+    plt.close()
     # Histogram of theta' (φ-clamp)
     if res["ok"]:
         edges, hist = res["theta_after_hist"]
         centers = 0.5*(np.array(edges[1:])+np.array(edges[:-1]))
         plt.figure(figsize=(7,3))
         plt.bar(centers, hist, width=(edges[1]-edges[0]))
-        plt.axvline(+res["phi_clamp_rad"], ls="--"); plt.axvline(-res["phi_clamp_rad"], ls="--")
+        plt.axvline(+res["phi_clamp_rad"], ls="--")
+        plt.axvline(-res["phi_clamp_rad"], ls="--")
         plt.title(f"{tag}: φ-clamp at ±{res['phi_clamp_rad']:.3f} rad (~±38.2°)")
-        plt.tight_layout(); plt.savefig(os.path.join(OUT, f"{tag}_clamp.png"), dpi=160); plt.close()
+        plt.tight_layout()
+        plt.savefig(os.path.join(OUT, f"{tag}_clamp.png"), dpi=160)
+        plt.close()
     return {"tag": tag, "moves": len(evals), **({} if not res["ok"] else res)}
 
 def load_demo_pgns():
@@ -94,18 +107,21 @@ def main():
     rows = []
     for tag, pgn in load_demo_pgns():
         r = eval_game(pgn, mid=mid, tag=tag)
-        if r: rows.append(r)
+        if r:
+            rows.append(r)
     
     # Write summary JSON + CSV-like TSV
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     js = os.path.join(OUT, f"entropy_pump_summary_{ts}.json")
-    with open(js, "w", encoding="utf-8") as f: f.write(json.dumps(rows, indent=2))
+    with open(js, "w", encoding="utf-8") as f:
+        f.write(json.dumps(rows, indent=2))
     tsv = os.path.join(OUT, f"entropy_pump_summary_{ts}.tsv")
     with open(tsv, "w", encoding="utf-8") as f:
         hdr = ["tag","moves","variance_reduction_pct","compression","mae_improvement_pct","phi_clamp_rad"]
         f.write("\t".join(hdr)+"\n")
         for r in rows:
-            if not r.get("ok"): continue
+            if not r.get("ok"):
+                continue
             f.write("\t".join(str(r.get(k,"")) for k in hdr)+"\n")
     
     # Generate and display results summary
