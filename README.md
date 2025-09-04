@@ -147,6 +147,27 @@ pytest -q
 - CI: `.github/workflows/ci.yml` runs lint & tests on push
 - `my_recursive_ai.py` provides keyword → function routing for agent mode
 
+### Agent Commit Functionality
+The agent system now supports git operations for automated commits:
+
+```python
+from my_recursive_ai import query
+
+# Check git status
+query("git_status")                           # Show current git status
+
+# Git operations
+query("git_add", "filename.txt")              # Add specific file
+query("git_add", ".")                         # Add all files
+query("git_commit", "commit message")         # Commit staged changes
+query("commit", "commit message")             # Add all files and commit
+
+# Example: Agent automated commit
+query("commit", "feat: automated agent commit")
+```
+
+Available git routes: `git_status`, `git_add`, `git_commit`, `commit`
+
 ## Codex Entropy-Pump Feature
 
 **Pull request:** [Add Codex entropy-pump feature with golden refraction for game analysis](https://github.com/wizardaax/recursive-field-math-pro/pull/2)  
