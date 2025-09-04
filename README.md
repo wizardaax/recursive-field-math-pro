@@ -121,6 +121,7 @@ pytest -q
 
 - Golden ratio refraction formula for variance reduction in chess game evaluations
 - Core implementation in `scripts/codex_entropy_pump.py`
+- **🚀 NEW: Regen88 Codex** enhanced version with flame correction, entropy self-healing, and recursive defense modules
 - PGN analysis harness: processes chess games, generates plots, metrics, and summary artifacts
 - Lucas weights for resonance adjustment
 - Results: Up to ~92% variance reduction on classic games (Kasparov, Fischer, Carlsen)
@@ -130,8 +131,31 @@ pytest -q
 ### Quick Usage
 
 ```bash
+# Standard entropy pump harness
 python -m scripts.run_entropy_pump_harness
+
+# Enhanced Regen88 harness (with flame correction, self-healing, recursive defense)
+python -m scripts.run_regen88_harness
 # Artifacts appear in the out/ directory: *_curve.png, *_clamp.png, *.json, *.tsv, *.md
+```
+
+**Enhanced Regen88 Features:**
+- **Flame Correction Engine**: Detects and corrects chaotic entropy patterns
+- **Self-Healing System**: Automatically repairs entropy degradation
+- **Recursive Defense**: Multi-layer protection against entropy threats
+- **Comprehensive Analysis**: Side-by-side comparison of standard vs enhanced modes
+
+**Python API:**
+```python
+from scripts.regen88_integration import regen88_analyze
+
+# Quick enhanced analysis
+result = regen88_analyze(eval_series, tag="my_analysis")
+
+# Custom configuration
+from scripts.regen88_integration import create_regen88_config
+regen88 = create_regen88_config("high", "aggressive", "maximum")
+result = regen88.process_evaluation_series(eval_series)
 ```
 
 **New:** The harness now automatically evaluates results against acceptance rules and generates summary reports:
