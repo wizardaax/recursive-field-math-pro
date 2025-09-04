@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "regen88-codex"
 version = "0.1.0"
-description = "Projex X1 — Recursive field math (Lucas 4–7–11) with CLI, docs, tests."
+description = "Regen88 Codex — Cross-platform recursive field math with entropy-pump, Lucas sequences, and complete CI/CD"
 readme = "README.md"
 license = {text = "MIT License"}
 authors = [{name="Commander X (Wizard)"}]
