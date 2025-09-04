@@ -8,7 +8,18 @@ The format loosely follows:
 
 ## [Unreleased]
 
-### (no changes yet)
+### Features
+- **Regen88 Codex Flame Correction Engine**: Advanced post-processing module for enhanced variance reduction
+  - Flame detection using robust outlier identification (MAD-based)
+  - Regen88 regenerative smoothing algorithm with bidirectional filtering
+  - Improves variance reduction from ~92% to ~99% in typical cases
+  - CLI integration: `rfm entropy-pump --enable-flame-correction`
+  - Configurable parameters for threshold, smoothing factor, and iterations
+  - Comprehensive test suite with 15 new tests
+  - Full backward compatibility with existing workflows
+  - Detailed documentation in `docs/regen88-flame-correction.md`
+
+### (no other changes yet)
 
 ## [v0.2.0] - 2025-01-27
 

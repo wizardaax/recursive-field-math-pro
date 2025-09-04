@@ -42,6 +42,21 @@ def main():
                    help="Lucas weights (default: 4 7 11)")
     sp.add_argument("--markdown", action="store_true", 
                    help="Output as markdown (default: JSON)")
+    
+    # Add entropy pump harness with flame correction
+    sp = sub.add_parser("entropy-pump", help="Run Codex entropy-pump harness on demo PGNs")
+    sp.add_argument("--enable-flame-correction", action="store_true",
+                   help="Enable Regen88 Codex Flame Correction Engine")
+    sp.add_argument("--flame-threshold", type=float, default=2.5,
+                   help="Flame detection threshold (std devs, default: 2.5)")
+    sp.add_argument("--regen-factor", type=float, default=88.0,
+                   help="Regen88 smoothing factor (default: 88.0)")
+    sp.add_argument("--regen-iterations", type=int, default=3,
+                   help="Number of Regen88 iterations (default: 3)")
+    sp.add_argument("--output-dir", default="out", 
+                   help="Output directory for results (default: out)")
+    sp.add_argument("--quiet", action="store_true",
+                   help="Suppress detailed output")
 
     args = p.parse_args()
     if args.cmd == "field":
@@ -111,10 +126,91 @@ def main():
                 }
             except (FileNotFoundError, json.JSONDecodeError) as e:
                 out = {"error": f"Cannot load results file: {e}"}
+    elif args.cmd == "entropy-pump":
+        # Run entropy pump harness
+        try:
+            # Import and run harness
+            project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+            sys.path.insert(0, project_root)
+            
+            # Set up arguments for harness
+            import argparse as harness_argparse
+            harness_args = harness_argparse.Namespace()
+            harness_args.enable_flame_correction = args.enable_flame_correction
+            harness_args.flame_threshold = args.flame_threshold
+            harness_args.regen_factor = args.regen_factor
+            harness_args.regen_iterations = args.regen_iterations
+            
+            # Change to output directory
+            original_cwd = os.getcwd()
+            os.makedirs(args.output_dir, exist_ok=True)
+            
+            # Import and run harness with custom arguments
+            from scripts.run_entropy_pump_harness import main as harness_main, eval_game, load_demo_pgns
+            from datetime import datetime, timezone
+            import json
+            
+            if not args.quiet:
+                if args.enable_flame_correction:
+                    print(f"🔥 Regen88 Flame Correction Engine enabled:")
+                    print(f"   - Flame threshold: {args.flame_threshold} std devs")
+                    print(f"   - Regen factor: {args.regen_factor}")
+                    print(f"   - Iterations: {args.regen_iterations}")
+                    print()
+            
+            # Run harness logic directly
+            mid = (10, 30)
+            lucas_weights = (4, 7, 11)
+            
+            flame_params = None
+            if args.enable_flame_correction:
+                flame_params = {
+                    "flame_threshold": args.flame_threshold,
+                    "regen_factor": args.regen_factor,
+                    "iterations": args.regen_iterations
+                }
+            
+            rows = []
+            for tag, pgn in load_demo_pgns():
+                r = eval_game(pgn, mid=mid, tag=tag, 
+                             enable_flame_correction=args.enable_flame_correction,
+                             flame_params=flame_params)
+                if r: rows.append(r)
+            
+            # Write summary JSON
+            ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+            suffix = "_flame" if args.enable_flame_correction else ""
+            js = os.path.join(args.output_dir, f"entropy_pump_summary_{ts}{suffix}.json")
+            with open(js, "w", encoding="utf-8") as f:
+                f.write(json.dumps(rows, indent=2))
+            
+            # Generate summary
+            from scripts.results_evaluator import generate_summary_comment
+            summary = generate_summary_comment(rows, lucas_weights)
+            
+            flame_status = " (🔥 Regen88 enabled)" if args.enable_flame_correction else ""
+            
+            if not args.quiet:
+                print(f"Results written to {js}{flame_status}")
+                print("\n" + "="*60)
+                print(f"RESULTS SUMMARY{flame_status}")
+                print("="*60)
+                print(summary)
+            
+            out = {
+                "status": "success",
+                "results_file": js,
+                "flame_correction_enabled": args.enable_flame_correction,
+                "games_processed": len(rows),
+                "summary": summary
+            }
+            
+        except Exception as e:
+            out = {"error": f"Failed to run entropy pump harness: {e}"}
     else:
         out = {"error": "unknown command"}
 
-    if args.cmd != "eval" or not args.markdown:
+    if args.cmd not in ["eval", "entropy-pump"] or (args.cmd == "eval" and not args.markdown):
         print(json.dumps(out, indent=2, sort_keys=True))
 
 
