@@ -1,4 +1,5 @@
-import math, numpy as np
+import math
+import numpy as np
 from scripts.codex_entropy_pump import _rank_to_phase, golden_refraction, PHI, codex_pump_from_series
 
 def test_phi_clamp_invariant():
@@ -20,7 +21,7 @@ def test_codex_pump_basic():
     
     result = codex_pump_from_series(evals, window=(5, 25))
     
-    assert result["ok"] == True
+    assert result["ok"]
     assert "variance_reduction_pct" in result
     assert "compression" in result
     assert "phi_clamp_rad" in result
@@ -30,13 +31,13 @@ def test_codex_pump_edge_cases():
     # Test too short series
     short_series = np.array([1, 2, 3])
     result = codex_pump_from_series(short_series)
-    assert result["ok"] == False
+    assert not result["ok"]
     assert result["reason"] == "too short"
     
     # Test zero variance
     zero_var = np.array([5, 5, 5, 5, 5])
     result = codex_pump_from_series(zero_var)
-    assert result["ok"] == False
+    assert not result["ok"]
     assert result["reason"] == "zero variance"
 
 def test_lucas_weights():
@@ -48,8 +49,8 @@ def test_lucas_weights():
     result_lucas = codex_pump_from_series(evals, window=(5, 25), lucas_weights=(4, 7, 11))
     result_normal = codex_pump_from_series(evals, window=(5, 25))
     
-    assert result_lucas["ok"] == True
-    assert result_normal["ok"] == True
+    assert result_lucas["ok"]
+    assert result_normal["ok"]
     
     # The compression and variance reduction should be different with Lucas weights
     assert result_lucas["compression"] != result_normal["compression"]

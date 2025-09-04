@@ -2,8 +2,13 @@
 Parse PGNs, compute basic evals, apply Codex pump, write CSV + plots.
 Artifacts land in ./out so your GitHub Action uploads them.
 """
-import os, io, math, json, numpy as np, matplotlib.pyplot as plt
-import chess, chess.pgn
+import os
+import io
+import json
+import numpy as np
+import matplotlib.pyplot as plt
+import chess
+import chess.pgn
 from datetime import datetime, timezone
 from .codex_entropy_pump import codex_pump_from_series, PHI
 

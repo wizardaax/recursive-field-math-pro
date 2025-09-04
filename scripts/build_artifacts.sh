@@ -4,18 +4,21 @@
 
 set -euo pipefail
 
-PKG_NAME="regen88_codex"
-: "
-# {PYTHON:=python}"
+PKG_NAME="regen88-codex"
+PYTHON=${PYTHON:-python}
 
 echo "==> Upgrading build toolchain"
-$PYTHON -m pip install --upgrade pip build twine >/dev/null
+$PYTHON -m pip install --upgrade pip build twine || echo "Warning: Failed to upgrade tools, using existing versions"
 
 echo "==> Building sdist + wheel"
-$PYTHON -m build
+$PYTHON -m build --no-isolation
 
 echo "==> Verifying with twine"
-$PYTHON -m twine check dist/*
+if command -v twine >/dev/null 2>&1 || $PYTHON -c "import twine" 2>/dev/null; then
+  $PYTHON -m twine check dist/*
+else
+  echo "Warning: twine not available, skipping verification"
+fi
 
 echo "==> Calculating SHA256 checksums"
 if command -v sha256sum >/dev/null 2>&1; then
