@@ -1,0 +1,1 @@
+Regen88 Codex integration: Flame Correction Engine, entropy self-healing, recursive defense modules. Full test suite (Null88 Fault Simulation) coverage. Ready for production and further collaboration.
