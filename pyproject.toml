@@ -1,24 +1,82 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "regen88-codex"
-version = "0.1.0"
-description = "Regen88 Codex — Cross-platform recursive field math with entropy-pump, Lucas sequences, and complete CI/CD"
-readme = "README.md"
-license = {text = "MIT License"}
-authors = [{name="Commander X (Wizard)"}]
+version = "0.2.0a1"
+description = "Regen88 Codex — Flame Correction Engine (Null88 counter-agent)"
+readme = { file = "README.md", content-type = "text/markdown" }
+authors = [{ name = "Codex Dominion Regeneration" }]
 requires-python = ">=3.9"
-dependencies = [
-    "python-chess>=1.9",
-    "numpy>=1.26", 
-    "matplotlib>=3.8"
+license = { text = "MIT" }
+dependencies = ["numpy>=1.22"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Topic :: Scientific/Engineering",
+  "Typing :: Typed",
+]
+keywords = ["recursion", "codex", "lucas", "tri-pi", "fractal", "null88"]
+
+[project.urls]
+Homepage = "https://github.com/wizardaax/recursive-field-math-pro"
+Issues = "https://github.com/wizardaax/recursive-field-math-pro/issues"
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.0",
+  "hypothesis>=6.0",
+  "black>=24.0",
+  "isort>=5.12",
+  "flake8>=7.0",
+  "mypy>=1.8",
+  "pip-audit>=2.7",
+  "bandit>=1.7",
+  "build>=1.2.1",
 ]
 
-[project.scripts]
-rfm = "recursive_field_math.cli:main"
+[tool.black]
+line-length = 100
+target-version = ["py39", "py310", "py311", "py312"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.flake8]
+max-line-length = 100
+extend-ignore = ["E203", "W503"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_unused_configs = true
+disallow_untyped_defs = true
+check_untyped_defs = true
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
-addopts = "-q"
-pythonpath = ["src", "."]
+testpaths = ["tests"]
+addopts = "-ra -q"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["regen88_codex*"]
+exclude = ["tests*"]
+
+[tool.setuptools.package-data]
+regen88_codex = ["py.typed"]
+
+[tool.setuptools]
+include-package-data = true
+
+[project.scripts]
+regen88 = "regen88_codex.cli:main"
