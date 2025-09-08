@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Ternary Huffman – Live Demo</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, sans-serif; margin: 24px; }
+      h1 { margin: 0 0 12px 0; }
+      p  { color:#444; margin: 0 0 16px 0; }
+      #demo-panel { margin-top: 16px; }
+      .note { font-size: 12px; color:#666; margin-top:8px; }
+      a { color:#2563eb; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <h1>⚡ Ternary Huffman – Live Demo</h1>
+    <p>Type in the box below to see balanced-trit Huffman encoding, round-trip decoding, and size ratio.</p>
+
+    <div id="demo-panel"></div>
+
+    <!-- Backend + Demo (ESM) -->
+    <script type="module">
+      import './compression_backend.js';   // provides exports (used by the demo)
+      import './compression_demo.js';      // auto-mounts into #demo-panel
+      // Nothing else needed; compression_demo.js bootstraps itself.
+    </script>
+
+    <p class="note">
+      Notes: Encoding uses balanced trits {-1,0,1}. Decoding reuses the exact tree built from the demo's frequency table.
+      Unknown chars (not in DEMO_FREQS) are skipped during encoding.
+    </p>
+  </body>
+</html>
