@@ -16,13 +16,22 @@ python -m pytest -v
 
 # Check if package can be imported
 echo "==> Testing package import"
-python -c "import recursive_field_math; print('✓ Package imports successfully')"
+PYTHONPATH="src:${PYTHONPATH:-}" python -c "import recursive_field_math; print('✓ Package imports successfully')"
 
 # Test CLI command
 echo "==> Testing CLI command"
-python -c "
+PYTHONPATH="${PYTHONPATH:-}" python -c "
 import subprocess
-result = subprocess.run(['rfm', '--help'], capture_output=True, text=True)
+import os
+import sys
+
+# Add src to path for testing
+sys.path.insert(0, 'src')
+
+# Test CLI via python module
+result = subprocess.run([sys.executable, '-m', 'recursive_field_math.cli', '--help'], 
+                       capture_output=True, text=True, 
+                       env=dict(os.environ, PYTHONPATH='src:' + os.environ.get('PYTHONPATH', '')))
 if result.returncode == 0:
     print('✓ CLI command works')
 else:
@@ -33,7 +42,7 @@ else:
 
 # Test scripts can be imported
 echo "==> Testing script imports"
-python -c "
+PYTHONPATH="src:${PYTHONPATH:-}" python -c "
 try:
     from scripts.codex_entropy_pump import PHI
     from scripts.results_evaluator import evaluate_acceptance_rules
