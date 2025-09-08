@@ -1,0 +1,98 @@
+name: Codex Agent
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  codex-agent:
+    if: github.event.issue_comment.body == '/agent run'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install matplotlib>=3.8
+          sudo apt-get update && sudo apt-get install -y jq
+      
+      - name: Run Codex Entropy Pump
+        run: |
+          python -m scripts.run_entropy_pump_harness
+      
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+      
+      - name: Commit and push results
+        run: |
+          # Add all generated files in out/ directory
+          git add out/
+          
+          # Check if there are changes to commit
+          if ! git diff --staged --quiet; then
+            # Create commit with timestamp
+            timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+            git commit -m "feat(codex-agent): entropy pump run results - ${timestamp}"
+            git push
+            echo "CHANGES_COMMITTED=true" >> $GITHUB_ENV
+          else
+            echo "No changes to commit"
+            echo "CHANGES_COMMITTED=false" >> $GITHUB_ENV
+          fi
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: codex-run
+          path: out/
+          retention-days: 30
+      
+      - name: Read summary and comment on issue
+        run: |
+          # Find the most recent summary file
+          summary_file=$(ls -t out/entropy_pump_summary_*.md 2>/dev/null | head -1)
+          
+          if [ -f "$summary_file" ]; then
+            echo "📊 **Codex Entropy Pump Results**" > comment.md
+            echo "" >> comment.md
+            
+            if [ "$CHANGES_COMMITTED" = "true" ]; then
+              echo "✅ **Results committed and pushed to repository**" >> comment.md
+              echo "" >> comment.md
+            fi
+            
+            echo "📁 **Artifacts**: Download from [Actions → latest run → codex-run artifact](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> comment.md
+            echo "" >> comment.md
+            
+            # Add the summary content
+            cat "$summary_file" >> comment.md
+          else
+            echo "❌ Codex Entropy Pump run failed - no summary generated" > comment.md
+          fi
+          
+          # Post comment using GitHub API (more reliable than gh CLI in workflows)
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments" \
+            -d "{\"body\": $(jq -Rs . comment.md)}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
