@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>math-pro • Ternary REPL</title>
+<style>
+  :root { --fg:#111; --bg:#fff; --muted:#666; --card:#f5f5f5; --accent:#4a8; --ok:#2b8; --warn:#fa4; --bad:#e55; }
+  @media (prefers-color-scheme: dark){
+    :root { --fg:#eee; --bg:#0b0b0b; --muted:#aaa; --card:#161616; --accent:#7bc; --ok:#3c9; --warn:#fb5; --bad:#f66; }
+  }
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu}
+  header{padding:12px 16px;border-bottom:1px solid #0002;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  header h1{font-size:16px;margin:0 8px 0 0}
+  .btn{padding:6px 10px;border:1px solid #0003;background:var(--card);border-radius:8px;cursor:pointer}
+  .btn:hover{filter:brightness(0.95)}
+  input,textarea,select{padding:6px 8px;border:1px solid #0003;border-radius:6px;background:transparent;color:var(--fg);font:13px/1.4 monospace}
+  textarea{width:100%;min-height:150px}
+  main{display:grid;grid-template-columns:320px 1fr;gap:12px;padding:12px}
+  .panel{background:var(--card);border:1px solid #0002;border-radius:12px;overflow:auto}
+  .panel h2{margin:10px 12px;color:var(--muted);font-weight:600;font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+  .pad{padding:10px}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .muted{color:var(--muted)}
+  .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+  table{border-collapse:collapse;width:100%}
+  th,td{padding:6px 8px;border-bottom:1px solid #0002;vertical-align:top}
+  code{background:transparent;border:1px dashed #0003;border-radius:6px;padding:2px 6px}
+  .pill{display:inline-block;padding:2px 8px;border:1px solid #0003;border-radius:999px;background:transparent}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .flex{display:flex;gap:8px;align-items:center}
+  .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace}
+  .small{font-size:12px}
+  .chg{background: #ff005522}
+  .tabs{display:flex;gap:8px;padding:8px;border-bottom:1px solid #0002}
+  .tabs .btn[aria-current="page"]{outline:2px solid var(--accent)}
+  .hidden{display:none}
+  .w-100{width:100%}
+</style>
+</head>
+<body>
+<header>
+  <h1>math-pro • Ternary REPL</h1>
+  <a class="btn" href="./index.html">↩ Viewer</a>
+  <span class="muted">Live stepping • history • registers • memory • sessions</span>
+</header>
+
+<main>
+  <!-- Left: Program & Run -->
+  <section class="panel">
+    <div class="tabs">
+      <button class="btn" data-tab="prog" aria-current="page">Program</button>
+      <button class="btn" data-tab="run">Run</button>
+      <button class="btn" data-tab="history">History</button>
+      <button class="btn" data-tab="session">Session</button>
+    </div>
+
+    <div id="tab-prog" class="pad">
+      <h2>Program</h2>
+      <p class="small muted">Supports mnemonics/macros from your assembler (e.g., <code>ADD r0 r1</code>, <code>JNZ loop</code>, <code>MADD r0 1</code>).</p>
+      <textarea id="prog-src" spellcheck="false" class="mono"></textarea>
+      <div class="row" style="margin-top:8px">
+        <button id="btn-assemble" class="btn">Assemble & Load</button>
+        <button id="btn-reset" class="btn">Reset CPU</button>
+        <label class="pill"><input type="checkbox" id="opt-mini" /> allow mini ops</label>
+        <label class="btn">
+          <input id="open-asm" type="file" accept=".asm,.txt" hidden />
+          Open…
+        </label>
+        <button id="save-asm" class="btn">Save as .asm</button>
+      </div>
+      <p id="msg-assemble" class="small muted"></p>
+    </div>
+
+    <div id="tab-run" class="pad hidden">
+      <h2>Run</h2>
+      <div class="grid3">
+        <div>
+          <div class="small muted">Cycles</div>
+          <input id="cycles" type="number" value="1" min="1" step="1" />
+        </div>
+        <div>
+          <div class="small muted">Max steps</div>
+          <input id="maxsteps" type="number" value="1000" min="1" step="1" />
+        </div>
+        <div class="flex">
+          <button id="btn-step" class="btn">Step</button>
+          <button id="btn-run" class="btn">Run</button>
+          <button id="btn-halt" class="btn">Halt</button>
+        </div>
+      </div>
+      <p class="small"><span id="run-status" class="muted">Idle.</span></p>
+      <div class="grid2">
+        <div>
+          <h2>PC & Last Instruction</h2>
+          <div id="pc-line" class="mono small muted">—</div>
+          <div id="dis-line" class="mono small muted">—</div>
+        </div>
+        <div>
+          <h2>Quick Watch</h2>
+          <div class="row">
+            <label>mem[</label><input id="watch-addr" type="number" value="0" min="0" style="width:90px"/><label>]</label>
+            <button id="watch-read" class="btn">Read</button>
+          </div>
+          <div id="watch-line" class="mono small muted">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-history" class="pad hidden">
+      <h2>History</h2>
+      <div class="row">
+        <button id="hist-clear" class="btn">Clear</button>
+        <button id="hist-save" class="btn">Save .json</button>
+        <label class="btn"><input id="hist-open" type="file" accept=".json" hidden/>Open .json…</label>
+      </div>
+      <ol id="hist-list" class="mono small"></ol>
+    </div>
+
+    <div id="tab-session" class="pad hidden">
+      <h2>Session</h2>
+      <div class="row">
+        <button id="sess-save" class="btn">Save Session (.json)</button>
+        <label class="btn"><input id="sess-open" type="file" accept=".json" hidden/>Load Session…</label>
+        <label class="pill"><input type="checkbox" id="sess-auto" /> autosave to localStorage</label>
+      </div>
+      <p class="small muted">Session stores: program text, registers, PC, memory (touched), history.</p>
+      <pre id="sess-info" class="mono small muted">—</pre>
+    </div>
+  </section>
+
+  <!-- Right: Registers & Memory -->
+  <section class="panel">
+    <div class="tabs">
+      <button class="btn" data-tab="regs" aria-current="page">Registers</button>
+      <button class="btn" data-tab="mem">Memory</button>
+    </div>
+
+    <div id="tab-regs" class="pad">
+      <h2>Registers</h2>
+      <div class="row small muted">Click "Step" or "Run" to refresh. Values show <code>int</code> and balanced-trit string (LSB→MSB).</div>
+      <table id="regs-table" class="mono small">
+        <thead><tr><th>Reg</th><th>int</th><th>trits</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div id="tab-mem" class="pad hidden">
+      <h2>Memory Inspector</h2>
+      <div class="row">
+        <span class="small muted">Range:</span>
+        <label>start</label><input id="mem-start" type="number" value="0" min="0" style="width:90px"/>
+        <label>count</label><input id="mem-count" type="number" value="32" min="1" style="width:90px"/>
+        <button id="mem-refresh" class="btn">Refresh</button>
+        <label class="pill"><input id="mem-diff" type="checkbox" checked /> highlight changes</label>
+      </div>
+      <table id="mem-table" class="mono small w-100" style="margin-top:8px">
+        <thead><tr><th>addr</th><th>int</th><th>trits</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script type="module" src="./repl_harness.js"></script>
+</body>
+</html>
