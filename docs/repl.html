@@ -1,0 +1,338 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>math-pro • REPL</title>
+<style>
+  body{font:14px/1.4 system-ui;margin:20px;color:#222;background:#fafafa}
+  input,button,select{font:inherit}
+  .header{margin-bottom:20px;padding:16px;background:#fff;border:1px solid #ddd;border-radius:4px}
+  .repl{background:#fff;border:1px solid #ddd;border-radius:4px;height:500px;display:flex;flex-direction:column}
+  .output{flex:1;padding:12px;overflow-y:auto;font-family:ui-monospace,SF Mono,Monaco,Inconsolata,monospace;font-size:13px;background:#f8f9fa;border-bottom:1px solid #eee}
+  .input-area{padding:12px;display:flex;align-items:center;gap:8px}
+  .prompt{font-family:ui-monospace,SF Mono,Monaco,Inconsolata,monospace;color:#666;font-weight:bold}
+  #cmd{flex:1;font-family:ui-monospace,SF Mono,Monaco,Inconsolata,monospace;padding:6px 8px;border:1px solid #ccc;border-radius:3px}
+  .entry{margin-bottom:8px}
+  .command{color:#0066cc;font-weight:bold}
+  .result{color:#333;white-space:pre-wrap}
+  .error{color:#d73a49}
+  .info{color:#6f42c1}
+  .muted{color:#666}
+  .controls{display:flex;gap:8px;margin-bottom:16px}
+  button{padding:6px 12px;border:1px solid #ccc;border-radius:3px;background:#fff;cursor:pointer}
+  button:hover{background:#f5f5f5}
+  .examples{margin-top:12px;font-size:12px}
+  .examples code{background:#f1f3f4;padding:2px 4px;border-radius:2px;font-family:ui-monospace,SF Mono,Monaco,Inconsolata,monospace}
+</style>
+
+<div class="header">
+  <h1>math-pro • REPL</h1>
+  <p class="muted">Interactive shell for recursive field math operations. Type commands and press Enter.</p>
+  <p class="muted">← <a href="index.html">Back to Viewer</a></p>
+</div>
+
+<div class="controls">
+  <button onclick="clearOutput()">Clear</button>
+  <button onclick="showHelp()">Help</button>
+  <button onclick="showExamples()">Examples</button>
+</div>
+
+<div class="repl">
+  <div class="output" id="output">
+    <div class="entry">
+      <div class="info">Welcome to math-pro REPL! Type 'help' for available commands.</div>
+    </div>
+  </div>
+  <div class="input-area">
+    <span class="prompt">rfm></span>
+    <input type="text" id="cmd" placeholder="Enter command (e.g., lucas 0 10)" autocomplete="off">
+    <button onclick="executeCommand()">Run</button>
+  </div>
+</div>
+
+<div class="examples">
+  <strong>Quick Examples:</strong>
+  <code>lucas 0 10</code> • 
+  <code>fib 1 8</code> • 
+  <code>ratio 8</code> • 
+  <code>field 1 5</code> • 
+  <code>egypt</code> • 
+  <code>sig</code>
+</div>
+
+<script>
+const output = document.getElementById('output');
+const cmdInput = document.getElementById('cmd');
+let history = [];
+let historyIndex = -1;
+
+// Available commands that can be executed
+const commands = {
+  'lucas': 'Generate Lucas numbers L_n',
+  'fib': 'Generate Fibonacci numbers F_n', 
+  'field': 'Generate field coordinates (r, θ)',
+  'ratio': 'Calculate L_{n+1}/L_n ratio',
+  'egypt': 'Egyptian fraction 1/4+1/7+1/11',
+  'sig': 'Signature triple summary',
+  'cfrac': 'Continued fraction for Lucas ratio',
+  'help': 'Show this help message',
+  'clear': 'Clear the output',
+  'examples': 'Show example commands'
+};
+
+function addOutput(content, className = 'result') {
+  const entry = document.createElement('div');
+  entry.className = 'entry';
+  
+  const div = document.createElement('div');
+  div.className = className;
+  div.textContent = content;
+  
+  entry.appendChild(div);
+  output.appendChild(entry);
+  output.scrollTop = output.scrollHeight;
+}
+
+function addCommand(cmd) {
+  const entry = document.createElement('div');
+  entry.className = 'entry';
+  
+  const cmdDiv = document.createElement('div');
+  cmdDiv.className = 'command';
+  cmdDiv.textContent = `rfm> ${cmd}`;
+  
+  entry.appendChild(cmdDiv);
+  output.appendChild(entry);
+}
+
+async function executeCommand() {
+  const cmd = cmdInput.value.trim();
+  if (!cmd) return;
+  
+  // Add to history
+  history.unshift(cmd);
+  if (history.length > 50) history.pop();
+  historyIndex = -1;
+  
+  // Show command in output
+  addCommand(cmd);
+  
+  // Handle built-in commands
+  if (cmd === 'help') {
+    showHelp();
+    cmdInput.value = '';
+    return;
+  }
+  
+  if (cmd === 'clear') {
+    clearOutput();
+    cmdInput.value = '';
+    return;
+  }
+  
+  if (cmd === 'examples') {
+    showExamples();
+    cmdInput.value = '';
+    return;
+  }
+  
+  // Execute rfm command via mock API
+  try {
+    const result = await simulateRfmCommand(cmd);
+    if (result.error) {
+      addOutput(result.error, 'error');
+    } else {
+      addOutput(JSON.stringify(result, null, 2));
+    }
+  } catch (error) {
+    addOutput(`Error: ${error.message}`, 'error');
+  }
+  
+  cmdInput.value = '';
+}
+
+// Simulate rfm command execution (since we can't directly call the CLI)
+async function simulateRfmCommand(cmd) {
+  const parts = cmd.split(' ').filter(p => p.length > 0);
+  const [command, ...args] = parts;
+  
+  // Mock implementations of key commands
+  switch (command) {
+    case 'lucas':
+      if (args.length !== 2) return {error: 'Usage: lucas <start> <end>'};
+      const [a, b] = args.map(Number);
+      if (isNaN(a) || isNaN(b)) return {error: 'Arguments must be numbers'};
+      return generateLucas(a, b);
+      
+    case 'fib':
+      if (args.length !== 2) return {error: 'Usage: fib <start> <end>'};
+      const [fa, fb] = args.map(Number);
+      if (isNaN(fa) || isNaN(fb)) return {error: 'Arguments must be numbers'};
+      return generateFibonacci(fa, fb);
+      
+    case 'ratio':
+      if (args.length !== 1) return {error: 'Usage: ratio <n>'};
+      const n = Number(args[0]);
+      if (isNaN(n)) return {error: 'Argument must be a number'};
+      return calculateRatio(n);
+      
+    case 'field':
+      if (args.length !== 2) return {error: 'Usage: field <start> <end>'};
+      const [ra, rb] = args.map(Number);
+      if (isNaN(ra) || isNaN(rb)) return {error: 'Arguments must be numbers'};
+      return generateField(ra, rb);
+      
+    case 'egypt':
+      return {sum_1_4_7_11: {num: 143, den: 308}};
+      
+    case 'sig':
+      return {
+        signature_triple: [4, 7, 11],
+        lucas_subset: {4: 7, 7: 29, 11: 199},
+        golden_ratio_approx: 1.618033988749895
+      };
+      
+    default:
+      return {error: `Unknown command: ${command}. Type 'help' for available commands.`};
+  }
+}
+
+// Mock implementations of mathematical functions
+function generateLucas(start, end) {
+  // Lucas sequence: L_0=2, L_1=1, L_n = L_{n-1} + L_{n-2}
+  const lucas = {};
+  
+  for (let n = start; n <= end; n++) {
+    if (n === 0) lucas[n] = 2;
+    else if (n === 1) lucas[n] = 1;
+    else if (n > 1) {
+      // Calculate Lucas number iteratively
+      let a = 2, b = 1;
+      for (let i = 2; i <= n; i++) {
+        const next = a + b;
+        a = b;
+        b = next;
+      }
+      lucas[n] = b;
+    } else {
+      // Negative indices: L_{-n} = (-1)^n * L_n
+      const pos = Math.abs(n);
+      let a = 2, b = 1;
+      for (let i = 2; i <= pos; i++) {
+        const next = a + b;
+        a = b;
+        b = next;
+      }
+      lucas[n] = pos === 0 ? 2 : (pos % 2 === 0 ? 1 : -1) * (pos === 1 ? 1 : b);
+    }
+  }
+  
+  return lucas;
+}
+
+function generateFibonacci(start, end) {
+  // Fibonacci sequence: F_0=0, F_1=1, F_n = F_{n-1} + F_{n-2}
+  const fib = {};
+  
+  for (let n = start; n <= end; n++) {
+    if (n === 0) fib[n] = 0;
+    else if (n === 1) fib[n] = 1;
+    else if (n > 1) {
+      let a = 0, b = 1;
+      for (let i = 2; i <= n; i++) {
+        const next = a + b;
+        a = b;
+        b = next;
+      }
+      fib[n] = b;
+    } else {
+      // Negative indices: F_{-n} = (-1)^{n+1} * F_n
+      const pos = Math.abs(n);
+      let a = 0, b = 1;
+      for (let i = 2; i <= pos; i++) {
+        const next = a + b;
+        a = b;
+        b = next;
+      }
+      fib[n] = pos === 0 ? 0 : ((pos % 2 === 0) ? -1 : 1) * (pos === 1 ? 1 : b);
+    }
+  }
+  
+  return fib;
+}
+
+function calculateRatio(n) {
+  const lucas = generateLucas(n, n + 1);
+  const ratio = lucas[n + 1] / lucas[n];
+  const golden = (1 + Math.sqrt(5)) / 2;
+  const error = Math.abs(ratio - golden);
+  
+  return {
+    n: n,
+    ratio: ratio,
+    abs_error_bounds: [-error, error]
+  };
+}
+
+function generateField(start, end) {
+  const field = {};
+  const phi = (1 + Math.sqrt(5)) / 2;
+  
+  for (let n = start; n <= end; n++) {
+    const r = Math.pow(phi, n);
+    const theta = n * Math.PI / 4; // Simplified field angle
+    field[n] = [r, theta];
+  }
+  
+  return field;
+}
+
+function clearOutput() {
+  output.innerHTML = '<div class="entry"><div class="info">Output cleared.</div></div>';
+}
+
+function showHelp() {
+  let helpText = 'Available commands:\n\n';
+  for (const [cmd, desc] of Object.entries(commands)) {
+    helpText += `${cmd.padEnd(10)} - ${desc}\n`;
+  }
+  helpText += '\nUse arrow keys to navigate command history.';
+  addOutput(helpText, 'info');
+}
+
+function showExamples() {
+  const examples = [
+    'lucas 0 10    # Generate Lucas numbers L_0 through L_10',
+    'fib 1 8       # Generate Fibonacci numbers F_1 through F_8', 
+    'ratio 8       # Calculate L_9/L_8 ratio and error bounds',
+    'field 1 5     # Generate field coordinates for n=1..5',
+    'egypt         # Egyptian fraction 1/4+1/7+1/11',
+    'sig           # Show signature triple summary'
+  ];
+  
+  addOutput('Example commands:\n\n' + examples.join('\n'), 'info');
+}
+
+// Handle Enter key
+cmdInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    executeCommand();
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (historyIndex < history.length - 1) {
+      historyIndex++;
+      cmdInput.value = history[historyIndex];
+    }
+  } else if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (historyIndex > 0) {
+      historyIndex--;
+      cmdInput.value = history[historyIndex];
+    } else if (historyIndex === 0) {
+      historyIndex = -1;
+      cmdInput.value = '';
+    }
+  }
+});
+
+// Focus input on load
+cmdInput.focus();
+</script>

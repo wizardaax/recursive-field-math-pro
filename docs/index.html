@@ -52,7 +52,7 @@ function showCSV(text){
 async function fetchAndShow(path){
   const res = await fetch(path);
   if(!res.ok) { alert('Not found: '+path); return; }
-  const isCSV = \/\.csv(\?|$)/i.test(path);
+  const isCSV = /\.csv(\?|$)/i.test(path);
   if(isCSV) showCSV(await res.text());
   else showSVG(path);
 }
