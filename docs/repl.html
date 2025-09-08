@@ -1,0 +1,51 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>math-pro • REPL</title>
+<style>
+  body{font:14px/1.4 system-ui;margin:20px;color:#222}
+  textarea{width:100%;height:160px;font:12px/1.3 ui-monospace,monospace}
+  pre{background:#fafafa;border:1px solid #eee;padding:10px;overflow:auto}
+  .row{display:grid;gap:16px;grid-template-columns:1fr 1fr}
+</style>
+<h1>math-pro • REPL</h1>
+<p>Type instructions (one per line), then Run/Step. Uses <code>repl_harness.js</code> to load CPU/ALU.</p>
+
+<div class="row">
+  <div>
+    <h3>Program</h3>
+    <textarea id="prog">ADD r0 r1
+MJMPREL r0 -1</textarea>
+    <div style="margin-top:8px">
+      <button id="run">Run</button>
+      <button id="step">Step</button>
+      <button id="reset">Reset</button>
+    </div>
+  </div>
+  <div>
+    <h3>State</h3>
+    <pre id="state">Loading CPU…</pre>
+  </div>
+</div>
+
+<script type="module">
+import { boot } from './repl_harness.js';
+const ui = {
+  prog: document.querySelector('#prog'),
+  state: document.querySelector('#state'),
+  run: document.querySelector('#run'),
+  step: document.querySelector('#step'),
+  reset: document.querySelector('#reset'),
+};
+const env = await boot(ui.state);
+
+function render(cpu){
+  const regs = cpu.registers.map((w,i)=>`${i}: ${env.wordToInt(w)}`).join('  ');
+  ui.state.textContent = `PC=${env.wordToInt(cpu.pc)}  [ ${regs} ]`;
+}
+
+ui.reset.onclick = ()=>{ env.load(ui.prog.value); render(env.cpu); };
+ui.step.onclick  = ()=>{ env.cpu.step(); render(env.cpu); };
+ui.run.onclick   = ()=>{ for(let i=0;i<100 && !env.cpu.halted;i++) env.cpu.step(); render(env.cpu); };
+
+env.load(ui.prog.value); render(env.cpu);
+</script>
