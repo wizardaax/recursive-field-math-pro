@@ -6,88 +6,82 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     :root { color-scheme: light dark; }
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji"; margin: 1rem auto; max-width: 960px; padding: 0 1rem; }
-    h1 { font-size: 1.4rem; }
-    #status { padding: .5rem .75rem; border-radius: .5rem; background: #f0f3ff22; margin-bottom: .75rem; }
-    textarea { width: 100%; min-height: 220px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: .9rem; padding: .5rem; border-radius: .5rem; }
-    .controls { display: flex; gap: .5rem; align-items: center; margin: .5rem 0 1rem; flex-wrap: wrap; }
-    button { padding: .4rem .7rem; border-radius: .5rem; border: 1px solid #8884; background: #eee4; cursor: pointer; }
-    pre { background: #00000008; padding: .5rem; border-radius: .5rem; min-height: 4rem; }
-    footer { margin-top: 2rem; font-size: .9rem; opacity: .8; }
-    a { color: inherit; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial; margin: 1rem auto; max-width: 960px; padding: 0 1rem; }
+    h1 { font-size: 1.25rem; margin-bottom: .5rem; }
+    #status { padding:.5rem .75rem; border-radius:.5rem; background:#f0f3ff22; margin-bottom:.5rem; }
+    textarea { width:100%; min-height:220px; font: .9rem ui-monospace, SFMono-Regular, Menlo, Consolas, "Courier New", monospace; padding:.5rem; border-radius:.5rem; }
+    .controls { display:flex; gap:.5rem; align-items:center; margin:.5rem 0 1rem; flex-wrap:wrap; }
+    button { padding:.4rem .7rem; border-radius:.5rem; border:1px solid #8884; background:#eee4; cursor:pointer; }
+    .row { display:flex; gap:.5rem; align-items:center; }
+    pre { background:#00000008; padding:.5rem; border-radius:.5rem; min-height:4rem; }
+    .err { color:#b42318; white-space:pre-wrap; }
   </style>
 </head>
 <body>
   <h1>Recursive Field Math Pro — REPL</h1>
   <div id="status">Booting…</div>
-  <textarea id="program" placeholder="Enter assembly or program text here"></textarea>
+
+  <label class="row"><input type="checkbox" id="asmMacros" checked> Assemble with macros/labels</label>
+  <textarea id="program" spellcheck="false" placeholder="Enter assembly here (labels, LOOP/ENDLOOP, MACRO/USE ok)"></textarea>
+
   <div class="controls">
     <button id="load">Load</button>
     <button id="step">Step</button>
     <button id="run">Run</button>
     <button id="reset">Reset</button>
   </div>
-  <pre id="regs">(no CPU loaded)</pre>
 
-  <footer>
-    <p>
-      This REPL tries to import your CPU/ALU modules from <code>./cpu</code>. If they are not present, it uses stubs so the page still loads.
-      To wire your real CPU, ensure the files are copied to <code>docs/cpu/*.js</code> during deploy.
-    </p>
-  </footer>
+  <pre id="regs">(no CPU loaded)</pre>
+  <div id="error" class="err"></div>
 
   <script type="module">
     import { boot } from './repl_harness.js';
-
     const statusEl = document.getElementById('status');
     const regsEl = document.getElementById('regs');
+    const errorEl = document.getElementById('error');
     const programEl = document.getElementById('program');
+    const asmMacrosEl = document.getElementById('asmMacros');
 
-    let env = null;
-    let running = false;
-    let runTimer = null;
+    let env = null, running = false, timer = null;
 
-    function render(){
-      if (!env || !env.cpu){ regsEl.textContent = '(no CPU loaded)'; return; }
-      const regVals = (env.cpu.registers || []).map((w, i) => `R${i}: ${env.wordToInt(w)}`);
-      const pc = env.cpu.pc ? env.wordToInt(env.cpu.pc) : 0;
-      const halted = !!env.cpu.halted;
-      regsEl.textContent = `PC: ${pc}\nHalted: ${halted}\n` + regVals.join('\n');
-    }
+    const render = () => {
+      errorEl.textContent = '';
+      if (!env || !env.cpu){ regsEl.textContent='(no CPU loaded)'; return; }
+      const pc = env.wordToInt(env.cpu.pc || env.intToWord(0));
+      const regs = (env.cpu.registers||[]).map((w,i)=>`R${i}: ${env.wordToInt(w)}`).join('\n');
+      regsEl.textContent = `PC: ${pc}\nHalted: ${!!env.cpu.halted}\n${regs}`;
+    };
 
-    boot(statusEl).then(e => { env = e; statusEl.textContent = 'CPU ready'; render(); });
+    const shouldUseMacros = (src) => {
+      if (asmMacrosEl.checked) return true;
+      return /^(\s*\w+:\s*$)|\b(LOOP|ENDLOOP|MACRO|ENDMACRO|USE)\b/m.test(src);
+    };
 
-    document.getElementById('load').onclick = () => {
+    boot(statusEl).then(e => { env = e; statusEl.textContent='CPU ready'; render(); });
+
+    document.getElementById('load').onclick = async () => {
       if (!env) return;
-      env.load(programEl.value || '');
-      statusEl.textContent = 'Program loaded';
-      render();
+      try {
+        const src = programEl.value || '';
+        await env.load(src, { useMacros: shouldUseMacros(src) });
+        statusEl.textContent = 'Program loaded';
+        errorEl.textContent = '';
+        render();
+      } catch (err) {
+        errorEl.textContent = String(err && err.message || err);
+      }
     };
 
-    document.getElementById('step').onclick = () => {
-      if (!env || !env.cpu || typeof env.cpu.step !== 'function') return;
-      env.cpu.step();
-      render();
-    };
+    document.getElementById('step').onclick = () => { if (!env?.cpu?.step) return; env.cpu.step(); render(); };
 
     document.getElementById('run').onclick = () => {
-      if (!env || !env.cpu || typeof env.cpu.step !== 'function') return;
-      if (running) { running = false; clearInterval(runTimer); statusEl.textContent='Paused'; return; }
-      running = true;
-      statusEl.textContent = 'Running… click Run to pause';
-      runTimer = setInterval(() => {
-        if (!env.cpu || env.cpu.halted) { running=false; clearInterval(runTimer); statusEl.textContent='Halted'; }
-        else { env.cpu.step(); }
-        render();
-      }, 200);
+      if (!env?.cpu?.step) return;
+      if (running){ running=false; clearInterval(timer); statusEl.textContent='Paused'; return; }
+      running=true; statusEl.textContent='Running… click Run to pause';
+      timer=setInterval(()=>{ if (env.cpu.halted){running=false;clearInterval(timer);statusEl.textContent='Halted';} else { env.cpu.step(); } render();}, 200);
     };
 
-    document.getElementById('reset').onclick = () => {
-      if (!env) return;
-      env.load('');
-      statusEl.textContent = 'Reset';
-      render();
-    };
+    document.getElementById('reset').onclick = () => { if (!env) return; env.load(''); statusEl.textContent='Reset'; render(); };
   </script>
 </body>
 </html>
