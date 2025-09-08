@@ -3,6 +3,7 @@ Parse PGNs, compute basic evals, apply Codex pump, write CSV + plots.
 Artifacts land in ./out so your GitHub Action uploads them.
 """
 import os
+import sys
 import io
 import json
 import numpy as np
@@ -10,7 +11,16 @@ import matplotlib.pyplot as plt
 import chess
 import chess.pgn
 from datetime import datetime, timezone
-from .codex_entropy_pump import codex_pump_from_series, PHI
+
+# Handle imports for both module and standalone execution
+try:
+    from .codex_entropy_pump import codex_pump_from_series, PHI
+    from .results_evaluator import generate_summary_comment
+except ImportError:
+    # Add scripts directory to path for standalone execution
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from codex_entropy_pump import codex_pump_from_series, PHI
+    from results_evaluator import generate_summary_comment
 
 OUT = "out"
 os.makedirs(OUT, exist_ok=True)
@@ -125,7 +135,6 @@ def main():
             f.write("\t".join(str(r.get(k,"")) for k in hdr)+"\n")
     
     # Generate and display results summary
-    from .results_evaluator import generate_summary_comment
     summary = generate_summary_comment(rows, lucas_weights)
     
     # Write summary to file

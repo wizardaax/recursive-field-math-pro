@@ -34,7 +34,7 @@ jobs:
       
       - name: Run Codex Entropy Pump
         run: |
-          python -m scripts.run_entropy_pump_harness
+          python scripts/run_entropy_pump_harness.py
       
       - name: Configure Git
         run: |
@@ -43,8 +43,8 @@ jobs:
       
       - name: Commit and push results
         run: |
-          # Add all generated files in out/ directory
-          git add out/
+          # Add all generated files in out/ directory (force add since it's in .gitignore)
+          git add -f out/
           
           # Check if there are changes to commit
           if ! git diff --staged --quiet; then
