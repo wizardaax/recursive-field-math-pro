@@ -7,7 +7,6 @@ name = "regen88-codex"
 version = "0.1.0"
 description = "Regen88 Codex — Cross-platform recursive field math with entropy-pump, Lucas sequences, and complete CI/CD"
 readme = "README.md"
-license = {text = "MIT License"}
 authors = [{name="Commander X (Wizard)"}]
 requires-python = ">=3.9"
 dependencies = [
