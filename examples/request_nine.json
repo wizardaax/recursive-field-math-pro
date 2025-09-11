@@ -1,0 +1,8 @@
+{
+  "api": "sequence.generation/lucas",
+  "capabilities": ["timeout_configurable", "metrics_reporting"],
+  "params": {
+    "range": [0, 10],
+    "output_format": "csv"
+  }
+}
