@@ -1,0 +1,17 @@
+{
+  "name": "codex.order_meter",
+  "version": "1.0.1",
+  "description": "Analyzes sequence order metrics and entropy",
+  "apis": [
+    "codex.analysis/order"
+  ],
+  "capabilities": [
+    "wav_analysis",
+    "k_value_computation"
+  ],
+  "time_limit_s": 8,
+  "script": "analyze.py",
+  "author": "AES Evolution Team",
+  "license": "MIT",
+  "signature": "6602fcbae17fe10a1c6bbae27e65a729f7cac28341fb6f877a8f0b6ee96eac1c"
+}

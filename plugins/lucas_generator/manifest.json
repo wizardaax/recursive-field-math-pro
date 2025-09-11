@@ -1,0 +1,18 @@
+{
+  "name": "lucas_generator",
+  "version": "1.2.0",
+  "description": "Generates Lucas number sequences with ratio analysis",
+  "apis": [
+    "sequence.generation/lucas"
+  ],
+  "capabilities": [
+    "timeout_configurable",
+    "metrics_reporting",
+    "csv_output"
+  ],
+  "time_limit_s": 10,
+  "script": "main.py",
+  "author": "AES Evolution Team",
+  "license": "MIT",
+  "signature": "40e9df61433af2422516b04c2f15bf749aba23f772435b8feae74a15f7d6f520"
+}

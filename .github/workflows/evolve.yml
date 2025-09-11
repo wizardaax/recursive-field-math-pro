@@ -1,0 +1,48 @@
+name: Evolve Build & Deploy
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: evolve-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  evolve:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Run Evolution
+        run: |
+          python3 xova/evolve.py examples/request_nine.json || true
+          ls -la out/ || true
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: evolve-output
+          path: out/
+          retention-days: 7
+
+      - name: Sync to Docs
+        run: |
+          mkdir -p docs
+          cp -r out/* docs/ || true
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add docs/
+          git commit -m "Sync evolve artifacts to docs [skip ci]" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
