@@ -1,0 +1,210 @@
+---
+name: Xova AES Evolution
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - 'xova/**'
+      - 'plugins/**'
+      - 'policies/**'
+      - 'examples/request_nine.json'
+      - '.github/workflows/evolve.yml'
+  workflow_dispatch:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  evolve:
+    name: AES Evolution Pipeline
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Need to check previous commit
+
+      - name: Early Infinite Loop Guard
+        run: |
+          echo "Checking commit message for infinite loop prevention..."
+          COMMIT_MSG=$(git log -1 --pretty=%s)
+          echo "Current commit message: $COMMIT_MSG"
+
+          if [[ "$COMMIT_MSG" == *"Sync evolve artifacts to docs"* ]] || \
+             [[ "$COMMIT_MSG" == *"Update AES badge"* ]]; then
+            echo "🔄 Detected sync commit - skipping to prevent loop"
+            echo "SKIP_EVOLUTION=true" >> $GITHUB_ENV
+          else
+            echo "✅ Safe to proceed with evolution"
+            echo "SKIP_EVOLUTION=false" >> $GITHUB_ENV
+          fi
+
+      - name: Setup Python
+        if: env.SKIP_EVOLUTION == 'false'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        if: env.SKIP_EVOLUTION == 'false'
+        run: |
+          python -m pip install --upgrade pip
+          # Install minimal dependencies for evolution
+          pip install pathlib
+
+      - name: Archive existing artifacts to history
+        if: env.SKIP_EVOLUTION == 'false'
+        run: |
+          echo "Archiving existing artifacts to docs/history/..."
+          mkdir -p docs/history
+
+          # Move existing artifacts to history with timestamp
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          HISTORY_DIR="docs/history/$TIMESTAMP"
+          mkdir -p "$HISTORY_DIR"
+
+          # Archive if files exist
+          if [ -f "docs/metrics.json" ]; then
+            mv docs/metrics.json "$HISTORY_DIR/"
+            echo "Archived metrics.json"
+          fi
+
+          if [ -f "docs/summary.json" ]; then
+            mv docs/summary.json "$HISTORY_DIR/"
+            echo "Archived summary.json"
+          fi
+
+          if [ -f "docs/sequence.csv" ]; then
+            mv docs/sequence.csv "$HISTORY_DIR/"
+            echo "Archived sequence.csv"
+          fi
+
+          if [ -f "docs/sequence.wav" ]; then
+            mv docs/sequence.wav "$HISTORY_DIR/"
+            echo "Archived sequence.wav"
+          fi
+
+          # Clean up empty history directory
+          if [ -z "$(ls -A "$HISTORY_DIR" 2>/dev/null)" ]; then
+            rmdir "$HISTORY_DIR"
+            echo "No existing artifacts to archive"
+          else
+            echo "Artifacts archived to $HISTORY_DIR"
+          fi
+
+      - name: Run AES Evolution
+        if: env.SKIP_EVOLUTION == 'false'
+        run: |
+          echo "Running Xova AES Evolution pipeline..."
+          python xova/evolve.py examples/request_nine.json \
+            > evolution_output.json
+
+          # Check if evolution was successful
+          if [ $? -eq 0 ]; then
+            echo "EVOLUTION_STATUS=success" >> $GITHUB_ENV
+            echo "✅ Evolution completed successfully"
+            cat evolution_output.json
+          else
+            echo "EVOLUTION_STATUS=failure" >> $GITHUB_ENV
+            echo "❌ Evolution failed"
+            cat evolution_output.json
+            exit 1
+          fi
+
+      - name: Copy artifacts to docs
+        if: |
+          env.SKIP_EVOLUTION == 'false' &&
+          env.EVOLUTION_STATUS == 'success'
+        run: |
+          echo "Copying new artifacts from out/ to docs/..."
+
+          # Copy artifacts if they exist
+          if [ -f "out/metrics.json" ]; then
+            cp out/metrics.json docs/
+            echo "Copied metrics.json"
+          fi
+
+          if [ -f "out/summary.json" ]; then
+            cp out/summary.json docs/
+            echo "Copied summary.json"
+          fi
+
+          if [ -f "out/sequence.csv" ]; then
+            cp out/sequence.csv docs/
+            echo "Copied sequence.csv"
+          fi
+
+          if [ -f "out/sequence.wav" ]; then
+            cp out/sequence.wav docs/
+            echo "Copied sequence.wav"
+          fi
+
+          echo "Artifact sync completed"
+
+      - name: Generate status badge
+        if: env.SKIP_EVOLUTION == 'false'
+        run: |
+          echo "Generating status badge..."
+          BADGE_COLOR=""
+          BADGE_MESSAGE=""
+
+          if [ "$EVOLUTION_STATUS" = "success" ]; then
+            BADGE_COLOR="brightgreen"
+            BADGE_MESSAGE="passing"
+          else
+            BADGE_COLOR="red"
+            BADGE_MESSAGE="failing"
+          fi
+
+          # Create badge data
+          cat > docs/aes_badge.json << EOF
+          {
+            "schemaVersion": 1,
+            "label": "AES Evolution",
+            "message": "$BADGE_MESSAGE",
+            "color": "$BADGE_COLOR",
+            "namedLogo": "github"
+          }
+          EOF
+
+          echo "Badge generated: $BADGE_MESSAGE ($BADGE_COLOR)"
+
+      - name: Commit and push changes
+        if: env.SKIP_EVOLUTION == 'false'
+        run: |
+          echo "Committing changes..."
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          # Stage all changes in docs/
+          git add docs/
+
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Sync evolve artifacts to docs [skip ci]"
+            git push
+            echo "Changes committed and pushed"
+          fi
+
+      - name: Upload artifacts
+        if: env.SKIP_EVOLUTION == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: evolution-artifacts
+          path: |
+            out/
+            docs/metrics.json
+            docs/summary.json
+            docs/sequence.csv
+            docs/sequence.wav
+            docs/aes_badge.json
+          retention-days: 30

@@ -21,3 +21,8 @@ data/**/*.tmp
 
 # Entropy pump output
 out/
+evolution_output.json
+
+# Evolution test artifacts (don't commit)
+docs/history/*/
+docs/aes_badge.json
