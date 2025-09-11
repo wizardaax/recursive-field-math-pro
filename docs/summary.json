@@ -1,0 +1,14 @@
+{
+  "chosen": "test_aes",
+  "version": "1.0.0",
+  "metrics": {
+    "evolution_steps": 100,
+    "sequence_length": 10,
+    "convergence_rate": 0.95,
+    "audio_quality": 0.87,
+    "latency_ms": 0.15854835510253906
+  },
+  "timestamp": 1757600301.5135336,
+  "request_api": "aes_evolution_v1",
+  "commit": "17353a26cb2020e238ea86b176f3c47260414ead"
+}
