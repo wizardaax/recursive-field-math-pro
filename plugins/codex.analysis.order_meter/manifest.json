@@ -1,0 +1,12 @@
+{
+  "name": "codex.analysis.order_meter",
+  "version": "1.0.0",
+  "apis": [
+    "codex.analysis/order"
+  ],
+  "capabilities": [],
+  "main": "main.py",
+  "description": "Analyzes audio sequences for order parameters k2 and k3",
+  "time_limit_s": 5,
+  "signature": "b5a0f6bc9da4be2bb679478eeec285f9496c1eaef5f7aac25b0111d658cf8158"
+}

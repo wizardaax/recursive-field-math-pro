@@ -1,0 +1,8 @@
+{
+  "security":{"require_signatures":true},
+  "limits":{"time_s":15},
+  "selection":{"prefer":"highest_version"},
+  "thresholds":{"max":{"latency_ms":600},"min":{"order_k2":0.10,"order_k3":0.05}},
+  "post_chain":[{"api":"codex.analysis/order","plugin":"codex.analysis.order_meter"}],
+  "grading":{"penalties":{"bad-signature":100,"timeout":50,"exception":40,"bad-metrics":30}}
+}

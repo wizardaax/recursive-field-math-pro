@@ -1,0 +1,12 @@
+{
+  "name": "codex.sequence.nine",
+  "version": "1.0.0",
+  "apis": [
+    "codex.sequence/nine"
+  ],
+  "capabilities": [],
+  "main": "main.py",
+  "description": "Generates nine-based sequence patterns with audio output",
+  "time_limit_s": 10,
+  "signature": "4725db01b5a9204a962102f1b7595873da737d5744aac4a76c9e44bb3f48e8df"
+}

@@ -1,0 +1,5 @@
+{
+  "api":"codex.sequence/nine",
+  "capabilities":[],
+  "params":{"steps":27,"niner":true}
+}
