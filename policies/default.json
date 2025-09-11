@@ -1,0 +1,16 @@
+{
+  "security": {
+    "require_signatures": false
+  },
+  "limits": {
+    "time_s": 30.0
+  },
+  "selection": {
+    "prefer": "highest_version"
+  },
+  "thresholds": {
+    "max": {},
+    "min": {}
+  },
+  "post_chain": []
+}

@@ -25,6 +25,7 @@
 ## Status
 
 [![Codex Agent](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/codex-agent.yml/badge.svg)](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/codex-agent.yml)
+[![AES Evolution](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/evolve.yml/badge.svg)](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/evolve.yml)
 [![Docs](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/docs.yml/badge.svg)](https://wizardaax.github.io/recursive-field-math-pro/)
 [![Docs Preview](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/docs-preview.yml/badge.svg)](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/docs-preview.yml)
 [![Release](https://img.shields.io/github/v/release/wizardaax/recursive-field-math-pro?logo=github)](https://github.com/wizardaax/recursive-field-math-pro/releases)
@@ -35,6 +36,37 @@
 - ⚡ **CI/CD**: [Actions dashboard](https://github.com/wizardaax/recursive-field-math-pro/actions)
 
 > **Docs Previews:** Open a PR against `main`. The **docs-preview** workflow deploys a temporary site and comments the preview URL on your PR automatically.
+
+## Xova AES Evolution Pipeline
+
+🔄 **Automated Evolution**: The repository includes an automated AES Evolution pipeline that runs daily and on relevant changes.
+
+**Key Features**:
+- **Infinite Loop Guard**: Prevents workflow loops by detecting commit messages
+- **Artifact History**: Archives previous evolution artifacts with timestamps
+- **Status Badge**: Real-time pass/fail status indicator
+- **Local Validation**: Quick check script for development
+
+**Quick Commands**:
+```bash
+bash scripts/check_evolution.sh  # Validate evolution setup locally
+python xova/evolve.py examples/request_nine.json  # Run evolution manually
+```
+
+**Workflow Triggers**: Automatically runs on pushes to `main` affecting:
+- `xova/**` - Evolution scripts
+- `plugins/**` - Plugin registry
+- `policies/**` - Evolution policies  
+- `examples/request_nine.json` - Request configuration
+
+**Generated Artifacts** (in `docs/`):
+- `metrics.json` - Evolution performance metrics
+- `summary.json` - Detailed execution summary
+- `sequence.csv` - Generated sequence data
+- `sequence.wav` - Audio output file
+- `aes_badge.json` - Status badge data
+
+**Historical Archives**: Previous artifacts are automatically moved to `docs/history/YYYYMMDD_HHMMSS/` before new evolution runs.
 
 ## Regen88 Codex — Development Workflow
 

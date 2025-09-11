@@ -1,0 +1,9 @@
+{
+  "manifest": {
+    "version": "1.0.0",
+    "api": "aes_evolution_v1",
+    "capabilities": ["audio_generation", "sequence_analysis"],
+    "description": "Test AES Evolution plugin",
+    "time_limit_s": 30.0
+  }
+}
