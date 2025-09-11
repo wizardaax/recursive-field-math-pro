@@ -147,6 +147,34 @@ pytest -q
 - CI: `.github/workflows/ci.yml` runs lint & tests on push
 - `my_recursive_ai.py` provides keyword → function routing for agent mode
 
+## Xova AES Evolution
+
+**Purpose:** Automated sequence generation and analysis pipeline that produces audio and metrics, publishes artifacts to GitHub Pages, and provides a live dashboard for monitoring evolution runs.
+
+**Dashboard:** [https://wizardaax.github.io/recursive-field-math-pro/aes.html](https://wizardaax.github.io/recursive-field-math-pro/aes.html)
+
+### Quick Start
+
+1. **Sign Manifests** (optional): `python3 tools/auto_sign_manifests.py`
+2. **Local Evolution**: `PYTHONPATH=xova python3 xova/evolve.py examples/request_nine.json`
+3. **Trigger Workflow**: Push to main branch or use workflow_dispatch
+4. **View Dashboard**: Navigate to GitHub Pages `/aes.html` after workflow completion
+
+### Acceptance Thresholds
+
+- **Latency:** ≤ 600ms
+- **Order K2:** ≥ 0.10  
+- **Order K3:** ≥ 0.05
+
+### Generated Artifacts
+
+- `sequence.wav` - Audio representation of evolved sequence
+- `sequence.csv` - Tabular sequence data (first ~60 lines shown in dashboard)
+- `metrics.json` - Compact metrics for programmatic use
+- `summary.json` - Human-readable run summary with metadata
+
+The evolution system automatically runs plugins matching the requested API (`codex.sequence/nine`), enforces security policies, measures performance, and applies post-processing analysis (order analysis via `codex.analysis/order_meter`). Results are published to the docs directory and synchronized to GitHub Pages for public access.
+
 ## Codex Entropy-Pump Feature
 
 **Pull request:** [Add Codex entropy-pump feature with golden refraction for game analysis](https://github.com/wizardaax/recursive-field-math-pro/pull/2)  

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xova AES Evolution Dashboard</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        h1 {
+            color: #2c5aa0;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .metric-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+        
+        .metric-value {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .pass { color: #28a745; }
+        .fail { color: #dc3545; }
+        .neutral { color: #6c757d; }
+        
+        .audio-player {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        .csv-preview {
+            margin: 20px 0;
+        }
+        
+        .csv-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: block;
+        }
+        
+        .csv-table thead, .csv-table tbody {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+        
+        .csv-table th, .csv-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .csv-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        .placeholder {
+            color: #6c757d;
+            font-style: italic;
+            padding: 20px;
+            text-align: center;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .nav-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        
+        .nav-link:hover {
+            text-decoration: underline;
+        }
+        
+        .timestamp {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧬 Xova AES Evolution Dashboard</h1>
+    
+    <div id="status-section">
+        <div class="status-grid" id="metrics-grid">
+            <!-- Metrics will be loaded here -->
+        </div>
+    </div>
+    
+    <div class="audio-player" id="audio-section">
+        <h3>🎵 Generated Audio Sequence</h3>
+        <div id="audio-content">
+            <!-- Audio player will be loaded here -->
+        </div>
+    </div>
+    
+    <div class="csv-preview" id="csv-section">
+        <h3>📊 Sequence Data Preview</h3>
+        <div id="csv-content">
+            <!-- CSV preview will be loaded here -->
+        </div>
+    </div>
+    
+    <div id="summary-section">
+        <h3>📈 Run Summary</h3>
+        <div id="summary-content">
+            <!-- Summary will be loaded here -->
+        </div>
+    </div>
+    
+    <a href="index.html" class="nav-link">← Back to Main Dashboard</a>
+
+    <script>
+        // Thresholds for pass/fail classification
+        const THRESHOLDS = {
+            latency_ms: { max: 600 },
+            order_k2: { min: 0.10 },
+            order_k3: { min: 0.05 }
+        };
+
+        function classifyMetric(key, value) {
+            const threshold = THRESHOLDS[key];
+            if (!threshold) return 'neutral';
+            
+            if (threshold.max !== undefined && value > threshold.max) return 'fail';
+            if (threshold.min !== undefined && value < threshold.min) return 'fail';
+            return 'pass';
+        }
+
+        function formatMetricValue(key, value) {
+            if (typeof value === 'number') {
+                if (key.includes('ms') || key.includes('time')) {
+                    return value.toFixed(1) + ' ms';
+                } else if (key.includes('order_k')) {
+                    return value.toFixed(3);
+                } else {
+                    return value.toFixed(2);
+                }
+            }
+            return value;
+        }
+
+        function createMetricCard(key, value) {
+            const classification = classifyMetric(key, value);
+            const formattedValue = formatMetricValue(key, value);
+            
+            return `
+                <div class="metric-card">
+                    <div class="metric-name">${key.replace(/_/g, ' ').toUpperCase()}</div>
+                    <div class="metric-value ${classification}">${formattedValue}</div>
+                    <div class="metric-status ${classification}">
+                        ${classification === 'pass' ? '✅ PASS' : 
+                          classification === 'fail' ? '❌ FAIL' : '⚪ INFO'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadMetrics() {
+            fetch('metrics.json')
+                .then(response => {
+                    if (!response.ok) throw new Error('Metrics not found');
+                    return response.json();
+                })
+                .then(metrics => {
+                    const grid = document.getElementById('metrics-grid');
+                    let cards = '';
+                    
+                    // Priority metrics first
+                    const priorityMetrics = ['latency_ms', 'order_k2', 'order_k3'];
+                    priorityMetrics.forEach(key => {
+                        if (metrics[key] !== undefined) {
+                            cards += createMetricCard(key, metrics[key]);
+                        }
+                    });
+                    
+                    // Other metrics
+                    Object.entries(metrics).forEach(([key, value]) => {
+                        if (!priorityMetrics.includes(key)) {
+                            cards += createMetricCard(key, value);
+                        }
+                    });
+                    
+                    grid.innerHTML = cards;
+                })
+                .catch(error => {
+                    document.getElementById('metrics-grid').innerHTML = `
+                        <div class="placeholder">
+                            📊 No metrics available yet<br>
+                            <small>Run the evolution workflow to generate metrics</small>
+                        </div>
+                    `;
+                });
+        }
+
+        function loadAudio() {
+            const audioSection = document.getElementById('audio-content');
+            
+            // Check if audio file exists
+            fetch('sequence.wav', { method: 'HEAD' })
+                .then(response => {
+                    if (response.ok) {
+                        audioSection.innerHTML = `
+                            <audio controls style="width: 100%;">
+                                <source src="sequence.wav" type="audio/wav">
+                                Your browser does not support the audio element.
+                            </audio>
+                            <p><small>🎧 Generated from sequence evolution parameters</small></p>
+                        `;
+                    } else {
+                        throw new Error('Audio not found');
+                    }
+                })
+                .catch(error => {
+                    audioSection.innerHTML = `
+                        <div class="placeholder">
+                            🎵 No audio sequence available yet<br>
+                            <small>Run the evolution workflow to generate audio</small>
+                        </div>
+                    `;
+                });
+        }
+
+        function loadCSVPreview() {
+            fetch('sequence.csv')
+                .then(response => {
+                    if (!response.ok) throw new Error('CSV not found');
+                    return response.text();
+                })
+                .then(csvText => {
+                    const lines = csvText.trim().split('\n');
+                    const maxLines = 60;
+                    const showLines = Math.min(lines.length, maxLines);
+                    
+                    let tableHTML = '<div style="max-height: 400px; overflow-y: auto;"><table class="csv-table"><thead>';
+                    
+                    // Header
+                    if (lines.length > 0) {
+                        const headers = lines[0].split(',');
+                        tableHTML += '<tr>';
+                        headers.forEach(header => {
+                            tableHTML += `<th>${header.trim()}</th>`;
+                        });
+                        tableHTML += '</tr></thead><tbody>';
+                        
+                        // Data rows
+                        for (let i = 1; i < showLines; i++) {
+                            const cells = lines[i].split(',');
+                            tableHTML += '<tr>';
+                            cells.forEach(cell => {
+                                tableHTML += `<td>${cell.trim()}</td>`;
+                            });
+                            tableHTML += '</tr>';
+                        }
+                        
+                        tableHTML += '</tbody></table></div>';
+                        
+                        if (lines.length > maxLines) {
+                            tableHTML += `<p><small>📋 Showing first ${maxLines} lines of ${lines.length} total</small></p>`;
+                        }
+                    }
+                    
+                    document.getElementById('csv-content').innerHTML = tableHTML;
+                })
+                .catch(error => {
+                    document.getElementById('csv-content').innerHTML = `
+                        <div class="placeholder">
+                            📊 No sequence data available yet<br>
+                            <small>Run the evolution workflow to generate sequence data</small>
+                        </div>
+                    `;
+                });
+        }
+
+        function loadSummary() {
+            fetch('summary.json')
+                .then(response => {
+                    if (!response.ok) throw new Error('Summary not found');
+                    return response.json();
+                })
+                .then(summary => {
+                    const timestamp = new Date(summary.timestamp * 1000).toLocaleString();
+                    const summaryHTML = `
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <p><strong>Plugin:</strong> ${summary.chosen} v${summary.version}</p>
+                            <p><strong>API:</strong> ${summary.request_api}</p>
+                            <p><strong>Timestamp:</strong> <span class="timestamp">${timestamp}</span></p>
+                            ${summary.commit ? `<p><strong>Commit:</strong> <code>${summary.commit.substring(0, 8)}</code></p>` : ''}
+                        </div>
+                    `;
+                    document.getElementById('summary-content').innerHTML = summaryHTML;
+                })
+                .catch(error => {
+                    document.getElementById('summary-content').innerHTML = `
+                        <div class="placeholder">
+                            📈 No run summary available yet<br>
+                            <small>Run the evolution workflow to generate summary</small>
+                        </div>
+                    `;
+                });
+        }
+
+        // Load all sections
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMetrics();
+            loadAudio();
+            loadCSVPreview();
+            loadSummary();
+        });
+    </script>
+</body>
+</html>

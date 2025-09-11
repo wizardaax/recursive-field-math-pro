@@ -1,0 +1,66 @@
+name: Xova Evolution
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  evolve:
+    runs-on: ubuntu-latest
+    
+    # Skip if commit message contains "Sync evolve artifacts" to prevent infinite loops
+    if: "!contains(github.event.head_commit.message, 'Sync evolve artifacts')"
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy matplotlib
+
+    - name: Run evolution
+      env:
+        GITHUB_SHA: ${{ github.sha }}
+      run: |
+        cd ${{ github.workspace }}
+        PYTHONPATH=xova python3 xova/evolve.py examples/request_nine.json
+
+    - name: Upload artifacts (debug)
+      uses: actions/upload-artifact@v4
+      with:
+        name: evolve-output
+        path: out/
+        retention-days: 30
+
+    - name: Prepare docs directory
+      run: |
+        mkdir -p docs
+        
+    - name: Copy artifacts to docs
+      run: |
+        if [ -d "out" ]; then
+          cp -r out/* docs/ 2>/dev/null || true
+        fi
+
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add docs/
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Sync evolve artifacts to docs [skip ci]"
+          git push
+        fi
