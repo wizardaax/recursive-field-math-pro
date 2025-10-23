@@ -2,6 +2,7 @@
 # Uses rank->phase mapping so it's scale-free and robust.
 import math
 import numpy as np
+from typing import Optional
 
 PHI = (1 + 5**0.5) / 2
 
@@ -20,9 +21,9 @@ def golden_refraction(theta: np.ndarray, n: float = PHI) -> np.ndarray:
     return np.arcsin(s)
 
 def codex_pump_from_series(eval_series: np.ndarray,
-                           window: tuple[int,int] | None = None,
+                           window: Optional[tuple[int, int]] = None,
                            n_index: float = PHI,
-                           lucas_weights: tuple[int,int,int] | None = None) -> dict:
+                           lucas_weights: Optional[tuple[int, int, int]] = None) -> dict:
     """
     eval_series: per-move evaluations (cp-like). We operate on deltas.
     window: (start, end) moves to analyze; default = whole series.
