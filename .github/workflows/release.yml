@@ -34,6 +34,14 @@ jobs:
         with:
           name: dist
           path: dist/
+      
+      - name: Publish to PyPI
+        if: ${{ secrets.PYPI_API_TOKEN != '' }}
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          python -m twine upload dist/* --skip-existing
 
   release:
     name: Create GitHub Release
@@ -58,13 +66,6 @@ jobs:
           body: |
             ## Regen88 Codex ${{ env.TAG_NAME }}
             
-            ### Features
-            - Complete cross-platform build, test, and release setup
-            - CI: lint/type/test across multiple Python versions  
-            - Release-on-tag workflow with artifact uploads
-            - Pre-commit hooks and development scripts
-            - Enhanced packaging metadata and documentation
-            
             ### Installation
             ```bash
             pip install regen88-codex==${{ env.TAG_NAME }}
@@ -75,6 +76,14 @@ jobs:
             rfm --help
             python -c "import recursive_field_math; print('✓ Installation successful')"
             ```
+            
+            ### Features
+            - Complete cross-platform build, test, and release setup
+            - CI: lint/type/test across multiple Python versions
+            - Release-on-tag workflow with artifact uploads
+            - PyPI publishing with PYPI_API_TOKEN (when configured)
+            - Pre-commit hooks and development scripts
+            - Enhanced packaging metadata and documentation
             
             For more details, see [CHANGELOG.md](CHANGELOG.md).
           files: |

@@ -8,7 +8,22 @@ The format loosely follows:
 
 ## [Unreleased]
 
-### (no changes yet)
+### Added
+- Release workflow publishes to PyPI on tags if `PYPI_API_TOKEN` secret is set
+- `scripts/demo_loom.sh`: One-click demo artifact generation for 60s Loom recording
+- `scripts/publish_pypi.sh`: Manual local PyPI publish helper using Twine
+- Marketing kit in `marketing/` directory:
+  - `x_thread.md`: X/Twitter thread (12 posts) on ternary cognition and φ-refraction
+  - `blog_ternary_agents.md`: 800-word blog post on Xova Intelligence and Lucas 4–7–11 resonance
+  - `pitch_deck.md`: Concise one-pager for problem/solution/traction/roadmap
+  - `hn_post.md`: Hacker News announcement with reproducibility steps
+  - `reddit_ml_post.md`: r/MachineLearning community post
+  - `vc_dm_templates.md`: Short and long investor outreach templates
+- README brand header for "Xova Intelligence — Ternary Field Agents" (soft brand, no breaking changes)
+
+### Changed
+- Standardized release notes body in `.github/workflows/release.yml` with install/verify snippet at top
+- Release workflow now includes PyPI publishing step (conditional on `PYPI_API_TOKEN` secret)
 
 ## [v0.2.0] - 2025-01-27
 

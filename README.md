@@ -3,6 +3,18 @@
 [![Release](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/release.yml/badge.svg)](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/release.yml)
 ---
 
+## Xova Intelligence — Ternary Field Agents
+
+**Ternary cognition meets φ-refraction**: Xova Intelligence harnesses the Lucas 4–7–11 resonance within recursive field mathematics to create agent-ready workflows for entropy-pump variance reduction, golden ratio refraction, and reproducible ternary computations. This soft brand unifies our research under a coherent vision while preserving the foundational Projex X1 formula.
+
+**Quick Install**:
+```bash
+pip install regen88-codex
+rfm --help
+```
+
+---
+
 # Projex X1 — Original Formula (Lucas 4–7–11)
 
 ## TL;DR
