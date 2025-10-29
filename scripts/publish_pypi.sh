@@ -22,7 +22,7 @@ if [ ! -d "dist" ]; then
 fi
 
 # Check for built packages
-if [ -z "$(ls -A dist/*.whl 2>/dev/null)" ] && [ -z "$(ls -A dist/*.tar.gz 2>/dev/null)" ]; then
+if ! compgen -G "dist/*.whl" > /dev/null && ! compgen -G "dist/*.tar.gz" > /dev/null; then
     echo "❌ Error: No packages found in dist/"
     echo "   Run: bash scripts/build_artifacts.sh"
     exit 1

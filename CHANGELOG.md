@@ -25,6 +25,10 @@ The format loosely follows:
 - Standardized release notes body in `.github/workflows/release.yml` with install/verify snippet at top
 - Release workflow now includes PyPI publishing step (conditional on `PYPI_API_TOKEN` secret)
 
+### Fixed
+- Improved secret check in release workflow to use proper GitHub Actions syntax
+- Enhanced file existence check in `scripts/publish_pypi.sh` to avoid glob expansion issues
+
 ## [v0.2.0] - 2025-01-27
 
 ### Features
