@@ -1,8 +1,9 @@
 import math
-from typing import Tuple
+
 from .constants import PHI, ROOT_SCALE
 
-def r_theta(n: int) -> Tuple[float, float]:
+
+def r_theta(n: int) -> tuple[float, float]:
     """Radial/Angular pair for index n.
     r_n = 3 * sqrt(n)
     theta_n = n * PHI (radians)

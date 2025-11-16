@@ -2,13 +2,13 @@ import argparse
 import json
 import os
 import sys
-from .field import r_theta
-from .lucas import L
-from .fibonacci import F
-from .ratios import ratio
-from .ratios import ratio_error_bounds
+
 from .continued_fraction import lucas_ratio_cfrac
 from .egyptian_fraction import egypt_4_7_11
+from .fibonacci import F
+from .field import r_theta
+from .lucas import L
+from .ratios import ratio, ratio_error_bounds
 from .signatures import signature_summary
 
 
@@ -34,13 +34,13 @@ def main():
     sub.add_parser("egypt", help="Egyptian fraction 1/4+1/7+1/11")
     sub.add_parser("sig", help="Signature triple summary")
     sub.add_parser("cfrac", help="Continued fraction meta for L_{n+1}/L_n (n>=1)").add_argument("n", type=int)
-    
+
     # Add entropy pump evaluation command
     sp = sub.add_parser("eval", help="Evaluate entropy pump results against acceptance rules")
     sp.add_argument("results_file", help="Path to entropy pump results JSON file")
     sp.add_argument("--lucas-weights", nargs=3, type=int, default=[4, 7, 11],
                    help="Lucas weights (default: 4 7 11)")
-    sp.add_argument("--markdown", action="store_true", 
+    sp.add_argument("--markdown", action="store_true",
                    help="Output as markdown (default: JSON)")
 
     args = p.parse_args()
@@ -77,9 +77,9 @@ def main():
         except ImportError:
             print("Error: Cannot import results evaluator. Make sure scripts/results_evaluator.py exists.")
             sys.exit(1)
-        
+
         lucas_weights = tuple(args.lucas_weights)
-        
+
         if args.markdown:
             # Output markdown summary
             summary = evaluate_and_summarize_results(args.results_file, lucas_weights)
@@ -88,9 +88,9 @@ def main():
         else:
             # Output JSON evaluation data
             try:
-                with open(args.results_file, 'r', encoding='utf-8') as f:
+                with open(args.results_file, encoding='utf-8') as f:
                     results = json.load(f)
-                
+
                 from scripts.results_evaluator import evaluate_acceptance_rules
                 evaluations = []
                 for result in results:
@@ -98,7 +98,7 @@ def main():
                     eval_result["tag"] = result.get("tag", "unknown")
                     eval_result["moves"] = result.get("moves", 0)
                     evaluations.append(eval_result)
-                
+
                 out = {
                     "lucas_weights": lucas_weights,
                     "evaluations": evaluations,

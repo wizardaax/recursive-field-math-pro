@@ -3,6 +3,7 @@
 import json
 from pathlib import Path
 
+
 def load_registry(plugins_dir):
     """Load plugin registry from plugins directory"""
     registry = {}
@@ -10,7 +11,7 @@ def load_registry(plugins_dir):
     if plugins_path.exists():
         for plugin_file in plugins_path.glob('*.json'):
             try:
-                with open(plugin_file, 'r') as f:
+                with open(plugin_file) as f:
                     plugin_data = json.load(f)
                     registry[plugin_file.stem] = plugin_data
             except Exception:

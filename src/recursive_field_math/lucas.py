@@ -1,5 +1,6 @@
 from .constants import PHI, PSI
 
+
 def L(n: int) -> int:
     """Lucas number via closed form."""
     if n < 0:
