@@ -12,6 +12,8 @@ on:
       - "pyproject.toml"
       - "requirements*.txt"
       - ".github/workflows/ci-python.yml"
+permissions:
+  contents: read
 jobs:
   lint-type-test:
     runs-on: ubuntu-latest
