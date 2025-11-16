@@ -1,5 +1,7 @@
 import math
+
 from .constants import PHI, PSI
+
 
 def F(n: int) -> int:
     """Binet formula rounded to nearest integer (safe for moderate n)."""

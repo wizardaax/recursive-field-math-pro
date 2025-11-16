@@ -2,15 +2,17 @@
 Parse PGNs, compute basic evals, apply Codex pump, write CSV + plots.
 Artifacts land in ./out so your GitHub Action uploads them.
 """
-import os
 import io
 import json
-import numpy as np
-import matplotlib.pyplot as plt
+import os
+from datetime import datetime, timezone
+
 import chess
 import chess.pgn
-from datetime import datetime, timezone
-from .codex_entropy_pump import codex_pump_from_series, PHI
+import matplotlib.pyplot as plt
+import numpy as np
+
+from .codex_entropy_pump import PHI, codex_pump_from_series
 
 OUT = "out"
 os.makedirs(OUT, exist_ok=True)
@@ -21,7 +23,7 @@ def stock_eval(board: chess.Board) -> float:
     mobility = len(list(board.legal_moves))*0.1
     # tiny king shield
     kW, kB = board.king(chess.WHITE), board.king(chess.BLACK)
-    def shield(k, color, sgn): 
+    def shield(k, color, sgn):
         if k is None:
             return 0
         paw = chess.Piece(chess.PAWN, color)
@@ -109,7 +111,7 @@ def main():
         r = eval_game(pgn, mid=mid, tag=tag)
         if r:
             rows.append(r)
-    
+
     # Write summary JSON + CSV-like TSV
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     js = os.path.join(OUT, f"entropy_pump_summary_{ts}.json")
@@ -123,16 +125,16 @@ def main():
             if not r.get("ok"):
                 continue
             f.write("\t".join(str(r.get(k,"")) for k in hdr)+"\n")
-    
+
     # Generate and display results summary
     from .results_evaluator import generate_summary_comment
     summary = generate_summary_comment(rows, lucas_weights)
-    
+
     # Write summary to file
     summary_file = os.path.join(OUT, f"entropy_pump_summary_{ts}.md")
     with open(summary_file, "w", encoding="utf-8") as f:
         f.write(summary)
-    
+
     print(f"OK — wrote {js} and {tsv} and plots in {OUT}/")
     print(f"Summary written to {summary_file}")
     print("\n" + "="*60)

@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-import json, os, sys, time, hashlib
+import hashlib
+import json
+import os
+import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -7,11 +11,12 @@ PLUGINS = ROOT / "plugins"
 OUTDIR  = ROOT / "out"
 POLICY  = ROOT / "policies" / "default.json"
 
-from registry import load_registry, choose_candidates
+from registry import choose_candidates, load_registry
 from sandbox import run_plugin
 
+
 def load_policy():
-    with open(POLICY, "r", encoding="utf-8") as f:
+    with open(POLICY, encoding="utf-8") as f:
         return json.load(f)
 
 def sha256_manifest_without_sig(man: dict) -> str:
@@ -64,7 +69,7 @@ def _write_summaries(chosen_name, man, metrics, api):
 
 def evolve(request_path: str):
     OUTDIR.mkdir(exist_ok=True)
-    with open(request_path, "r", encoding="utf-8") as f:
+    with open(request_path, encoding="utf-8") as f:
         req = json.load(f)
 
     policy = load_policy()

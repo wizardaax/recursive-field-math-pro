@@ -1,8 +1,13 @@
-import math
 import json
-import tempfile
+import math
 import os
-from scripts.results_evaluator import evaluate_acceptance_rules, generate_summary_comment, evaluate_and_summarize_results
+import tempfile
+
+from scripts.results_evaluator import (
+    evaluate_acceptance_rules,
+    evaluate_and_summarize_results,
+    generate_summary_comment,
+)
 
 
 def test_evaluate_acceptance_rules_pass():
@@ -20,9 +25,9 @@ def test_evaluate_acceptance_rules_pass():
             [0, 0, 1, 1, 2, 5, 2, 0]  # hist - peak at 0.65 rad ≈ 37.2°
         )
     }
-    
+
     evaluation = evaluate_acceptance_rules(result)
-    
+
     assert evaluation["verdict"] == "PASS"
     assert evaluation["variance_reduction_pass"] is True
     assert evaluation["mae_delta_pass"] is True
@@ -40,15 +45,15 @@ def test_evaluate_acceptance_rules_check():
         "tag": "test_game",
         "moves": 20,
         "variance_reduction_pct": 15.0,  # < 20% ✗
-        "mae_improvement_pct": 1.5,      # < 2% ✗  
+        "mae_improvement_pct": 1.5,      # < 2% ✗
         "theta_after_hist": (
             [-0.7, -0.6, -0.5, 0.5, 0.6, 0.65, 0.68, 0.7],
             [0, 0, 1, 1, 2, 5, 2, 0]  # peak around 37.2° - this should pass
         )
     }
-    
+
     evaluation = evaluate_acceptance_rules(result)
-    
+
     assert evaluation["verdict"] == "CHECK"
     assert evaluation["variance_reduction_pass"] is False
     assert evaluation["mae_delta_pass"] is False
@@ -63,9 +68,9 @@ def test_evaluate_acceptance_rules_skip():
         "reason": "too short",
         "tag": "test_game"
     }
-    
+
     evaluation = evaluate_acceptance_rules(result)
-    
+
     assert evaluation["verdict"] == "SKIP"
     assert evaluation["reason"] == "too short"
     assert evaluation["overall_pass"] is False
@@ -83,9 +88,9 @@ def test_phi_clamp_peak_calculation():
             [1, 2, 10, 2]  # hist - peak at bin centered on ~0.675 rad
         )
     }
-    
+
     evaluation = evaluate_acceptance_rules(result)
-    
+
     # Peak bin center: (0.67 + 0.68) / 2 = 0.675 rad ≈ 38.7°
     expected_deg = math.degrees(0.675)
     assert abs(evaluation["phi_clamp_peak_deg"] - expected_deg) < 0.1
@@ -109,7 +114,7 @@ def test_generate_summary_comment():
         },
         {
             "ok": True,
-            "tag": "game_check", 
+            "tag": "game_check",
             "moves": 30,
             "variance_reduction_pct": 15.0,  # Fails
             "mae_improvement_pct": 1.0,      # Fails
@@ -125,15 +130,15 @@ def test_generate_summary_comment():
             "moves": 5
         }
     ]
-    
+
     summary = generate_summary_comment(results, lucas_weights=(4, 7, 11))
-    
+
     # Check for key components
     assert "Codex Entropy-Pump Results" in summary
     assert "Lucas Weights:** (4, 7, 11)" in summary
     assert "**Overall Verdict:** ⚠️ **MIXED**" in summary
     assert "game_pass" in summary
-    assert "game_check" in summary 
+    assert "game_check" in summary
     assert "game_skip" in summary
     assert "✅ PASS" in summary
     assert "⚠️ CHECK" in summary
@@ -156,9 +161,9 @@ def test_generate_summary_comment_all_pass():
             )
         }
     ]
-    
+
     summary = generate_summary_comment(results)
-    
+
     assert "**Overall Verdict:** ✅ **PASS**" in summary
 
 
@@ -177,19 +182,19 @@ def test_evaluate_and_summarize_results():
             )
         }
     ]
-    
+
     # Create temporary JSON file
     with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
         json.dump(results, f)
         temp_path = f.name
-    
+
     try:
         summary = evaluate_and_summarize_results(temp_path, lucas_weights=(4, 7, 11))
-        
+
         assert "Codex Entropy-Pump Results" in summary
         assert "Lucas Weights:** (4, 7, 11)" in summary
         assert "test_game" in summary
-        
+
     finally:
         os.unlink(temp_path)
 
@@ -197,6 +202,6 @@ def test_evaluate_and_summarize_results():
 def test_evaluate_and_summarize_results_file_not_found():
     """Test handling of missing JSON file."""
     summary = evaluate_and_summarize_results("/nonexistent/file.json")
-    
+
     assert "Error loading results" in summary
     assert "❌" in summary
