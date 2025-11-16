@@ -2,6 +2,7 @@
 Results evaluator for Codex entropy-pump output.
 Applies acceptance rules and generates summary comments.
 """
+
 import math
 from typing import Any
 
@@ -11,15 +12,15 @@ import numpy as np
 def evaluate_acceptance_rules(result: dict[str, Any]) -> dict[str, Any]:
     """
     Apply acceptance rules to entropy pump result.
-    
+
     Acceptance Rules (from README):
     - Variance reduction ≥ 20%
     - MAE delta ≥ 2%
     - φ-clamp peak within ±2° of 38.2°
-    
+
     Args:
         result: Single entropy pump result dict
-        
+
     Returns:
         Dict with evaluation details and verdict
     """
@@ -30,7 +31,7 @@ def evaluate_acceptance_rules(result: dict[str, Any]) -> dict[str, Any]:
             "variance_reduction_pass": False,
             "mae_delta_pass": False,
             "phi_clamp_peak_pass": False,
-            "overall_pass": False
+            "overall_pass": False,
         }
 
     # Rule 1: Variance reduction ≥ 20%
@@ -74,19 +75,20 @@ def evaluate_acceptance_rules(result: dict[str, Any]) -> dict[str, Any]:
         "mae_delta_pass": mae_delta_pass,
         "phi_clamp_peak_deg": phi_clamp_peak_deg,
         "phi_clamp_peak_pass": phi_clamp_peak_pass,
-        "overall_pass": overall_pass
+        "overall_pass": overall_pass,
     }
 
 
-def generate_summary_comment(results: list[dict[str, Any]],
-                           lucas_weights: tuple = (4, 7, 11)) -> str:
+def generate_summary_comment(
+    results: list[dict[str, Any]], lucas_weights: tuple = (4, 7, 11)
+) -> str:
     """
     Generate a formatted summary comment for GitHub issue.
-    
+
     Args:
         results: List of entropy pump results with evaluations
         lucas_weights: Lucas weights tuple used
-        
+
     Returns:
         Formatted markdown comment string
     """
@@ -120,14 +122,16 @@ def generate_summary_comment(results: list[dict[str, Any]],
         "",
         f"**Lucas Weights:** {lucas_weights}",
         f"**Overall Verdict:** {overall_verdict}",
-        ""
+        "",
     ]
 
     # Summary table
-    lines.extend([
-        "| Game | Moves | Variance Reduction | MAE Delta | φ-Clamp Peak | Verdict |",
-        "|------|-------|-------------------|-----------|--------------|---------|"
-    ])
+    lines.extend(
+        [
+            "| Game | Moves | Variance Reduction | MAE Delta | φ-Clamp Peak | Verdict |",
+            "|------|-------|-------------------|-----------|--------------|---------|",
+        ]
+    )
 
     for eval_result in evaluations:
         tag = eval_result["tag"]
@@ -160,33 +164,36 @@ def generate_summary_comment(results: list[dict[str, Any]],
         )
 
     # Acceptance criteria reminder
-    lines.extend([
-        "",
-        "### Acceptance Rules",
-        "- Variance reduction ≥ **20%**",
-        "- MAE delta ≥ **2%**",
-        "- φ-clamp peak within **±2° of 38.2°**"
-    ])
+    lines.extend(
+        [
+            "",
+            "### Acceptance Rules",
+            "- Variance reduction ≥ **20%**",
+            "- MAE delta ≥ **2%**",
+            "- φ-clamp peak within **±2° of 38.2°**",
+        ]
+    )
 
     return "\n".join(lines)
 
 
-def evaluate_and_summarize_results(results_json_path: str,
-                                  lucas_weights: tuple = (4, 7, 11)) -> str:
+def evaluate_and_summarize_results(
+    results_json_path: str, lucas_weights: tuple = (4, 7, 11)
+) -> str:
     """
     Load results from JSON file, evaluate against rules, and generate summary.
-    
+
     Args:
         results_json_path: Path to entropy pump results JSON file
         lucas_weights: Lucas weights used
-        
+
     Returns:
         Formatted summary comment string
     """
     import json
 
     try:
-        with open(results_json_path, encoding='utf-8') as f:
+        with open(results_json_path, encoding="utf-8") as f:
             results = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError) as e:
         return f"❌ **Error loading results:** {e}"

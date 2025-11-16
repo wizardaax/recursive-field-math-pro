@@ -12,15 +12,16 @@ from scripts.codex_entropy_pump import (
 
 def test_phi_clamp_invariant():
     rng = np.random.default_rng(7)
-    x = rng.normal(size=5000)                    # synthetic chaos
+    x = rng.normal(size=5000)  # synthetic chaos
     th = _rank_to_phase(x)
     thp = golden_refraction(th, PHI)
-    clamp = math.asin(1.0/PHI)
+    clamp = math.asin(1.0 / PHI)
     # histogram peak near ±clamp (~0.666 rad)
-    hist,_ = np.histogram(thp, bins=60, range=(-math.pi/2, math.pi/2))
+    hist, _ = np.histogram(thp, bins=60, range=(-math.pi / 2, math.pi / 2))
     peak = np.argmax(hist)
-    centers = np.linspace(-math.pi/2, math.pi/2, 60, endpoint=False) + (math.pi/60)
+    centers = np.linspace(-math.pi / 2, math.pi / 2, 60, endpoint=False) + (math.pi / 60)
     assert abs(abs(centers[peak]) - clamp) < 0.1
+
 
 def test_codex_pump_basic():
     # Test with synthetic evaluation series
@@ -33,7 +34,8 @@ def test_codex_pump_basic():
     assert "variance_reduction_pct" in result
     assert "compression" in result
     assert "phi_clamp_rad" in result
-    assert abs(result["phi_clamp_rad"] - math.asin(1.0/PHI)) < 1e-10
+    assert abs(result["phi_clamp_rad"] - math.asin(1.0 / PHI)) < 1e-10
+
 
 def test_codex_pump_edge_cases():
     # Test too short series
@@ -47,6 +49,7 @@ def test_codex_pump_edge_cases():
     result = codex_pump_from_series(zero_var)
     assert not result["ok"]
     assert result["reason"] == "zero variance"
+
 
 def test_lucas_weights():
     # Test Lucas weights functionality

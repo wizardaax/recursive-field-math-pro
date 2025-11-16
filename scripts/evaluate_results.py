@@ -2,6 +2,7 @@
 """
 CLI tool to evaluate Codex entropy-pump results.
 """
+
 import argparse
 import os
 import sys
@@ -20,21 +21,15 @@ def main():
     parser = argparse.ArgumentParser(
         description="Evaluate Codex entropy-pump results against acceptance rules"
     )
-    parser.add_argument(
-        "results_file",
-        help="Path to entropy pump results JSON file"
-    )
+    parser.add_argument("results_file", help="Path to entropy pump results JSON file")
     parser.add_argument(
         "--lucas-weights",
         nargs=3,
         type=int,
         default=[4, 7, 11],
-        help="Lucas weights tuple (default: 4 7 11)"
+        help="Lucas weights tuple (default: 4 7 11)",
     )
-    parser.add_argument(
-        "--output", "-o",
-        help="Output file for summary (default: print to stdout)"
-    )
+    parser.add_argument("--output", "-o", help="Output file for summary (default: print to stdout)")
 
     args = parser.parse_args()
 
@@ -44,7 +39,7 @@ def main():
 
     # Output
     if args.output:
-        with open(args.output, 'w', encoding='utf-8') as f:
+        with open(args.output, "w", encoding="utf-8") as f:
             f.write(summary)
         print(f"Summary written to {args.output}")
     else:

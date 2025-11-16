@@ -18,12 +18,12 @@ def test_evaluate_acceptance_rules_pass():
         "tag": "test_game",
         "moves": 20,
         "variance_reduction_pct": 85.5,  # ≥ 20% ✓
-        "mae_improvement_pct": 5.2,      # ≥ 2% ✓
+        "mae_improvement_pct": 5.2,  # ≥ 2% ✓
         # φ-clamp peak near 38.2° (0.666 rad)
         "theta_after_hist": (
             [-0.7, -0.6, -0.5, 0.5, 0.6, 0.65, 0.68, 0.7],  # edges
-            [0, 0, 1, 1, 2, 5, 2, 0]  # hist - peak at 0.65 rad ≈ 37.2°
-        )
+            [0, 0, 1, 1, 2, 5, 2, 0],  # hist - peak at 0.65 rad ≈ 37.2°
+        ),
     }
 
     evaluation = evaluate_acceptance_rules(result)
@@ -45,11 +45,11 @@ def test_evaluate_acceptance_rules_check():
         "tag": "test_game",
         "moves": 20,
         "variance_reduction_pct": 15.0,  # < 20% ✗
-        "mae_improvement_pct": 1.5,      # < 2% ✗
+        "mae_improvement_pct": 1.5,  # < 2% ✗
         "theta_after_hist": (
             [-0.7, -0.6, -0.5, 0.5, 0.6, 0.65, 0.68, 0.7],
-            [0, 0, 1, 1, 2, 5, 2, 0]  # peak around 37.2° - this should pass
-        )
+            [0, 0, 1, 1, 2, 5, 2, 0],  # peak around 37.2° - this should pass
+        ),
     }
 
     evaluation = evaluate_acceptance_rules(result)
@@ -63,11 +63,7 @@ def test_evaluate_acceptance_rules_check():
 
 def test_evaluate_acceptance_rules_skip():
     """Test evaluation with failed result."""
-    result = {
-        "ok": False,
-        "reason": "too short",
-        "tag": "test_game"
-    }
+    result = {"ok": False, "reason": "too short", "tag": "test_game"}
 
     evaluation = evaluate_acceptance_rules(result)
 
@@ -85,8 +81,8 @@ def test_phi_clamp_peak_calculation():
         "mae_improvement_pct": 3.0,
         "theta_after_hist": (
             [0.6, 0.65, 0.67, 0.68, 0.7],  # edges
-            [1, 2, 10, 2]  # hist - peak at bin centered on ~0.675 rad
-        )
+            [1, 2, 10, 2],  # hist - peak at bin centered on ~0.675 rad
+        ),
     }
 
     evaluation = evaluate_acceptance_rules(result)
@@ -107,28 +103,17 @@ def test_generate_summary_comment():
             "moves": 25,
             "variance_reduction_pct": 85.0,
             "mae_improvement_pct": 5.0,
-            "theta_after_hist": (
-                [0.6, 0.65, 0.67, 0.68, 0.7],
-                [1, 2, 10, 2]
-            )
+            "theta_after_hist": ([0.6, 0.65, 0.67, 0.68, 0.7], [1, 2, 10, 2]),
         },
         {
             "ok": True,
             "tag": "game_check",
             "moves": 30,
             "variance_reduction_pct": 15.0,  # Fails
-            "mae_improvement_pct": 1.0,      # Fails
-            "theta_after_hist": (
-                [0.6, 0.65, 0.67, 0.68, 0.7],
-                [1, 2, 10, 2]
-            )
+            "mae_improvement_pct": 1.0,  # Fails
+            "theta_after_hist": ([0.6, 0.65, 0.67, 0.68, 0.7], [1, 2, 10, 2]),
         },
-        {
-            "ok": False,
-            "reason": "too short",
-            "tag": "game_skip",
-            "moves": 5
-        }
+        {"ok": False, "reason": "too short", "tag": "game_skip", "moves": 5},
     ]
 
     summary = generate_summary_comment(results, lucas_weights=(4, 7, 11))
@@ -155,10 +140,7 @@ def test_generate_summary_comment_all_pass():
             "moves": 25,
             "variance_reduction_pct": 85.0,
             "mae_improvement_pct": 5.0,
-            "theta_after_hist": (
-                [0.6, 0.65, 0.67, 0.68, 0.7],
-                [1, 2, 10, 2]
-            )
+            "theta_after_hist": ([0.6, 0.65, 0.67, 0.68, 0.7], [1, 2, 10, 2]),
         }
     ]
 
@@ -176,15 +158,12 @@ def test_evaluate_and_summarize_results():
             "moves": 25,
             "variance_reduction_pct": 85.0,
             "mae_improvement_pct": 5.0,
-            "theta_after_hist": (
-                [0.6, 0.65, 0.67, 0.68, 0.7],
-                [1, 2, 10, 2]
-            )
+            "theta_after_hist": ([0.6, 0.65, 0.67, 0.68, 0.7], [1, 2, 10, 2]),
         }
     ]
 
     # Create temporary JSON file
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
         json.dump(results, f)
         temp_path = f.name
 

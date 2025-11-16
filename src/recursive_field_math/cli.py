@@ -33,26 +33,32 @@ def main():
 
     sub.add_parser("egypt", help="Egyptian fraction 1/4+1/7+1/11")
     sub.add_parser("sig", help="Signature triple summary")
-    sub.add_parser("cfrac", help="Continued fraction meta for L_{n+1}/L_n (n>=1)").add_argument("n", type=int)
+    sub.add_parser("cfrac", help="Continued fraction meta for L_{n+1}/L_n (n>=1)").add_argument(
+        "n", type=int
+    )
 
     # Add entropy pump evaluation command
     sp = sub.add_parser("eval", help="Evaluate entropy pump results against acceptance rules")
     sp.add_argument("results_file", help="Path to entropy pump results JSON file")
-    sp.add_argument("--lucas-weights", nargs=3, type=int, default=[4, 7, 11],
-                   help="Lucas weights (default: 4 7 11)")
-    sp.add_argument("--markdown", action="store_true",
-                   help="Output as markdown (default: JSON)")
+    sp.add_argument(
+        "--lucas-weights",
+        nargs=3,
+        type=int,
+        default=[4, 7, 11],
+        help="Lucas weights (default: 4 7 11)",
+    )
+    sp.add_argument("--markdown", action="store_true", help="Output as markdown (default: JSON)")
 
     args = p.parse_args()
     if args.cmd == "field":
         a, b = args.a, args.b
-        out = {n: r_theta(n) for n in range(a, b+1)}
+        out = {n: r_theta(n) for n in range(a, b + 1)}
     elif args.cmd == "lucas":
         a, b = args.a, args.b
-        out = {n: L(n) for n in range(a, b+1)}
+        out = {n: L(n) for n in range(a, b + 1)}
     elif args.cmd == "fib":
         a, b = args.a, args.b
-        out = {n: F(n) for n in range(a, b+1)}
+        out = {n: F(n) for n in range(a, b + 1)}
     elif args.cmd == "ratio":
         n = args.n
         r = ratio(n)
@@ -75,7 +81,9 @@ def main():
             sys.path.insert(0, project_root)
             from scripts.results_evaluator import evaluate_and_summarize_results
         except ImportError:
-            print("Error: Cannot import results evaluator. Make sure scripts/results_evaluator.py exists.")
+            print(
+                "Error: Cannot import results evaluator. Make sure scripts/results_evaluator.py exists."
+            )
             sys.exit(1)
 
         lucas_weights = tuple(args.lucas_weights)
@@ -88,10 +96,11 @@ def main():
         else:
             # Output JSON evaluation data
             try:
-                with open(args.results_file, encoding='utf-8') as f:
+                with open(args.results_file, encoding="utf-8") as f:
                     results = json.load(f)
 
                 from scripts.results_evaluator import evaluate_acceptance_rules
+
                 evaluations = []
                 for result in results:
                     eval_result = evaluate_acceptance_rules(result)
@@ -106,8 +115,8 @@ def main():
                         "total_games": len(evaluations),
                         "passes": sum(1 for e in evaluations if e["verdict"] == "PASS"),
                         "checks": sum(1 for e in evaluations if e["verdict"] == "CHECK"),
-                        "skips": sum(1 for e in evaluations if e["verdict"] == "SKIP")
-                    }
+                        "skips": sum(1 for e in evaluations if e["verdict"] == "SKIP"),
+                    },
                 }
             except (FileNotFoundError, json.JSONDecodeError) as e:
                 out = {"error": f"Cannot load results file: {e}"}
