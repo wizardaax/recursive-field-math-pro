@@ -12,6 +12,8 @@ on:
       - "package.json"
       - "pnpm-lock.yaml"
       - ".github/workflows/ci-node.yml"
+permissions:
+  contents: read
 jobs:
   lint-test:
     runs-on: ubuntu-latest
