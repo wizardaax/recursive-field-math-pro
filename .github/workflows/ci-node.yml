@@ -1,0 +1,31 @@
+name: ci-node
+on:
+  push:
+    paths:
+      - "**/*.js"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/ci-node.yml"
+  pull_request:
+    paths:
+      - "**/*.js"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/ci-node.yml"
+permissions:
+  contents: read
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ["20", "22"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - run: npm ci || npm install
+      - run: npx eslint . --ext .js || true
+      - run: npm test --if-present
