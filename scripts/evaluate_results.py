@@ -29,7 +29,9 @@ def main():
         default=[4, 7, 11],
         help="Lucas weights tuple (default: 4 7 11)",
     )
-    parser.add_argument("--output", "-o", help="Output file for summary (default: print to stdout)")
+    parser.add_argument(
+        "--output", "-o", help="Output file for summary (default: print to stdout)"
+    )
 
     args = parser.parse_args()
 

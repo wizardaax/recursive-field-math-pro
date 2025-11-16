@@ -79,7 +79,9 @@ def codex_pump_from_series(
     # φ-clamp angles for report
     phi_clamp = math.asin(1.0 / n_index)  # ≈ 0.666 rad
     # Histogram (for peaks near ±phi_clamp)
-    hist_y, hist_edges = np.histogram(theta_p, bins=48, range=(-math.pi / 2, math.pi / 2))
+    hist_y, hist_edges = np.histogram(
+        theta_p, bins=48, range=(-math.pi / 2, math.pi / 2)
+    )
 
     # Simple "baseline smoother" to compute MAE improvement (optional)
     def ma(x, k=5):

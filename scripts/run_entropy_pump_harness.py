@@ -22,7 +22,8 @@ os.makedirs(OUT, exist_ok=True)
 def stock_eval(board: chess.Board) -> float:
     V = {chess.PAWN: 1, chess.KNIGHT: 3, chess.BISHOP: 3, chess.ROOK: 5, chess.QUEEN: 9}
     m = sum(
-        (len(board.pieces(pt, chess.WHITE)) - len(board.pieces(pt, chess.BLACK))) * V[pt]
+        (len(board.pieces(pt, chess.WHITE)) - len(board.pieces(pt, chess.BLACK)))
+        * V[pt]
         for pt in V
     )
     mobility = len(list(board.legal_moves)) * 0.1
@@ -34,7 +35,9 @@ def stock_eval(board: chess.Board) -> float:
             return 0
         paw = chess.Piece(chess.PAWN, color)
         return sum(
-            1 for d in (7, 8, 9) if 0 <= k + sgn * d < 64 and board.piece_at(k + sgn * d) == paw
+            1
+            for d in (7, 8, 9)
+            if 0 <= k + sgn * d < 64 and board.piece_at(k + sgn * d) == paw
         )
 
     ks = (shield(kW, chess.WHITE, +1) - shield(kB, chess.BLACK, -1)) * 0.5

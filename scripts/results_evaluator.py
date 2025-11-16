@@ -61,7 +61,9 @@ def evaluate_acceptance_rules(result: dict[str, Any]) -> dict[str, Any]:
                 # Check if within ±2° of 38.2°
                 target_deg = 38.2
                 tolerance_deg = 2.0
-                phi_clamp_peak_pass = abs(phi_clamp_peak_deg - target_deg) <= tolerance_deg
+                phi_clamp_peak_pass = (
+                    abs(phi_clamp_peak_deg - target_deg) <= tolerance_deg
+                )
 
     # Overall pass: all three rules must pass
     overall_pass = variance_reduction_pass and mae_delta_pass and phi_clamp_peak_pass

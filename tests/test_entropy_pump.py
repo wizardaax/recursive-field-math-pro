@@ -19,7 +19,9 @@ def test_phi_clamp_invariant():
     # histogram peak near ±clamp (~0.666 rad)
     hist, _ = np.histogram(thp, bins=60, range=(-math.pi / 2, math.pi / 2))
     peak = np.argmax(hist)
-    centers = np.linspace(-math.pi / 2, math.pi / 2, 60, endpoint=False) + (math.pi / 60)
+    centers = np.linspace(-math.pi / 2, math.pi / 2, 60, endpoint=False) + (
+        math.pi / 60
+    )
     assert abs(abs(centers[peak]) - clamp) < 0.1
 
 
@@ -57,7 +59,9 @@ def test_lucas_weights():
     evals = np.cumsum(rng.normal(0, 50, 50))
 
     # Test with (4,7,11) Lucas weights as mentioned in the problem
-    result_lucas = codex_pump_from_series(evals, window=(5, 25), lucas_weights=(4, 7, 11))
+    result_lucas = codex_pump_from_series(
+        evals, window=(5, 25), lucas_weights=(4, 7, 11)
+    )
     result_normal = codex_pump_from_series(evals, window=(5, 25))
 
     assert result_lucas["ok"]
@@ -65,4 +69,7 @@ def test_lucas_weights():
 
     # The compression and variance reduction should be different with Lucas weights
     assert result_lucas["compression"] != result_normal["compression"]
-    assert result_lucas["variance_reduction_pct"] != result_normal["variance_reduction_pct"]
+    assert (
+        result_lucas["variance_reduction_pct"]
+        != result_normal["variance_reduction_pct"]
+    )
