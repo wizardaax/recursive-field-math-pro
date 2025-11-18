@@ -197,7 +197,7 @@ jobs:
 
       - name: Upload artifacts
         if: env.SKIP_EVOLUTION == 'false'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: evolution-artifacts
           path: |
