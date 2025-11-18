@@ -1,10 +1,11 @@
 # Codex entropy-pump: golden refraction + metrics
 # Uses rank->phase mapping so it's scale-free and robust.
 import math
+
 import numpy as np
-from typing import Optional
 
 PHI = (1 + 5**0.5) / 2
+
 
 def _rank_to_phase(x: np.ndarray) -> np.ndarray:
     """Map real series -> phases in (-pi/2, pi/2) by ranks (no SciPy)."""
@@ -12,18 +13,22 @@ def _rank_to_phase(x: np.ndarray) -> np.ndarray:
     order = np.argsort(x)
     ranks = np.empty(n, dtype=float)
     ranks[order] = np.arange(1, n + 1)
-    u = ranks / (n + 1)                  # (0,1)
-    return np.pi * (u - 0.5)             # (-pi/2, pi/2)
+    u = ranks / (n + 1)  # (0,1)
+    return np.pi * (u - 0.5)  # (-pi/2, pi/2)
+
 
 def golden_refraction(theta: np.ndarray, n: float = PHI) -> np.ndarray:
     s = np.sin(theta) / float(n)
     s = np.clip(s, -1.0, 1.0)
     return np.arcsin(s)
 
-def codex_pump_from_series(eval_series: np.ndarray,
-                           window: Optional[tuple[int, int]] = None,
-                           n_index: float = PHI,
-                           lucas_weights: Optional[tuple[int, int, int]] = None) -> dict:
+
+def codex_pump_from_series(
+    eval_series: np.ndarray,
+    window: tuple[int, int] | None = None,
+    n_index: float = PHI,
+    lucas_weights: tuple[int, int, int] | None = None,
+) -> dict:
     """
     eval_series: per-move evaluations (cp-like). We operate on deltas.
     window: (start, end) moves to analyze; default = whole series.
@@ -44,7 +49,7 @@ def codex_pump_from_series(eval_series: np.ndarray,
     if len(xw) < 4:
         return {"ok": False, "reason": "too short"}
 
-    deltas = np.diff(xw)                         # chaos lives here
+    deltas = np.diff(xw)  # chaos lives here
     if np.allclose(np.var(deltas), 0.0):
         return {"ok": False, "reason": "zero variance"}
 
@@ -52,8 +57,8 @@ def codex_pump_from_series(eval_series: np.ndarray,
 
     # Lucas resonance (optional)
     if lucas_weights:
-        a,b,c = lucas_weights
-        f = (a + b + c) / math.sqrt(a*b*c)
+        a, b, c = lucas_weights
+        f = (a + b + c) / math.sqrt(a * b * c)
         eff_n = n_index / f
     else:
         eff_n = n_index
@@ -62,8 +67,8 @@ def codex_pump_from_series(eval_series: np.ndarray,
 
     # Compression coefficient (fraction removed)
     var_before = float(np.var(theta))
-    var_after  = float(np.var(theta_p))
-    compression = 1.0 - (var_after / var_before)   # e.g., ~0.75
+    var_after = float(np.var(theta_p))
+    compression = 1.0 - (var_after / var_before)  # e.g., ~0.75
 
     # Reconstruct an adjusted delta stream by scaling
     # (keep mean, shrink swings by compression factor)
@@ -72,18 +77,21 @@ def codex_pump_from_series(eval_series: np.ndarray,
     series_adj = np.concatenate([[xw[0]], xw[0] + np.cumsum(deltas_adj)])
 
     # φ-clamp angles for report
-    phi_clamp = math.asin(1.0 / n_index)          # ≈ 0.666 rad
+    phi_clamp = math.asin(1.0 / n_index)  # ≈ 0.666 rad
     # Histogram (for peaks near ±phi_clamp)
-    hist_y, hist_edges = np.histogram(theta_p, bins=48, range=(-math.pi/2, math.pi/2))
+    hist_y, hist_edges = np.histogram(
+        theta_p, bins=48, range=(-math.pi / 2, math.pi / 2)
+    )
 
     # Simple "baseline smoother" to compute MAE improvement (optional)
     def ma(x, k=5):
-        if len(x) < k+1:
+        if len(x) < k + 1:
             return x
-        kernel = np.ones(k)/k
-        pad = np.concatenate([np.repeat(x[0], k-1), x])
+        kernel = np.ones(k) / k
+        pad = np.concatenate([np.repeat(x[0], k - 1), x])
         sm = np.convolve(pad, kernel, mode="valid")
-        return sm[:len(x)]
+        return sm[: len(x)]
+
     base_series = ma(xw, 5)
     mae_base = float(np.mean(np.abs(xw - base_series)))
     mae_codex = float(np.mean(np.abs(xw - series_adj)))
@@ -94,8 +102,8 @@ def codex_pump_from_series(eval_series: np.ndarray,
         "offset": offset,
         "window_len": len(xw),
         "var_delta_before": float(np.var(deltas)),
-        "var_delta_after":  float(np.var(deltas_adj)),
-        "variance_reduction_pct": 100.0 * (1.0 - np.var(deltas_adj)/np.var(deltas)),
+        "var_delta_after": float(np.var(deltas_adj)),
+        "variance_reduction_pct": 100.0 * (1.0 - np.var(deltas_adj) / np.var(deltas)),
         "compression": compression,
         "phi_clamp_rad": phi_clamp,
         "theta_after_hist": (hist_edges.tolist(), hist_y.tolist()),

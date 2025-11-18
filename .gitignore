@@ -12,6 +12,15 @@ htmlcov/
 .ipynb_checkpoints/
 .mypy_cache/
 .pytype/
+coverage.xml
+.pytest_cache/
+
+# Node.js
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # OS
 .DS_Store

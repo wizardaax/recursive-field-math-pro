@@ -7,6 +7,6 @@ def lucas_ratio_cfrac(n: int):
     """
     if n < 1:
         raise ValueError("n must be >= 1")
-    num, den = L(n+1), L(n)
-    ones = max(0, n-2)
-    return (num, den, {"head":1, "ones":ones, "tail":3})
+    num, den = L(n + 1), L(n)
+    ones = max(0, n - 2)
+    return (num, den, {"head": 1, "ones": ones, "tail": 3})

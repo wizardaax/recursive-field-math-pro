@@ -1,0 +1,20 @@
+{
+  "name": "recursive-field-math-pro",
+  "version": "0.1.0",
+  "description": "Recursive field mathematics with ternary CPU implementation",
+  "type": "module",
+  "scripts": {
+    "test": "node --test cpu/*.js",
+    "lint": "eslint cpu/**/*.js docs/**/*.js"
+  },
+  "keywords": [
+    "mathematics",
+    "ternary",
+    "cpu"
+  ],
+  "author": "Commander X (Wizard)",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^9.0.0"
+  }
+}
