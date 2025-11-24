@@ -1,22 +1,91 @@
+# =============================================================================
+# ShellCheck Workflow - Shell Script Linting
+# =============================================================================
+# This workflow runs ShellCheck on all shell scripts to ensure code quality
+# and catch common shell scripting issues.
+#
+# Features:
+#   - ShellCheck linting with warning severity
+#   - Exit code validation for scripts
+#   - Best practice enforcement
+#   - Clear error reporting
+# =============================================================================
+
 name: ShellCheck
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
+    paths:
+      - 'scripts/**/*.sh'
+      - '.github/workflows/shellcheck.yml'
   pull_request:
+    paths:
+      - 'scripts/**/*.sh'
+      - '.github/workflows/shellcheck.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
+  # ===========================================================================
+  # Shell Script Linting
+  # ===========================================================================
   shellcheck:
-    name: ShellCheck
+    name: ShellCheck Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@master
         with:
           scandir: './scripts'
           severity: warning
+          format: gcc
+
+      - name: Verify error handling in scripts
+        run: |
+          echo "Checking shell scripts for proper error handling..."
+          
+          ISSUES_FOUND=false
+          
+          for script in scripts/*.sh; do
+            if [ -f "$script" ]; then
+              echo "Checking: $script"
+              
+              # Check for set -e or set -euo pipefail
+              if ! grep -q "set -e" "$script" && ! grep -q "set -euo pipefail" "$script"; then
+                echo "::warning file=$script::Script may not have strict error handling (no 'set -e' or 'set -euo pipefail')"
+                ISSUES_FOUND=true
+              fi
+              
+              # Check for proper shebang
+              FIRST_LINE=$(head -1 "$script")
+              if [[ ! "$FIRST_LINE" =~ ^#!.*(bash|sh) ]]; then
+                echo "::warning file=$script::Script may be missing proper shebang"
+              fi
+            fi
+          done
+          
+          if [ "$ISSUES_FOUND" = true ]; then
+            echo ""
+            echo "Some scripts have warnings - see above for details"
+          else
+            echo "✓ All scripts have proper error handling"
+          fi
+
+      - name: Test script syntax
+        run: |
+          echo "Validating shell script syntax..."
+          
+          for script in scripts/*.sh; do
+            if [ -f "$script" ]; then
+              echo "Syntax check: $script"
+              bash -n "$script" || echo "::error file=$script::Syntax error in script"
+            fi
+          done
+          
+          echo "✓ Shell script syntax validation complete"

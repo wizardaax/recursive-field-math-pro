@@ -1,71 +1,228 @@
+# =============================================================================
+# CI Workflow - Industry Standard Automation
+# =============================================================================
+# This workflow enforces code quality, testing, and builds on all PRs and pushes.
+# 
+# Components:
+#   - Python: ruff (lint+fix), black (format), mypy (type-check), pytest (test+coverage)
+#   - JavaScript: eslint (lint), Node.js test runner
+#   - Shell: shellcheck validation
+#   - Matrix: OS (ubuntu, macos, windows); Python 3.9-3.12; Node.js LTS
+#   - Coverage artifacts uploaded for cross-language aggregation
+# =============================================================================
+
 name: CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
-  lint:
-    name: Lint
+  # ===========================================================================
+  # Python Linting & Formatting
+  # ===========================================================================
+  lint-python:
+    name: Python Lint & Format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      - name: Install dependencies
+          python-version: '3.12'
+
+      - name: Install linting tools
         run: |
           python -m pip install --upgrade pip
-          pip install ruff
-      - name: Run ruff linting
-        run: ruff check .
+          pip install ruff black mypy
 
-  test:
-    name: Test Python ${{ matrix.python-version }}
+      - name: Run ruff check (lint)
+        run: ruff check . --output-format=github
+
+      - name: Run ruff format check
+        run: ruff format --check .
+
+      - name: Run black format check
+        run: black --check --diff .
+
+      - name: Run mypy type checking
+        run: mypy src/ --config-file=mypy.ini || echo "::warning::mypy found issues (non-blocking)"
+        continue-on-error: true
+
+  # ===========================================================================
+  # Python Testing with Coverage
+  # ===========================================================================
+  test-python:
+    name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    needs: lint-python
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ['3.9', '3.10', '3.11', '3.12']
         exclude:
-          # Reduce matrix size for faster CI
+          # Reduce matrix size while maintaining coverage
           - os: windows-latest
             python-version: '3.9'
           - os: macos-latest
             python-version: '3.9'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install package
+
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -e .
-          pip install pytest
-      - name: Run tests
-        run: pytest -v
-      - name: Test CLI
+          pip install pytest pytest-cov
+
+      - name: Run tests with coverage
+        run: |
+          pytest -v --cov=src/recursive_field_math --cov-report=xml --cov-report=term-missing --cov-report=html
+
+      - name: Test CLI functionality
         run: |
           rfm --help
-          python -c "import recursive_field_math; print('✓ Package imports')"
+          python -c "import recursive_field_math; print('✓ Package imports successfully')"
 
+      - name: Upload Python coverage artifact
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-coverage
+          path: |
+            coverage.xml
+            htmlcov/
+          retention-days: 14
+
+  # ===========================================================================
+  # JavaScript Linting
+  # ===========================================================================
+  lint-js:
+    name: JavaScript Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+  # ===========================================================================
+  # JavaScript Testing
+  # ===========================================================================
+  test-js:
+    name: Test Node.js ${{ matrix.node-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: lint-js
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node-version: ['20', '22']
+        exclude:
+          # Reduce matrix size while maintaining coverage
+          - os: windows-latest
+            node-version: '20'
+          - os: macos-latest
+            node-version: '20'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+  # ===========================================================================
+  # Shell Script Linting
+  # ===========================================================================
+  lint-shell:
+    name: Shell Lint (shellcheck)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: './scripts'
+          severity: warning
+          format: gcc
+
+      - name: Verify shell script exit codes
+        run: |
+          echo "Checking shell scripts for proper exit code handling..."
+          # Verify scripts use set -e or explicit exit codes
+          for script in scripts/*.sh; do
+            if [ -f "$script" ]; then
+              if ! grep -q "set -e" "$script" && ! grep -q "set -euo pipefail" "$script"; then
+                echo "::warning file=$script::Script may not have strict error handling (no 'set -e')"
+              fi
+            fi
+          done
+          echo "✓ Shell script validation complete"
+
+  # ===========================================================================
+  # Build Artifacts
+  # ===========================================================================
   build:
     name: Build and Verify
     runs-on: ubuntu-latest
-    needs: [lint, test]
+    needs: [lint-python, test-python, lint-js, test-js, lint-shell]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
+
       - name: Build artifacts
         run: bash scripts/build_artifacts.sh
+
       - name: Check artifacts
         run: bash scripts/check_artifacts.sh
-      - name: Upload artifacts
+
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/
+          retention-days: 30

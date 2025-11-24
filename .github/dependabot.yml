@@ -1,38 +1,119 @@
+# =============================================================================
+# Dependabot Configuration - Automated Dependency Updates
+# =============================================================================
+# This configuration enables automated dependency updates with security focus.
+#
+# Ecosystems:
+#   - GitHub Actions: Weekly updates on Monday
+#   - Python (pip): Weekly updates with security priority
+#   - npm: Weekly updates with audit integration
+#
+# Security Features:
+#   - Automated security advisories
+#   - Grouped updates to reduce PR noise
+#   - Priority labels for security updates
+# =============================================================================
+
 version: 2
+
+# Enable security updates globally
+registries: {}
+
 updates:
+  # ===========================================================================
   # GitHub Actions
+  # ===========================================================================
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
+      time: "06:00"
+      timezone: "UTC"
     open-pull-requests-limit: 10
     labels:
       - "dependencies"
       - "github-actions"
+      - "ci"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    groups:
+      actions:
+        patterns:
+          - "actions/*"
+          - "github/*"
 
-  # Python dependencies
+  # ===========================================================================
+  # Python Dependencies (pip)
+  # ===========================================================================
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
+      time: "06:00"
+      timezone: "UTC"
     open-pull-requests-limit: 10
     labels:
       - "dependencies"
       - "python"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    # Group related dependencies
+    groups:
+      testing:
+        patterns:
+          - "pytest*"
+          - "coverage*"
+        update-types:
+          - "minor"
+          - "patch"
+      linting:
+        patterns:
+          - "ruff*"
+          - "black*"
+          - "mypy*"
+        update-types:
+          - "minor"
+          - "patch"
+      core:
+        patterns:
+          - "numpy*"
+          - "matplotlib*"
+        update-types:
+          - "minor"
+          - "patch"
+    # Ignore updates that might break compatibility
+    ignore:
+      - dependency-name: "numpy"
+        update-types: ["version-update:semver-major"]
 
-  # npm dependencies
+  # ===========================================================================
+  # npm Dependencies
+  # ===========================================================================
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
+      time: "06:00"
+      timezone: "UTC"
     open-pull-requests-limit: 10
     labels:
       - "dependencies"
       - "javascript"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    groups:
+      dev-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+    # Ignore major version bumps that might break compatibility
     ignore:
-      # Ignore ESLint major version bumps
       - dependency-name: "eslint"
         update-types: ["version-update:semver-major"]

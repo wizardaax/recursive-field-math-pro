@@ -1,4 +1,7 @@
 [![CI](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/ci.yml/badge.svg)](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/ci.yml)
+[![Coverage](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/coverage.yml/badge.svg)](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/coverage.yml)
+[![Pre-commit](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/pre-commit.yml)
+[![Security](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/security.yml/badge.svg)](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/security.yml)
 [![PyPI version](https://img.shields.io/pypi/v/regen88-codex.svg)](https://pypi.org/project/regen88-codex/)
 [![Release](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/release.yml/badge.svg)](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/release.yml)
 ---
