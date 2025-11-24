@@ -138,6 +138,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install build twine
 
+      - name: Verify build scripts exist
+        run: |
+          if [ ! -f "scripts/build_artifacts.sh" ]; then
+            echo "::error::scripts/build_artifacts.sh not found"
+            exit 1
+          fi
+          if [ ! -f "scripts/check_artifacts.sh" ]; then
+            echo "::error::scripts/check_artifacts.sh not found"
+            exit 1
+          fi
+          chmod +x scripts/build_artifacts.sh scripts/check_artifacts.sh
+          echo "✓ Build scripts verified"
+
       - name: Build wheel and sdist
         run: bash scripts/build_artifacts.sh
 

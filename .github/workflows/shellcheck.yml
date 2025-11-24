@@ -51,26 +51,43 @@ jobs:
           echo "Checking shell scripts for proper error handling..."
           
           ISSUES_FOUND=false
+          SCRIPTS_FOUND=false
           
-          for script in scripts/*.sh; do
-            if [ -f "$script" ]; then
-              echo "Checking: $script"
-              
-              # Check for set -e or set -euo pipefail
-              if ! grep -q "set -e" "$script" && ! grep -q "set -euo pipefail" "$script"; then
-                echo "::warning file=$script::Script may not have strict error handling (no 'set -e' or 'set -euo pipefail')"
-                ISSUES_FOUND=true
-              fi
-              
-              # Check for proper shebang
-              FIRST_LINE=$(head -1 "$script")
-              if [[ ! "$FIRST_LINE" =~ ^#!.*(bash|sh) ]]; then
-                echo "::warning file=$script::Script may be missing proper shebang"
-              fi
+          # Check if scripts directory exists and has .sh files
+          if [ -d "scripts" ]; then
+            shopt -s nullglob
+            SCRIPT_LIST=(scripts/*.sh)
+            shopt -u nullglob
+            
+            if [ ${#SCRIPT_LIST[@]} -eq 0 ]; then
+              echo "No .sh files found in scripts/ directory"
+            else
+              SCRIPTS_FOUND=true
+              for script in "${SCRIPT_LIST[@]}"; do
+                if [ -f "$script" ]; then
+                  echo "Checking: $script"
+                  
+                  # Check for set -e or set -euo pipefail
+                  if ! grep -q "set -e" "$script" && ! grep -q "set -euo pipefail" "$script"; then
+                    echo "::warning file=$script::Script may not have strict error handling (no 'set -e' or 'set -euo pipefail')"
+                    ISSUES_FOUND=true
+                  fi
+                  
+                  # Check for proper shebang
+                  FIRST_LINE=$(head -1 "$script")
+                  if [[ ! "$FIRST_LINE" =~ ^#!.*(bash|sh) ]]; then
+                    echo "::warning file=$script::Script may be missing proper shebang"
+                  fi
+                fi
+              done
             fi
-          done
+          else
+            echo "scripts/ directory not found"
+          fi
           
-          if [ "$ISSUES_FOUND" = true ]; then
+          if [ "$SCRIPTS_FOUND" = false ]; then
+            echo "✓ No shell scripts to check"
+          elif [ "$ISSUES_FOUND" = true ]; then
             echo ""
             echo "Some scripts have warnings - see above for details"
           else
@@ -81,11 +98,23 @@ jobs:
         run: |
           echo "Validating shell script syntax..."
           
-          for script in scripts/*.sh; do
-            if [ -f "$script" ]; then
-              echo "Syntax check: $script"
-              bash -n "$script" || echo "::error file=$script::Syntax error in script"
+          if [ -d "scripts" ]; then
+            shopt -s nullglob
+            SCRIPT_LIST=(scripts/*.sh)
+            shopt -u nullglob
+            
+            if [ ${#SCRIPT_LIST[@]} -eq 0 ]; then
+              echo "No .sh files found in scripts/ directory"
+            else
+              for script in "${SCRIPT_LIST[@]}"; do
+                if [ -f "$script" ]; then
+                  echo "Syntax check: $script"
+                  bash -n "$script" || echo "::error file=$script::Syntax error in script"
+                fi
+              done
             fi
-          done
+          else
+            echo "scripts/ directory not found"
+          fi
           
           echo "✓ Shell script syntax validation complete"

@@ -53,9 +53,14 @@ jobs:
       - name: Check for common issues
         run: |
           echo "Checking for common JavaScript issues..."
-          # Check for console.log statements in production code (warning only)
-          if grep -rn "console.log" cpu/*.js 2>/dev/null | grep -v "test" | head -5; then
-            echo "::warning::Found console.log statements in source files"
+          # Find JavaScript files dynamically
+          JS_FILES=$(find . -name "*.js" -not -path "./node_modules/*" -not -name "*.test.js" -not -name "*.spec.js" 2>/dev/null || true)
+          
+          if [ -n "$JS_FILES" ]; then
+            # Check for console.log statements in production code (warning only)
+            if echo "$JS_FILES" | xargs grep -l "console.log" 2>/dev/null | head -5; then
+              echo "::warning::Found console.log statements in source files"
+            fi
           fi
           echo "✓ JavaScript lint checks complete"
 
