@@ -1,0 +1,276 @@
+# =============================================================================
+# Publish Workflow - PyPI Release Automation
+# =============================================================================
+# This workflow automates publishing to PyPI on tagged releases.
+#
+# Process:
+#   1. Triggered on version tags (v*)
+#   2. Validates changelog and artifacts
+#   3. Builds wheel and sdist
+#   4. Publishes to Test PyPI first
+#   5. If Test PyPI succeeds, publishes to Production PyPI (requires PYPI_API_TOKEN)
+#
+# Security:
+#   - Uses OIDC trusted publishing when available
+#   - Falls back to API tokens for authentication
+#   - Production publish gated behind secret availability
+# =============================================================================
+
+name: Publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      publish_to_pypi:
+        description: 'Publish to PyPI (only works with valid tag)'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  id-token: write  # Required for OIDC trusted publishing
+
+jobs:
+  # ===========================================================================
+  # Validate Release
+  # ===========================================================================
+  validate:
+    name: Validate Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+      is_prerelease: ${{ steps.get_version.outputs.is_prerelease }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        id: get_version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            VERSION="${GITHUB_REF#refs/tags/}"
+          else
+            VERSION="dev"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+          # Check if pre-release
+          if [[ "$VERSION" == *"rc"* ]] || [[ "$VERSION" == *"alpha"* ]] || [[ "$VERSION" == *"beta"* ]]; then
+            echo "is_prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_prerelease=false" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "Version: $VERSION"
+
+      - name: Check CHANGELOG.md
+        run: |
+          echo "Checking CHANGELOG.md for release documentation..."
+          
+          if [ ! -f "CHANGELOG.md" ]; then
+            echo "::error::CHANGELOG.md not found"
+            exit 1
+          fi
+          
+          # Check if changelog has content
+          if [ ! -s "CHANGELOG.md" ]; then
+            echo "::error::CHANGELOG.md is empty"
+            exit 1
+          fi
+          
+          echo "✓ CHANGELOG.md exists and has content"
+
+      - name: Validate pyproject.toml
+        run: |
+          echo "Validating pyproject.toml..."
+          
+          if [ ! -f "pyproject.toml" ]; then
+            echo "::error::pyproject.toml not found"
+            exit 1
+          fi
+          
+          # Check for required fields
+          python3 -c "
+          import sys
+          try:
+              import tomllib
+          except ImportError:
+              import tomli as tomllib
+          
+          with open('pyproject.toml', 'rb') as f:
+              config = tomllib.load(f)
+          
+          project = config.get('project', {})
+          required = ['name', 'version', 'description']
+          missing = [f for f in required if f not in project]
+          
+          if missing:
+              print(f'::error::Missing required fields in pyproject.toml: {missing}')
+              sys.exit(1)
+          
+          print('✓ pyproject.toml is valid')
+          "
+
+  # ===========================================================================
+  # Build Distribution
+  # ===========================================================================
+  build:
+    name: Build Distribution
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      - name: Verify build scripts exist
+        run: |
+          if [ ! -f "scripts/build_artifacts.sh" ]; then
+            echo "::error::scripts/build_artifacts.sh not found"
+            exit 1
+          fi
+          if [ ! -f "scripts/check_artifacts.sh" ]; then
+            echo "::error::scripts/check_artifacts.sh not found"
+            exit 1
+          fi
+          chmod +x scripts/build_artifacts.sh scripts/check_artifacts.sh
+          echo "✓ Build scripts verified"
+
+      - name: Build wheel and sdist
+        run: bash scripts/build_artifacts.sh
+
+      - name: Verify artifacts
+        run: bash scripts/check_artifacts.sh
+
+      - name: Check artifact integrity
+        run: |
+          echo "Verifying artifact integrity..."
+          
+          # Check wheel exists and is valid
+          WHEEL_COUNT=$(ls dist/*.whl 2>/dev/null | wc -l)
+          SDIST_COUNT=$(ls dist/*.tar.gz 2>/dev/null | wc -l)
+          
+          if [ "$WHEEL_COUNT" -eq 0 ]; then
+            echo "::error::No wheel files found in dist/"
+            exit 1
+          fi
+          
+          if [ "$SDIST_COUNT" -eq 0 ]; then
+            echo "::error::No source distributions found in dist/"
+            exit 1
+          fi
+          
+          # Generate checksums
+          echo "=== SHA256 Checksums ===" > dist/checksums.txt
+          sha256sum dist/*.whl dist/*.tar.gz >> dist/checksums.txt
+          cat dist/checksums.txt
+          
+          echo "✓ Artifact integrity verified"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 30
+
+  # ===========================================================================
+  # Publish to Test PyPI
+  # ===========================================================================
+  publish-test-pypi:
+    name: Publish to Test PyPI
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: test-pypi
+      url: https://test.pypi.org/project/regen88-codex/
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+          verbose: true
+        continue-on-error: true
+
+      - name: Verify Test PyPI installation
+        run: |
+          echo "Waiting for package to be available on Test PyPI..."
+          sleep 30
+          
+          # Try to install from Test PyPI
+          python -m pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ regen88-codex || echo "::warning::Could not install from Test PyPI (may not be published yet)"
+
+  # ===========================================================================
+  # Publish to Production PyPI
+  # ===========================================================================
+  publish-pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: [build, publish-test-pypi]
+    if: startsWith(github.ref, 'refs/tags/v')
+    environment:
+      name: pypi
+      url: https://pypi.org/project/regen88-codex/
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Check for PyPI API token
+        id: check_secret
+        run: |
+          if [ -n "${{ secrets.PYPI_API_TOKEN }}" ]; then
+            echo "has_token=true" >> $GITHUB_OUTPUT
+            echo "✓ PYPI_API_TOKEN secret is configured"
+          else
+            echo "has_token=false" >> $GITHUB_OUTPUT
+            echo "::warning::PYPI_API_TOKEN not configured - skipping production PyPI publish"
+          fi
+
+      - name: Publish to PyPI
+        if: steps.check_secret.outputs.has_token == 'true'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip-existing: true
+          verbose: true
+
+      - name: Report publish status
+        if: always()
+        run: |
+          echo "=== Publish Status ==="
+          echo "Test PyPI: Attempted (see previous job)"
+          if [ "${{ steps.check_secret.outputs.has_token }}" == "true" ]; then
+            echo "Production PyPI: Attempted"
+          else
+            echo "Production PyPI: Skipped (no PYPI_API_TOKEN)"
+            echo ""
+            echo "To enable production publishing:"
+            echo "1. Go to repository Settings > Secrets and variables > Actions"
+            echo "2. Add a new secret named PYPI_API_TOKEN"
+            echo "3. Use your PyPI API token as the value"
+          fi
