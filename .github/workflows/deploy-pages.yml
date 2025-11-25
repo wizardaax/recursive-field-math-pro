@@ -19,12 +19,31 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Setup Pages
+
+      - name: Build site (placeholder)
+        run: |
+          # TODO: Replace these commands with your real build steps.
+          # Example for Node static site:
+          # npm ci && npm run build
+          # Example for MkDocs:
+          # pip install -r requirements.txt && mkdocs build -d docs
+          # Minimal fallback ensures 'docs' exists for deploy:
+          mkdir -p docs
+          # If your build outputs to 'build' or 'public', copy into docs:
+          # cp -a build/. docs/ || cp -a public/. docs/ || true
+
+      - name: Setup Pages (ensure site exists)
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
           path: "docs"
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
