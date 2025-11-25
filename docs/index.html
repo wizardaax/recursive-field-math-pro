@@ -1,78 +1,13 @@
 <!doctype html>
-<meta charset="utf-8">
-<title>math-pro • Viewer</title>
-<style>
-  body{font:14px/1.4 system-ui;margin:20px;color:#222}
-  input,button,select{font:inherit}
-  table{border-collapse:collapse;margin-top:10px}
-  td,th{border:1px solid #ddd;padding:6px 8px}
-  .muted{color:#666}
-  #wrap{display:grid;gap:16px;grid-template-columns:1fr}
-  #img{max-width:100%;border:1px solid #eee}
-  #csv{max-width:100%;overflow:auto}
-</style>
-<h1>math-pro • Viewer</h1>
-<p><strong>New:</strong> Try the <a href="huffman/">Ternary Huffman – Live Demo</a>.</p>
-<p class="muted">Use <code>?file=timeline.svg</code> or <code>?csv=dtqc.csv</code> in the URL, or pick a file below.</p>
-
-<div id="wrap">
-  <div>
-    <label>Open file (SVG/CSV): <input id="picker" type="file" accept=".svg,.csv,text/csv,image/svg+xml"></label>
-    <button id="demo">Demo help</button>
-  </div>
-
-  <div id="view-svg" hidden>
-    <h3>SVG</h3>
-    <img id="img" alt="SVG preview">
-  </div>
-
-  <div id="view-csv" hidden>
-    <h3>CSV</h3>
-    <div id="csv"></div>
-  </div>
-
-  <p class="muted">Need the REPL? <a href="repl.html">Open REPL</a></p>
-</div>
-
-<script>
-const qs = new URLSearchParams(location.search);
-const img = document.querySelector('#img');
-const svgWrap = document.querySelector('#view-svg');
-const csvWrap = document.querySelector('#view-csv');
-const csvDiv = document.querySelector('#csv');
-
-function showSVG(src){ img.src = src; svgWrap.hidden = false; csvWrap.hidden = true; }
-function showCSV(text){
-  const rows = text.trim().split(/\r?\n/).map(r=>r.split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/));
-  const table = document.createElement('table');
-  table.innerHTML = rows.map((r,i)=>`<tr>${r.map((c,j)=> (i===0?'\u003cth\u003e':'\u003ctd\u003e')+c.replace(/^"|"$/g,'')+(i===0?'\u003c/th\u003e':'\u003c/td\u003e')).join('')}</tr>`).join('');
-  csvDiv.innerHTML = ''; csvDiv.appendChild(table);
-  csvWrap.hidden = false; svgWrap.hidden = true;
-}
-
-async function fetchAndShow(path){
-  const res = await fetch(path);
-  if(!res.ok) { alert('Not found: '+path); return; }
-  const isCSV = \/\.csv(\?|$)/i.test(path);
-  if(isCSV) showCSV(await res.text());
-  else showSVG(path);
-}
-
-document.querySelector('#picker').addEventListener('change', ev=>{
-  const f = ev.target.files[0]; if(!f) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    if(f.name.toLowerCase().endsWith('.csv')) showCSV(reader.result);
-    else showSVG(reader.result);
-  };
-  if(f.type.startsWith('text')||f.name.endsWith('.csv')) reader.readAsText(f);
-  else reader.readAsDataURL(f);
-});
-
-document.querySelector('#demo').onclick = ()=>{
-  alert('Usage:\n- Upload a .svg or .csv\n- Or navigate to ?file=timeline.svg or ?csv=dtqc.csv');
-};
-
-if(qs.get('file')) fetchAndShow(qs.get('file'));
-else if(qs.get('csv')) fetchAndShow(qs.get('csv'));
-</script>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>recursive-field-math-pro — smoke test</title>
+</head>
+<body>
+  <h1>recursive-field-math-pro</h1>
+  <p>Smoke test page (auto-created by CI) — replace with your real site build output.</p>
+  <p>Source: Workflow fix for job 56274475980 (ref: 2e417f0ea1e3813afeaf34318064ed3cac835d3d)</p>
+</body>
+</html>
