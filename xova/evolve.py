@@ -6,13 +6,13 @@ import sys
 import time
 from pathlib import Path
 
+from registry import choose_candidates, load_registry
+from sandbox import run_plugin
+
 ROOT = Path(__file__).resolve().parents[1]
 PLUGINS = ROOT / "plugins"
 OUTDIR = ROOT / "out"
 POLICY = ROOT / "policies" / "default.json"
-
-from registry import choose_candidates, load_registry
-from sandbox import run_plugin
 
 
 def load_policy():
@@ -43,10 +43,7 @@ def passes_thresholds(metrics, thr):
     for k, v in mx.items():
         if k in metrics and metrics[k] > v:
             return False
-    for k, v in mn.items():
-        if k in metrics and metrics[k] < v:
-            return False
-    return True
+    return all(not (k in metrics and metrics[k] < v) for k, v in mn.items())
 
 
 def rank_candidates(cands, prefer):
@@ -109,10 +106,9 @@ def evolve(request_path: str):
     errors = []
     for cand in cands:
         man = cand["manifest"]
-        if policy["security"].get("require_signatures", False):
-            if not verify_manifest(man):
-                errors.append({"plugin": cand["name"], "error": "bad-signature"})
-                continue
+        if policy["security"].get("require_signatures", False) and not verify_manifest(man):
+            errors.append({"plugin": cand["name"], "error": "bad-signature"})
+            continue
 
         time_limit_s = float(man.get("time_limit_s", policy["limits"]["time_s"]))
 
