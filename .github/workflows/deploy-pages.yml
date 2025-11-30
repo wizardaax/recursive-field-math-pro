@@ -3,13 +3,16 @@ on:
   push:
     branches: ["main"]
   workflow_dispatch:
+
 permissions:
   contents: read
   pages: write
   id-token: write
+
 concurrency:
   group: "pages"
   cancel-in-progress: true
+
 jobs:
   deploy:
     environment:
@@ -26,13 +29,11 @@ jobs:
           # Example for a Node static site:
           # npm ci
           # npm run build
-          # Example for MkDocs:
-          # pip install -r requirements.txt
-          # mkdocs build -d docs
-          # Minimal fallback to ensure 'docs' exists for deploy:
-          mkdir -p docs
-          # If your build outputs to 'build' or 'public', copy it into docs:
-          # cp -a build/. docs/ || cp -a public/. docs/ || true
+          # Example for a static site generator outputting to _site (e.g., Jekyll):
+          # bundle install && bundle exec jekyll build -d _site
+          mkdir -p _site
+          # If your build outputs to 'build' or 'public', copy it into _site:
+          # cp -a build/. _site/ || cp -a public/. _site/ || true
 
       - name: Setup Pages (ensure site exists)
         uses: actions/configure-pages@v5
@@ -42,10 +43,26 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: "docs"
+          path: "_site"
+
+      - name: Determine deploy token (use PAGES_PAT if provided, else GITHUB_TOKEN)
+        id: token
+        run: |
+          if [ -n "${{ secrets.PAGES_PAT }}" ]; then
+            echo "Using provided PAGES_PAT secret for deployment."
+            echo "token=${{ secrets.PAGES_PAT }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "No PAGES_PAT secret found; falling back to GITHUB_TOKEN."
+            echo "token=${{ secrets.GITHUB_TOKEN }}" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.token.outputs.token }}
+
+      - name: Show deployment result
+        if: always()
+        run: |
+          echo "Page URL: ${{ steps.deployment.outputs.page_url || 'not-set' }}"
