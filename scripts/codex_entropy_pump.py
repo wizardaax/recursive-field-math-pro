@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # Codex entropy-pump: golden refraction + metrics
 # Uses rank->phase mapping so it's scale-free and robust.
 import math

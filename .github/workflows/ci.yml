@@ -95,9 +95,11 @@ jobs:
           pytest -v --cov=src/recursive_field_math --cov-report=xml --cov-report=term-missing --cov-report=html
 
       - name: Test CLI functionality
+        env:
+          PYTHONUTF8: '1'
         run: |
           rfm --help
-          python -c "import recursive_field_math; print('✓ Package imports successfully')"
+          python -c "import recursive_field_math; print('Package imports successfully')"
 
       - name: Upload Python coverage artifact
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
