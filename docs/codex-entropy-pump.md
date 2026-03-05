@@ -1,6 +1,6 @@
 # Codex Entropy-Pump (ϕ–Refraction)
 
-**Goal:** tame midgame chaos by refracting eval-deltas through a golden-ratio index  
+**Goal:** tame midgame chaos by refracting eval-deltas through a golden-ratio index
 θ′ = arcsin(sin θ / ϕ), with θ = rank-phase of eval changes.
 
 **Key metrics**
@@ -31,7 +31,7 @@ matplotlib>=3.8
 
 ## How to run it in your repo (fast)
 1. **Paste the files** above into the matching paths.
-2. **Commit** (web editor is fine):  
+2. **Commit** (web editor is fine):
    `wire: add Codex entropy-pump harness (ϕ-clamp + metrics)`
 3. **Trigger the agent:** open an issue "Entropy pump test" and comment:
 

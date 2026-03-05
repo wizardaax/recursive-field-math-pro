@@ -14,7 +14,7 @@ try:
     from scripts.results_evaluator import evaluate_and_summarize_results
 except ImportError:
     # If running from scripts directory
-    from results_evaluator import evaluate_and_summarize_results
+    from results_evaluator import evaluate_and_summarize_results  # type: ignore[no-redef]
 
 
 def main():

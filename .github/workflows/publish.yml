@@ -59,42 +59,42 @@ jobs:
             VERSION="dev"
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          
+
           # Check if pre-release
           if [[ "$VERSION" == *"rc"* ]] || [[ "$VERSION" == *"alpha"* ]] || [[ "$VERSION" == *"beta"* ]]; then
             echo "is_prerelease=true" >> $GITHUB_OUTPUT
           else
             echo "is_prerelease=false" >> $GITHUB_OUTPUT
           fi
-          
+
           echo "Version: $VERSION"
 
       - name: Check CHANGELOG.md
         run: |
           echo "Checking CHANGELOG.md for release documentation..."
-          
+
           if [ ! -f "CHANGELOG.md" ]; then
             echo "::error::CHANGELOG.md not found"
             exit 1
           fi
-          
+
           # Check if changelog has content
           if [ ! -s "CHANGELOG.md" ]; then
             echo "::error::CHANGELOG.md is empty"
             exit 1
           fi
-          
+
           echo "✓ CHANGELOG.md exists and has content"
 
       - name: Validate pyproject.toml
         run: |
           echo "Validating pyproject.toml..."
-          
+
           if [ ! -f "pyproject.toml" ]; then
             echo "::error::pyproject.toml not found"
             exit 1
           fi
-          
+
           # Check for required fields
           python3 -c "
           import sys
@@ -102,18 +102,18 @@ jobs:
               import tomllib
           except ImportError:
               import tomli as tomllib
-          
+
           with open('pyproject.toml', 'rb') as f:
               config = tomllib.load(f)
-          
+
           project = config.get('project', {})
           required = ['name', 'version', 'description']
           missing = [f for f in required if f not in project]
-          
+
           if missing:
               print(f'::error::Missing required fields in pyproject.toml: {missing}')
               sys.exit(1)
-          
+
           print('✓ pyproject.toml is valid')
           "
 
@@ -160,26 +160,26 @@ jobs:
       - name: Check artifact integrity
         run: |
           echo "Verifying artifact integrity..."
-          
+
           # Check wheel exists and is valid
           WHEEL_COUNT=$(ls dist/*.whl 2>/dev/null | wc -l)
           SDIST_COUNT=$(ls dist/*.tar.gz 2>/dev/null | wc -l)
-          
+
           if [ "$WHEEL_COUNT" -eq 0 ]; then
             echo "::error::No wheel files found in dist/"
             exit 1
           fi
-          
+
           if [ "$SDIST_COUNT" -eq 0 ]; then
             echo "::error::No source distributions found in dist/"
             exit 1
           fi
-          
+
           # Generate checksums
           echo "=== SHA256 Checksums ===" > dist/checksums.txt
           sha256sum dist/*.whl dist/*.tar.gz >> dist/checksums.txt
           cat dist/checksums.txt
-          
+
           echo "✓ Artifact integrity verified"
 
       - name: Upload build artifacts
@@ -218,7 +218,7 @@ jobs:
         run: |
           echo "Waiting for package to be available on Test PyPI..."
           sleep 30
-          
+
           # Try to install from Test PyPI
           python -m pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ regen88-codex || echo "::warning::Could not install from Test PyPI (may not be published yet)"
 

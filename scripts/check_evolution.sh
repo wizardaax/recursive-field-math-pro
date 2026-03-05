@@ -16,7 +16,7 @@ cd "$ROOT_DIR"
 echo "==> Checking required files..."
 REQUIRED_FILES=(
     "xova/evolve.py"
-    "xova/registry.py" 
+    "xova/registry.py"
     "xova/sandbox.py"
     "policies/default.json"
     "examples/request_nine.json"
@@ -54,11 +54,11 @@ done
 echo "==> Testing evolution script..."
 if python xova/evolve.py examples/request_nine.json > /tmp/evolution_test.json 2>&1; then
     echo "✅ Evolution script runs successfully"
-    
+
     # Check output files were created
     if [ -f "out/summary.json" ] && [ -f "out/metrics.json" ]; then
         echo "✅ Output artifacts generated"
-        
+
         # Validate JSON format
         if python -m json.tool out/summary.json > /dev/null 2>&1; then
             echo "✅ summary.json is valid JSON"
@@ -66,18 +66,18 @@ if python xova/evolve.py examples/request_nine.json > /tmp/evolution_test.json 2
             echo "❌ summary.json is not valid JSON"
             exit 1
         fi
-        
+
         if python -m json.tool out/metrics.json > /dev/null 2>&1; then
             echo "✅ metrics.json is valid JSON"
         else
             echo "❌ metrics.json is not valid JSON"
             exit 1
         fi
-        
+
         # Show sample metrics
         echo "==> Sample metrics:"
-        cat out/metrics.json | python -m json.tool
-        
+        python -m json.tool out/metrics.json
+
     else
         echo "❌ Expected output artifacts not found"
         exit 1
@@ -111,7 +111,7 @@ import sys
 # Test commit messages that should trigger the guard
 guard_messages = [
     "Sync evolve artifacts to docs",
-    "Update AES badge", 
+    "Update AES badge",
     "Some change: Sync evolve artifacts to docs [skip ci]",
     "Fix issue and Update AES badge automatically"
 ]

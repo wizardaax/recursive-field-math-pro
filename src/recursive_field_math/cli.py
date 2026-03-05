@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import sys
+from typing import Any
 
 from .continued_fraction import lucas_ratio_cfrac
 from .egyptian_fraction import egypt_4_7_11
@@ -50,6 +51,7 @@ def main():
     sp.add_argument("--markdown", action="store_true", help="Output as markdown (default: JSON)")
 
     args = p.parse_args()
+    out: Any
     if args.cmd == "field":
         a, b = args.a, args.b
         out = {n: r_theta(n) for n in range(a, b + 1)}

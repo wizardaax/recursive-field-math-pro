@@ -38,7 +38,7 @@ def stock_eval(board: chess.Board) -> float:
         )
 
     ks = (shield(kW, chess.WHITE, +1) - shield(kB, chess.BLACK, -1)) * 0.5
-    return (m + mobility + ks) * 100.0  # cp
+    return float((m + mobility + ks) * 100.0)  # cp
 
 
 def eval_game(pgn_text: str, mid=(10, 30), tag="game"):

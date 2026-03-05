@@ -1,1 +1,29 @@
-**Owner:** @wizardaax (Commander X)\n\n<!-- Please describe your issue here -->\n\n## Checklist\n- [ ] Item 1\n- [ ] Item 2\n\n## Additional Information\n- Additional info here...\n
+name: Social Campaign
+about: Social campaign tracking issue
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Owner:** @wizardaax (Commander X)
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      placeholder: Please describe your issue here
+    validations:
+      required: false
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: Item 1
+        - label: Item 2
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional Information
+      placeholder: Additional info here...
+    validations:
+      required: false

@@ -1,7 +1,7 @@
 # Release Notes Index
 
-Structured, immutable snapshots of each tagged release.  
-For ongoing aggregated history, see the root CHANGELOG.md.  
+Structured, immutable snapshots of each tagged release.
+For ongoing aggregated history, see the root CHANGELOG.md.
 For community-facing summary UI, see GitHub Releases.
 
 ## Index

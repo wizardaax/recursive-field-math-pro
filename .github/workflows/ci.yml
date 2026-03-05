@@ -2,7 +2,7 @@
 # CI Workflow - Industry Standard Automation
 # =============================================================================
 # This workflow enforces code quality, testing, and builds on all PRs and pushes.
-# 
+#
 # Components:
 #   - Python: ruff (lint+fix), black (format), mypy (type-check), pytest (test+coverage)
 #   - JavaScript: eslint (lint), Node.js test runner

@@ -55,7 +55,7 @@ jobs:
           echo "Checking for common JavaScript issues..."
           # Find JavaScript files dynamically
           JS_FILES=$(find . -name "*.js" -not -path "./node_modules/*" -not -name "*.test.js" -not -name "*.spec.js" 2>/dev/null || true)
-          
+
           if [ -n "$JS_FILES" ]; then
             # Check for console.log statements in production code (warning only)
             if echo "$JS_FILES" | xargs grep -l "console.log" 2>/dev/null | head -5; then

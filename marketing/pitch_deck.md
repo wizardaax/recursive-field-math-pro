@@ -37,12 +37,12 @@ Current data processing and agent systems rely on binary paradigms that miss har
 
 **Adjacent**: IoT sensor processing, scientific computing, multi-agent systems, educational tools
 
-**Size**: 
+**Size**:
 - Time-series analysis market: $3.2B+ (growing 12% annually)
 - Agent-based modeling: $1.8B+ (enterprise + research)
 - Open-source data tools: Community-driven, high adoption potential
 
-**Trends**: 
+**Trends**:
 - Increasing demand for reproducible research
 - Growth in agent-based automation
 - Need for mathematically grounded AI/ML approaches
@@ -213,8 +213,8 @@ Current data processing and agent systems rely on binary paradigms that miss har
 
 ## Contact
 
-**Repository**: https://github.com/wizardaax/recursive-field-math-pro  
-**Package**: `pip install regen88-codex`  
+**Repository**: https://github.com/wizardaax/recursive-field-math-pro
+**Package**: `pip install regen88-codex`
 **Documentation**: https://wizardaax.github.io/recursive-field-math-pro/
 
 **Get Started**:

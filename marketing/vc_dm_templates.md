@@ -62,7 +62,7 @@ I hope this message finds you well. I'm reaching out to share **Xova Intelligenc
 
 **Team**: Mathematics-driven, open-source focused, committed to reproducibility and rigor.
 
-**Ask**: 
+**Ask**:
 - Seed funding for team expansion and platform development
 - Introductions to potential partners in finance, gaming, IoT
 - Advisory support on go-to-market strategy
@@ -147,7 +147,7 @@ Thank you for taking the time to review the Xova Intelligence demo today. I appr
 - [ ] [Action 2 with timeline]
 - [ ] [Action 3 with timeline]
 
-**Ask**: 
+**Ask**:
 Would [Firm Name] be interested in participating in our [seed/Series A] round at [valuation/terms]? We're targeting [closing date] with [allocation info].
 
 **Updated materials**:

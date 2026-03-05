@@ -146,7 +146,7 @@ export class CPU {
   step(){ if (this.halted) return; this.execute(this.decode(this.fetch())); }
   run(maxSteps = 1000){ let n=0; while(!this.halted && n<maxSteps){ this.step(); n++; } }
 
-  loadProgram(wordsOrInts){ 
+  loadProgram(wordsOrInts){
     this.pc = intToWord(0); this.halted = false;
     for (let i=0; i<wordsOrInts.length && i<this.memory.length; i++){
       const val = (typeof wordsOrInts[i] === 'number') ? intToWord(wordsOrInts[i]) : wordsOrInts[i];

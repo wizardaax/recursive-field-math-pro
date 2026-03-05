@@ -14,8 +14,8 @@ if [ ! -d "dist" ]; then
 fi
 
 # Count expected files
-WHEELS=$(ls dist/*.whl 2>/dev/null | wc -l)
-SDISTS=$(ls dist/*.tar.gz 2>/dev/null | wc -l)
+WHEELS=$(find dist -name '*.whl' 2>/dev/null | wc -l)
+SDISTS=$(find dist -name '*.tar.gz' 2>/dev/null | wc -l)
 
 echo "Found $WHEELS wheel(s) and $SDISTS source distribution(s)"
 

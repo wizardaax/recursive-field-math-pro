@@ -27,4 +27,4 @@ def query(intent: str, *args):
     intent = (intent or "").strip().lower()
     if intent not in ROUTES:
         return {"error": f"unknown intent: {intent}", "known": sorted(ROUTES.keys())}
-    return ROUTES[intent](*args)
+    return ROUTES[intent](*args)  # type: ignore[operator]

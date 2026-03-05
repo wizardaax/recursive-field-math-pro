@@ -49,16 +49,16 @@ jobs:
       - name: Verify error handling in scripts
         run: |
           echo "Checking shell scripts for proper error handling..."
-          
+
           ISSUES_FOUND=false
           SCRIPTS_FOUND=false
-          
+
           # Check if scripts directory exists and has .sh files
           if [ -d "scripts" ]; then
             shopt -s nullglob
             SCRIPT_LIST=(scripts/*.sh)
             shopt -u nullglob
-            
+
             if [ ${#SCRIPT_LIST[@]} -eq 0 ]; then
               echo "No .sh files found in scripts/ directory"
             else
@@ -66,13 +66,13 @@ jobs:
               for script in "${SCRIPT_LIST[@]}"; do
                 if [ -f "$script" ]; then
                   echo "Checking: $script"
-                  
+
                   # Check for set -e or set -euo pipefail
                   if ! grep -q "set -e" "$script" && ! grep -q "set -euo pipefail" "$script"; then
                     echo "::warning file=$script::Script may not have strict error handling (no 'set -e' or 'set -euo pipefail')"
                     ISSUES_FOUND=true
                   fi
-                  
+
                   # Check for proper shebang
                   FIRST_LINE=$(head -1 "$script")
                   if [[ ! "$FIRST_LINE" =~ ^#!.*(bash|sh) ]]; then
@@ -84,7 +84,7 @@ jobs:
           else
             echo "scripts/ directory not found"
           fi
-          
+
           if [ "$SCRIPTS_FOUND" = false ]; then
             echo "✓ No shell scripts to check"
           elif [ "$ISSUES_FOUND" = true ]; then
@@ -97,12 +97,12 @@ jobs:
       - name: Test script syntax
         run: |
           echo "Validating shell script syntax..."
-          
+
           if [ -d "scripts" ]; then
             shopt -s nullglob
             SCRIPT_LIST=(scripts/*.sh)
             shopt -u nullglob
-            
+
             if [ ${#SCRIPT_LIST[@]} -eq 0 ]; then
               echo "No .sh files found in scripts/ directory"
             else
@@ -116,5 +116,5 @@ jobs:
           else
             echo "scripts/ directory not found"
           fi
-          
+
           echo "✓ Shell script syntax validation complete"

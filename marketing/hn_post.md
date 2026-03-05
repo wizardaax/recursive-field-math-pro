@@ -112,5 +112,5 @@ Happy to answer questions about the mathematics, implementation, or potential ap
 
 ---
 
-*Posted: [Date]*  
+*Posted: [Date]*
 *Follow-up: Monitor for 24-48 hours, engage authentically*

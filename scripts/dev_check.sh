@@ -29,8 +29,8 @@ import sys
 sys.path.insert(0, 'src')
 
 # Test CLI via python module
-result = subprocess.run([sys.executable, '-m', 'recursive_field_math.cli', '--help'], 
-                       capture_output=True, text=True, 
+result = subprocess.run([sys.executable, '-m', 'recursive_field_math.cli', '--help'],
+                       capture_output=True, text=True,
                        env=dict(os.environ, PYTHONPATH='src:' + os.environ.get('PYTHONPATH', '')))
 if result.returncode == 0:
     print('✓ CLI command works')

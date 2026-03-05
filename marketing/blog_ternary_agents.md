@@ -163,8 +163,8 @@ We invite the community to join us in exploring these frontiers. The mathematics
 
 ## References
 
-**Repository**: https://github.com/wizardaax/recursive-field-math-pro  
-**Package**: https://pypi.org/project/regen88-codex/  
+**Repository**: https://github.com/wizardaax/recursive-field-math-pro
+**Package**: https://pypi.org/project/regen88-codex/
 **Documentation**: https://wizardaax.github.io/recursive-field-math-pro/
 
 **Key Concepts**:
@@ -177,9 +177,9 @@ We invite the community to join us in exploring these frontiers. The mathematics
 
 ---
 
-**License**: MIT  
-**Authors**: Xova Intelligence Team  
-**Version**: v0.1.0+  
+**License**: MIT
+**Authors**: Xova Intelligence Team
+**Version**: v0.1.0+
 **Date**: October 2025
 
 ---
