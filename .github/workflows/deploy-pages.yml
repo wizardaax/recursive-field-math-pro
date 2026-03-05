@@ -1,9 +1,7 @@
-name: Deploy to GitHub Pages
+name: Deploy Pages (manual)
+
 on:
   workflow_dispatch:
-
-
-
 
 permissions:
   contents: read
@@ -15,55 +13,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: docs
+
   deploy:
+    needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Build site (placeholder)
-        run: |
-          # TODO: Replace these example commands with your real build steps.
-          # Example for a Node static site:
-          # npm ci
-          # npm run build
-          # Example for a static site generator outputting to _site (e.g., Jekyll):
-          # bundle install && bundle exec jekyll build -d _site
-          mkdir -p _site
-          # If your build outputs to 'build' or 'public', copy it into _site:
-          # cp -a build/. _site/ || cp -a public/. _site/ || true
-
-      - name: Setup Pages (ensure site exists)
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: "_site"
-
-      - name: Determine deploy token (use PAGES_PAT if provided, else GITHUB_TOKEN)
-        id: token
-        run: |
-          if [ -n "${{ secrets.PAGES_PAT }}" ]; then
-            echo "Using provided PAGES_PAT secret for deployment."
-            echo "token=${{ secrets.PAGES_PAT }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "No PAGES_PAT secret found; falling back to GITHUB_TOKEN."
-            echo "token=${{ secrets.GITHUB_TOKEN }}" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          token: ${{ steps.token.outputs.token }}
-
-      - name: Show deployment result
-        if: always()
-        run: |
-          echo "Page URL: ${{ steps.deployment.outputs.page_url || 'not-set' }}"

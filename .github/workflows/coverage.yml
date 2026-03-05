@@ -50,10 +50,10 @@ jobs:
       coverage_pct: ${{ steps.coverage.outputs.coverage_pct }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
@@ -84,7 +84,7 @@ jobs:
           echo "Python coverage: $COVERAGE%"
 
       - name: Upload Python coverage report
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: python-coverage-report
           path: |
@@ -104,7 +104,7 @@ jobs:
       coverage_pct: ${{ steps.coverage.outputs.coverage_pct }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -146,7 +146,7 @@ jobs:
           echo "JavaScript coverage: $COVERAGE%"
 
       - name: Upload JS coverage report
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: js-coverage-report
           path: |
@@ -163,10 +163,10 @@ jobs:
     needs: [python-coverage, js-coverage]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Download Python coverage
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v4
         with:
           name: python-coverage-report
           path: python-coverage/
@@ -243,7 +243,7 @@ jobs:
           echo "Badge generated: ${TOTAL_COV}% ($COLOR)"
 
       - name: Upload coverage badge
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-badge
           path: badges/
