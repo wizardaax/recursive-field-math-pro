@@ -11,5 +11,5 @@ def r_theta(n: int) -> tuple[float, float]:
     if n <= 0:
         raise ValueError("n must be >= 1")
     r = ROOT_SCALE * math.sqrt(n)
-    theta = n * PHI
+    theta = n * (2 * math.pi / PHI**2)
     return r, theta
