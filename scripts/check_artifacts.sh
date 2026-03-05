@@ -4,7 +4,6 @@
 
 set -euo pipefail
 
-PKG_NAME="regen88-codex"
 PYTHON=${PYTHON:-python}
 
 echo "==> Checking build artifacts"

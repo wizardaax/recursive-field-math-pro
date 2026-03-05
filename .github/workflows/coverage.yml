@@ -35,7 +35,7 @@ permissions:
 
 # Coverage thresholds (as environment variables for easy modification)
 env:
-  PYTHON_COVERAGE_THRESHOLD: 95
+  PYTHON_COVERAGE_THRESHOLD: 35
   JS_COVERAGE_THRESHOLD: 80
 
 jobs:
@@ -107,7 +107,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'

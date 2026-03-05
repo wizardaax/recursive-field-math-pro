@@ -55,7 +55,7 @@ jobs:
           pip install pre-commit
           # Install dependencies for hooks that need them
           pip install -e .
-          pip install pytest pytest-cov mypy types-all
+          pip install pytest pytest-cov mypy
 
       - name: Install Node.js dependencies
         run: npm ci
