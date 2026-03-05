@@ -68,9 +68,7 @@ def _write_summaries(chosen_name, man, metrics, api):
         "request_api": api,
         "commit": os.environ.get("GITHUB_SHA", ""),
     }
-    (OUTDIR / "summary.json").write_text(
-        json.dumps(summary, indent=2), encoding="utf-8"
-    )
+    (OUTDIR / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     (OUTDIR / "metrics.json").write_text(
         json.dumps(metrics, separators=(",", ":")), encoding="utf-8"
     )
@@ -145,9 +143,7 @@ def evolve(request_path: str):
                 errors.append({"plugin": cand["name"], "error": f"post-exception:{e}"})
 
         if not passes_thresholds(metrics, policy.get("thresholds", {})):
-            errors.append(
-                {"plugin": cand["name"], "error": "bad-metrics", "metrics": metrics}
-            )
+            errors.append({"plugin": cand["name"], "error": "bad-metrics", "metrics": metrics})
             continue
 
         _write_summaries(cand["name"], man, metrics, api)

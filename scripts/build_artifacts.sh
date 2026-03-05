@@ -58,8 +58,10 @@ finally:
 
 echo "==> Verifying package can be imported from wheel"
 # Test that the wheel contains expected files rather than using twine
-if [ -f dist/*.whl ]; then
-    for wheel in dist/*.whl; do
+wheels=()
+while IFS= read -r -d '' f; do wheels+=("$f"); done < <(find dist -name '*.whl' -print0 2>/dev/null)
+if [ ${#wheels[@]} -gt 0 ]; then
+    for wheel in "${wheels[@]}"; do
         echo "Checking wheel contents: $wheel"
         unzip -l "$wheel" | grep -E '(recursive_field_math|entry_points)' | head -5
     done
