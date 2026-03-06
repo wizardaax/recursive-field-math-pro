@@ -8,6 +8,12 @@ from typing import Any
 
 import numpy as np
 
+# Acceptance rule thresholds (from README)
+VARIANCE_REDUCTION_THRESHOLD = 20.0  # percent: minimum variance reduction to pass
+MAE_DELTA_THRESHOLD = 2.0  # percent: minimum MAE improvement to pass
+PHI_CLAMP_TARGET_DEG = 38.2  # degrees: expected φ-clamp peak angle
+PHI_CLAMP_TOLERANCE_DEG = 2.0  # degrees: allowed deviation from PHI_CLAMP_TARGET_DEG
+
 
 def evaluate_acceptance_rules(result: dict[str, Any]) -> dict[str, Any]:
     """
@@ -36,11 +42,11 @@ def evaluate_acceptance_rules(result: dict[str, Any]) -> dict[str, Any]:
 
     # Rule 1: Variance reduction ≥ 20%
     variance_reduction = result.get("variance_reduction_pct", 0)
-    variance_reduction_pass = variance_reduction >= 20.0
+    variance_reduction_pass = variance_reduction >= VARIANCE_REDUCTION_THRESHOLD
 
     # Rule 2: MAE delta ≥ 2%
     mae_improvement = result.get("mae_improvement_pct", 0)
-    mae_delta_pass = mae_improvement >= 2.0
+    mae_delta_pass = mae_improvement >= MAE_DELTA_THRESHOLD
 
     # Rule 3: φ-clamp peak within ±2° of 38.2°
     # Need to find the peak in the histogram and convert to degrees
@@ -58,10 +64,10 @@ def evaluate_acceptance_rules(result: dict[str, Any]) -> dict[str, Any]:
                 bin_center_rad = (edges[peak_bin_idx] + edges[peak_bin_idx + 1]) / 2
                 phi_clamp_peak_deg = abs(math.degrees(bin_center_rad))
 
-                # Check if within ±2° of 38.2°
-                target_deg = 38.2
-                tolerance_deg = 2.0
-                phi_clamp_peak_pass = abs(phi_clamp_peak_deg - target_deg) <= tolerance_deg
+                # Check if within ±PHI_CLAMP_TOLERANCE_DEG of PHI_CLAMP_TARGET_DEG
+                phi_clamp_peak_pass = (
+                    abs(phi_clamp_peak_deg - PHI_CLAMP_TARGET_DEG) <= PHI_CLAMP_TOLERANCE_DEG
+                )
 
     # Overall pass: all three rules must pass
     overall_pass = variance_reduction_pass and mae_delta_pass and phi_clamp_peak_pass

@@ -18,6 +18,11 @@ from .codex_entropy_pump import PHI, codex_pump_from_series
 OUT = "out"
 os.makedirs(OUT, exist_ok=True)
 
+# Chess board has 64 squares (0-63); used for king-square boundary checks
+CHESS_BOARD_SQUARES = 64
+# Minimum number of half-moves (plies) required to run the entropy pump
+MIN_EVAL_MOVES = 6
+
 
 def stock_eval(board: chess.Board) -> float:
     V = {chess.PAWN: 1, chess.KNIGHT: 3, chess.BISHOP: 3, chess.ROOK: 5, chess.QUEEN: 9}
@@ -34,7 +39,9 @@ def stock_eval(board: chess.Board) -> float:
             return 0
         paw = chess.Piece(chess.PAWN, color)
         return sum(
-            1 for d in (7, 8, 9) if 0 <= k + sgn * d < 64 and board.piece_at(k + sgn * d) == paw
+            1
+            for d in (7, 8, 9)
+            if 0 <= k + sgn * d < CHESS_BOARD_SQUARES and board.piece_at(k + sgn * d) == paw
         )
 
     ks = (shield(kW, chess.WHITE, +1) - shield(kB, chess.BLACK, -1)) * 0.5
@@ -50,7 +57,7 @@ def eval_game(pgn_text: str, mid=(10, 30), tag="game"):
     for mv in g.mainline_moves():
         b.push(mv)
         evals.append(stock_eval(b))
-    if len(evals) < 6:
+    if len(evals) < MIN_EVAL_MOVES:
         return None
     res = codex_pump_from_series(np.array(evals), window=mid, n_index=PHI)
     # Plot curve

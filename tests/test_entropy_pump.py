@@ -9,6 +9,10 @@ from scripts.codex_entropy_pump import (
     golden_refraction,
 )
 
+# Numerical tolerances
+PHI_CLAMP_HIST_TOLERANCE = 0.1  # radians: histogram peak must be within this of ±clamp
+PHI_CLAMP_EXACT_TOLERANCE = 1e-10  # radians: exact phi_clamp_rad field tolerance
+
 
 def test_phi_clamp_invariant():
     rng = np.random.default_rng(7)
@@ -20,7 +24,7 @@ def test_phi_clamp_invariant():
     hist, _ = np.histogram(thp, bins=60, range=(-math.pi / 2, math.pi / 2))
     peak = np.argmax(hist)
     centers = np.linspace(-math.pi / 2, math.pi / 2, 60, endpoint=False) + (math.pi / 60)
-    assert abs(abs(centers[peak]) - clamp) < 0.1
+    assert abs(abs(centers[peak]) - clamp) < PHI_CLAMP_HIST_TOLERANCE
 
 
 def test_codex_pump_basic():
@@ -34,7 +38,7 @@ def test_codex_pump_basic():
     assert "variance_reduction_pct" in result
     assert "compression" in result
     assert "phi_clamp_rad" in result
-    assert abs(result["phi_clamp_rad"] - math.asin(1.0 / PHI)) < 1e-10
+    assert abs(result["phi_clamp_rad"] - math.asin(1.0 / PHI)) < PHI_CLAMP_EXACT_TOLERANCE
 
 
 def test_codex_pump_edge_cases():

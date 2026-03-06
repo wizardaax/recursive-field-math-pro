@@ -49,6 +49,10 @@ Generating functions can be evaluated at special points for entropy:
 - Points near singularities create quasi-chaotic behavior
 """
 
+# Threshold below which the generating function denominator is treated as zero
+# (i.e., we are at a singularity of 1 - x - x²).
+SINGULARITY_THRESHOLD = 1e-15
+
 
 def GF_F(x: float) -> float:
     """
@@ -89,7 +93,7 @@ def GF_F(x: float) -> float:
         The residues at the poles determine the asymptotic behavior F(n) ~ φⁿ/√5.
     """
     denom = 1 - x - x * x
-    if abs(denom) < 1e-15:
+    if abs(denom) < SINGULARITY_THRESHOLD:
         raise ZeroDivisionError("Singularity at 1 - x - x^2 = 0")
     return x / denom
 
@@ -137,6 +141,6 @@ def GF_L(x: float) -> float:
         The same singularities as G_F(x) determine L(n) ~ φⁿ asymptotically.
     """
     denom = 1 - x - x * x
-    if abs(denom) < 1e-15:
+    if abs(denom) < SINGULARITY_THRESHOLD:
         raise ZeroDivisionError("Singularity at 1 - x - x^2 = 0")
     return (2 - x) / denom

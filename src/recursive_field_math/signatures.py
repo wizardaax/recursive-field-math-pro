@@ -110,6 +110,6 @@ def signature_summary():
         "L5": l5,
         "product": prod,  # 308
         "pair_sum": pair_sum,  # 149
-        "frobenius_4_7": 4 * 7 - 4 - 7,  # 17
-        "additive_chain": (4 + 7 == 11),  # True
+        "frobenius_4_7": l3 * l4 - l3 - l4,  # 17
+        "additive_chain": (l3 + l4 == l5),  # True
     }
