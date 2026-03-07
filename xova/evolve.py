@@ -168,7 +168,7 @@ def evolve(request_path: str):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 2:  # noqa: PLR2004
         print("Usage: python3 xova/evolve.py examples/request_nine.json")
         sys.exit(2)
     sys.exit(evolve(sys.argv[1]))

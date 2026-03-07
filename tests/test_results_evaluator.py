@@ -33,9 +33,9 @@ def test_evaluate_acceptance_rules_pass():
     assert evaluation["mae_delta_pass"] is True
     assert evaluation["phi_clamp_peak_pass"] is True
     assert evaluation["overall_pass"] is True
-    assert evaluation["variance_reduction_pct"] == 85.5
-    assert evaluation["mae_improvement_pct"] == 5.2
-    assert abs(evaluation["phi_clamp_peak_deg"] - 37.2) < 1.0  # approximately
+    assert evaluation["variance_reduction_pct"] == 85.5  # noqa: PLR2004
+    assert evaluation["mae_improvement_pct"] == 5.2  # noqa: PLR2004
+    assert abs(evaluation["phi_clamp_peak_deg"] - 37.2) < 1.0  # noqa: PLR2004
 
 
 def test_evaluate_acceptance_rules_check():
@@ -88,8 +88,8 @@ def test_phi_clamp_peak_calculation():
     evaluation = evaluate_acceptance_rules(result)
 
     # Peak bin center: (0.67 + 0.68) / 2 = 0.675 rad ≈ 38.7°
-    expected_deg = math.degrees(0.675)
-    assert abs(evaluation["phi_clamp_peak_deg"] - expected_deg) < 0.1
+    expected_deg = math.degrees(0.675)  # noqa: PLR2004
+    assert abs(evaluation["phi_clamp_peak_deg"] - expected_deg) < 0.1  # noqa: PLR2004
     # Should pass since 38.7° is within ±2° of 38.2°
     assert evaluation["phi_clamp_peak_pass"] is True
 

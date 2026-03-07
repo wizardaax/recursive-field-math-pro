@@ -84,7 +84,8 @@ def main():
             from scripts.results_evaluator import evaluate_and_summarize_results
         except ImportError:
             print(
-                "Error: Cannot import results evaluator. Make sure scripts/results_evaluator.py exists."
+                "Error: Cannot import results evaluator. "
+                "Make sure scripts/results_evaluator.py exists."
             )
             sys.exit(1)
 

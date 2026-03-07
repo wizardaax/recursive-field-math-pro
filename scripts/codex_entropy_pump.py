@@ -8,6 +8,9 @@ import numpy as np
 
 PHI = (1 + 5**0.5) / 2
 
+# Minimum number of points required in the analysis window
+MIN_WINDOW_SIZE = 4
+
 
 def _rank_to_phase(x: np.ndarray) -> np.ndarray:
     """Map real series -> phases in (-pi/2, pi/2) by ranks (no SciPy)."""
@@ -48,7 +51,7 @@ def codex_pump_from_series(
         xw = x.copy()
         offset = 0
 
-    if len(xw) < 4:
+    if len(xw) < MIN_WINDOW_SIZE:
         return {"ok": False, "reason": "too short"}
 
     deltas = np.diff(xw)  # chaos lives here
