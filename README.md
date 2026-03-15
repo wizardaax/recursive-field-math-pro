@@ -155,3 +155,24 @@ Each run page includes:
 - source branch + commit SHA
 - actor + workflow run URL
 - UTC publish timestamp
+
+## Quality Gates (v0.4.2)
+
+This project enforces automated quality and reproducibility checks:
+
+- CI matrix: Linux + Windows, Python 3.10/3.11/3.12
+- Lint/type/test gates: `ruff`, `black --check`, `flake8`, `mypy`, `pytest`
+- Reproducibility gate: deterministic figure generation + SHA-256 manifest verification
+
+### Local commands
+
+```bash
+make quality
+# or step-by-step:
+make lint
+make test
+make stats
+make figures
+make manifest
+make verify-manifest
+```
