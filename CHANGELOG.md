@@ -6,6 +6,27 @@ The format loosely follows:
 - Keep a Changelog (https://keepachangelog.com/en/1.1.0/)
 - Conventional Commits categories (https://www.conventionalcommits.org/)
 
+## [v0.4.1-pages-integration] - 2026-03-15
+
+This release finalizes the RFF φ-modulation reproducibility and publishing pipeline.
+
+### Added
+- **PR #73** — Reproducibility bundle
+  - Figure generator CLI (`scripts/generate_figures.py`)
+  - Stats validator (`scripts/validate_stats.py`)
+  - Ablation dataset, LaTeX paper source, docs summary
+  - CI workflow + Makefile/README updates
+- **PR #74** — Initial GitHub Pages artifact publishing automation
+- **PR #75** — Final Pages architecture fix
+  - Aligned publishing with active Pages source (`main/docs`)
+  - Versioned runs at `docs/research/runs/<run_number>/`
+  - Latest snapshot at `docs/research/latest/`
+  - Removed branch/source mismatch and retired redundant publisher flow
+
+### Live artifact URLs
+- Latest: https://wizardaax.github.io/recursive-field-math-pro/research/latest/
+- All runs: https://wizardaax.github.io/recursive-field-math-pro/research/runs/
+
 ## [Unreleased]
 
 ### Added
@@ -78,7 +99,8 @@ For the next release:
 3. Regenerate compare links.
 
 ## Compare Links
-[Unreleased]: https://github.com/wizardaax/recursive-field-math-pro/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/wizardaax/recursive-field-math-pro/compare/v0.4.1-pages-integration...HEAD
+[v0.4.1-pages-integration]: https://github.com/wizardaax/recursive-field-math-pro/compare/v0.2.0...v0.4.1-pages-integration
 [v0.2.0]: https://github.com/wizardaax/recursive-field-math-pro/compare/v0.1.1...v0.2.0
 [v0.1.1]: https://github.com/wizardaax/recursive-field-math-pro/compare/v0.1.0...v0.1.1
 [v0.1.0]: https://github.com/wizardaax/recursive-field-math-pro/releases/tag/v0.1.0
