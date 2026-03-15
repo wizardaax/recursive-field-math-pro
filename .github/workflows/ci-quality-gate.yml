@@ -93,3 +93,26 @@ jobs:
           path: |
             paper/figures/*.png
             paper/figures/manifest.sha256
+
+  # ---------------------------------------------------------------------------
+  # Stable fan-in gate — branch protection targets THIS job, not the matrix
+  # rows above.  The job name never changes regardless of OS/Python matrix
+  # evolution, preventing required-check drift on main.
+  # ---------------------------------------------------------------------------
+  ci-gate:
+    name: CI Gate
+    if: always()
+    runs-on: ubuntu-latest
+    needs: [lint-type-test, reproducibility-figures]
+    steps:
+      - name: Check all required jobs passed
+        run: |
+          lint_result="${{ needs.lint-type-test.result }}"
+          repro_result="${{ needs.reproducibility-figures.result }}"
+          if [[ "$lint_result" == "failure" || "$lint_result" == "cancelled" ]]; then
+            echo "lint-type-test failed: $lint_result" && exit 1
+          fi
+          if [[ "$repro_result" == "failure" || "$repro_result" == "cancelled" ]]; then
+            echo "reproducibility-figures failed: $repro_result" && exit 1
+          fi
+          echo "All required checks passed (lint=$lint_result, repro=$repro_result)"

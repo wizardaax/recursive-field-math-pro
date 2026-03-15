@@ -23,13 +23,16 @@ Applied via `.github/workflows/branch-protection.yml` (run with `ADMIN_TOKEN` PA
 
 ### Required status checks
 
-All three checks below must pass before a PR can merge:
+All checks below must pass before a PR can merge:
 
 | Check context (GitHub UI name) | Workflow file | Job |
 |---|---|---|
-| `CI Quality Gate / Lint/Type/Test (ubuntu-latest / py3.11)` | `ci-quality-gate.yml` | `lint-type-test` (matrix row) |
-| `CI Quality Gate / Reproducibility Figures + Manifest` | `ci-quality-gate.yml` | `reproducibility-figures` |
+| `CI Quality Gate / CI Gate` | `ci-quality-gate.yml` | `ci-gate` (stable fan-in; depends on matrix + repro jobs) |
 | `PR Reproducibility Check / repro-check` | `pr-repro-check.yml` | `repro-check` |
+
+> **Note:** `ci-gate` is a non-matrix fan-in job whose name never changes
+> regardless of OS/Python version matrix evolution.  This prevents required-check
+> names from drifting when the matrix is updated.
 
 ---
 

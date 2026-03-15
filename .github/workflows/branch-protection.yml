@@ -25,11 +25,13 @@ jobs:
             const branch = 'main';
 
             // Required status-check contexts that must pass before merge.
-            // These names match the "workflow / job-name (matrix)" format shown
-            // in the GitHub UI for the CI Quality Gate and PR Repro workflows.
+            // These names match the "workflow / job-name" format shown in the
+            // GitHub UI.  We deliberately target the stable fan-in job
+            // "CI Gate" (defined in ci-quality-gate.yml) rather than a
+            // matrix-specific row, so that OS/Python version changes never
+            // silently break branch protection.
             const requiredChecks = [
-              'CI Quality Gate / Lint/Type/Test (ubuntu-latest / py3.11)',
-              'CI Quality Gate / Reproducibility Figures + Manifest',
+              'CI Quality Gate / CI Gate',
               'PR Reproducibility Check / repro-check',
             ];
 
@@ -99,7 +101,6 @@ jobs:
           | Auto-merge | ✅ |
 
           ### Required status checks
-          - `CI Quality Gate / Lint/Type/Test (ubuntu-latest / py3.11)`
-          - `CI Quality Gate / Reproducibility Figures + Manifest`
+          - `CI Quality Gate / CI Gate`
           - `PR Reproducibility Check / repro-check`
           EOF

@@ -8,12 +8,47 @@ The format loosely follows:
 
 ## [v0.5.0-substrate] - 2026-03-15
 
+**Release headline:** RFF evaluation, φ-UCB search, structural detection,
+containment validation, and cross-domain bridge (with numerically hardened
+harmonic metrics).
+
+Coverage: **91.6 % total / 96.6 % Python** on the substrate stack.
+
+### Added
+- **`eval_api`** — `score()` deterministic scoring for numeric/token/action
+  sequences using the `rff_v1` profile.  Returns normalised `coherence`,
+  `entropy`, and `confidence` scalars.  Fail-closed when confidence is below
+  threshold.
+- **`phi_ucb`** — φ-UCB exploration/exploitation scoring via `phi_ucb_score()`
+  and `select_best()`.  Includes `benchmark_phi_ucb_vs_ucb1()` for empirical
+  comparison.  Unvisited nodes always receive `+inf` priority, guaranteeing
+  full exploration.
+- **`structural_detector`** — `detect()` analyses an arbitrary sequence and
+  returns a `structural_signature` (φ-harmonic coefficient vector),
+  `anomaly_index ∈ [0, 1]`, and a per-window `coherence_trace`.
+- **`containment_validator`** — `validate()` audits a layered-architecture spec
+  (dict / JSON / YAML) and returns `containment_score`, `weak_layer_map`, and
+  `escape_path_candidates`.  Reasons about structural geometry only; never makes
+  runtime safety claims.
+- **`xdomain_bridge`** — `encode()` / `decode()` / `bridge()` provide
+  bidirectional conversion to/from a φ-harmonic latent vector (`xbridge_v1`
+  profile).  Round-trip relative error is bounded by `ERROR_BOUND = 0.10`;
+  exceeding the bound raises `BridgeError` (fail-closed).
+- **Usage documentation** in `docs/usage/` with one Markdown guide per module.
+- **CI gate fan-in job** (`ci-gate`) added to `ci-quality-gate.yml`, giving
+  branch protection a single stable check name that survives matrix changes.
+
 ### Fixed
 - **Numeric robustness** (`structural_detector.py`): replaced
   `math.sqrt(cos_sum**2 + sin_sum**2)` with `math.hypot(cos_sum, sin_sum)` in
   `_phi_harmonic_coefficients`.  `math.hypot` avoids intermediate overflow for
   large operands and is the idiomatic, CodeQL-clean form.  No behaviour change
   for normal-range inputs.
+
+### Changed
+- Branch-protection required checks now point at the stable
+  `CI Quality Gate / CI Gate` context instead of a matrix-specific job name,
+  preventing check-name drift when the Python version matrix is updated.
 
 ## [v0.4.1-pages-integration] - 2026-03-15
 
@@ -108,7 +143,8 @@ For the next release:
 3. Regenerate compare links.
 
 ## Compare Links
-[Unreleased]: https://github.com/wizardaax/recursive-field-math-pro/compare/v0.4.1-pages-integration...HEAD
+[Unreleased]: https://github.com/wizardaax/recursive-field-math-pro/compare/v0.5.0-substrate...HEAD
+[v0.5.0-substrate]: https://github.com/wizardaax/recursive-field-math-pro/compare/v0.4.1-pages-integration...v0.5.0-substrate
 [v0.4.1-pages-integration]: https://github.com/wizardaax/recursive-field-math-pro/compare/v0.2.0...v0.4.1-pages-integration
 [v0.2.0]: https://github.com/wizardaax/recursive-field-math-pro/compare/v0.1.1...v0.2.0
 [v0.1.1]: https://github.com/wizardaax/recursive-field-math-pro/compare/v0.1.0...v0.1.1
