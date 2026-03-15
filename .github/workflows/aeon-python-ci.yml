@@ -10,7 +10,7 @@
 # Prerequisites:
 #   - wizardaax/aeon-standards must be bootstrapped and contain
 #     .github/workflows/python-ci.yml with a `workflow_call` trigger.
-#   - Update the `@main` ref below to a stable tag (e.g. @v1) once available.
+#   - The `@v1` ref below pins to the stable tag in the aeon-standards control repo.
 #
 # See: https://github.com/wizardaax/aeon-standards
 #      docs/ENGINEERING_STANDARDS.md
@@ -35,11 +35,11 @@ permissions:
 jobs:
   # ---------------------------------------------------------------------------
   # Delegate shared Python CI to aeon-standards reusable workflow.
-  # Update `@main` to `@v1` once the control repo is tagged.
+  # Pinned to stable tag @v1 of the aeon-standards control repo.
   # ---------------------------------------------------------------------------
   python-ci:
     name: Python CI (shared)
-    uses: wizardaax/aeon-standards/.github/workflows/python-ci.yml@main
+    uses: wizardaax/aeon-standards/.github/workflows/python-ci.yml@v1
     with:
       python-versions: '["3.10", "3.11", "3.12"]'
       os: ubuntu-latest

@@ -4,9 +4,7 @@
 > policy templates live in the central control repository:
 > [`wizardaax/aeon-standards`](https://github.com/wizardaax/aeon-standards)
 >
-> **Pinned ref:** `wizardaax/aeon-standards@main`
-> *(update this line to a specific commit SHA once the control repo is tagged,
-> e.g. `wizardaax/aeon-standards@a1b2c3d`)*
+> **Pinned ref:** `wizardaax/aeon-standards@v1`
 >
 > This file is a **local summary**. The authoritative version is
 > [`wizardaax/aeon-standards/docs/ENGINEERING_STANDARDS.md`](https://github.com/wizardaax/aeon-standards/blob/main/docs/ENGINEERING_STANDARDS.md).
