@@ -20,7 +20,7 @@ Live status for all `wizardaax` repositories governed by
 | Coverage | [![Coverage](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/coverage.yml/badge.svg)](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/coverage.yml) |
 | Last Release | [![Release](https://img.shields.io/github/v/release/wizardaax/recursive-field-math-pro?logo=github)](https://github.com/wizardaax/recursive-field-math-pro/releases) |
 | Branch protection | ✅ enforced (see [branch-protection.yml](../.github/workflows/branch-protection.yml)) |
-| aeon-standards wired | ⏳ pending `aeon-standards` bootstrap |
+| aeon-standards wired | ✅ `@v1` ([aeon-python-ci.yml](../.github/workflows/aeon-python-ci.yml), [aeon-security.yml](../.github/workflows/aeon-security.yml)) |
 
 ---
 
@@ -29,10 +29,9 @@ Live status for all `wizardaax` repositories governed by
 | Metric | Status |
 |---|---|
 | Repo | [![aeon-standards](https://img.shields.io/badge/repo-aeon--standards-6A0DAD?logo=github)](https://github.com/wizardaax/aeon-standards) |
-| Status | ⏳ bootstrap pending |
-
-> Once bootstrapped, add CI / security / release badges here from
-> `wizardaax/aeon-standards`.
+| Status | ✅ bootstrapped — tagged `v1` |
+| CI | [![CI](https://github.com/wizardaax/aeon-standards/actions/workflows/python-ci.yml/badge.svg)](https://github.com/wizardaax/aeon-standards/actions/workflows/python-ci.yml) |
+| Security | [![Security](https://github.com/wizardaax/aeon-standards/actions/workflows/security.yml/badge.svg)](https://github.com/wizardaax/aeon-standards/actions/workflows/security.yml) |
 
 ---
 
@@ -40,8 +39,8 @@ Live status for all `wizardaax` repositories governed by
 
 | Repo | Branch protection | Dependabot | Stale bot | Reusable CI wired | Security scanning |
 |---|---|---|---|---|---|
-| `recursive-field-math-pro` | ✅ | ✅ | ✅ | ⏳ pending | ✅ |
-| `aeon-standards` | ⏳ | ⏳ | ⏳ | N/A (source) | ⏳ |
+| `recursive-field-math-pro` | ✅ | ✅ | ✅ | ✅ `@v1` | ✅ |
+| `aeon-standards` | ✅ | ✅ | ✅ | N/A (source) | ✅ |
 
 ---
 
@@ -53,5 +52,5 @@ Live status for all `wizardaax` repositories governed by
 3. **Branch protection state** — run the
    [Enforce Branch Protection](../../../actions/workflows/branch-protection.yml)
    workflow manually after any policy change, then update the checkmark in the table.
-4. **aeon-standards bootstrap** — once the control repo is live and tagged `v1`,
-   flip all ⏳ entries to ✅ and add live badges.
+4. **aeon-standards bootstrap** — the control repo is live and tagged `v1`; all
+   ⏳ entries have been flipped to ✅.
