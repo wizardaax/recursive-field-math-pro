@@ -4,6 +4,7 @@
 [![Docs](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/docs.yml/badge.svg)](https://github.com/wizardaax/recursive-field-math-pro/actions/workflows/docs.yml)
 [![Release](https://img.shields.io/github/v/release/wizardaax/recursive-field-math-pro?logo=github)](https://github.com/wizardaax/recursive-field-math-pro/releases)
 [![License](https://img.shields.io/github/license/wizardaax/recursive-field-math-pro)](LICENSE)
+[![Governed by aeon-standards](https://img.shields.io/badge/governed%20by-aeon--standards-6A0DAD?logo=github)](https://github.com/wizardaax/aeon-standards)
 
 ---
 
