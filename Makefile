@@ -1,6 +1,6 @@
 # Makefile
 
-.PHONY: lint format test figures stats paper build clean
+.PHONY: lint format test figures stats paper build clean manifest verify-manifest quality
 
 # Target to build artifacts
 build:
@@ -34,3 +34,11 @@ figures:
 paper: figures
 	@echo "Figures generated. Compile LaTeX with:"
 	@echo "cd paper && pdflatex rff_phi_mod_verification.tex"
+
+manifest:
+	python scripts/figure_manifest.py write --dir paper/figures --out paper/figures/manifest.sha256
+
+verify-manifest:
+	python scripts/figure_manifest.py verify --dir paper/figures --manifest paper/figures/manifest.sha256
+
+quality: lint test stats figures manifest verify-manifest
