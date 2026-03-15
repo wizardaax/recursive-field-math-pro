@@ -89,3 +89,56 @@ Please open issues or PRs for feature requests and bug reports.
 ## License
 
 This project is licensed under the terms in LICENSE.
+
+## RFF φ-Modulation Verification (Reproducibility)
+
+This repository includes a reproducible verification bundle for the Recursive Field Framework (RFF) φ-modulation analysis.
+
+### Files
+
+- `scripts/generate_figures.py` — generates publication figures
+- `scripts/validate_stats.py` — validates ablation summary statistics from CSV
+- `paper/data/ablation_metrics.csv` — trial-level ablation data
+- `paper/rff_phi_mod_verification.tex` — LaTeX paper source
+- `docs/rff_phi_mod_verification.md` — narrative verification summary
+- `.github/workflows/research-paper.yml` — CI automation for lint/test/figure artifacts
+
+### Quickstart
+
+Install dependencies:
+
+```bash
+pip install numpy matplotlib pandas pytest ruff black flake8 mypy
+```
+
+Generate figures:
+
+```bash
+python scripts/generate_figures.py --theme light --format png --outdir paper/figures
+```
+
+Validate statistics:
+
+```bash
+python scripts/validate_stats.py
+```
+
+Build paper:
+
+```bash
+cd paper && pdflatex rff_phi_mod_verification.tex
+```
+
+Or with Makefile:
+
+```bash
+make figures
+make stats
+make paper
+```
+
+### Notes
+
+- Figure 1 uses 95% CI error bars (t=2.776, df=4, n=5 trials/config).
+- Scale-invariance figure compares precise φ against quantized φ≈1.618.
+- CI workflow uploads generated figures as build artifacts for traceability.
