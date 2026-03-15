@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "regen88-codex"
-version = "0.1.0"
+version = "0.4.1"
 description = "Regen88 Codex — Cross-platform recursive field math with entropy-pump, Lucas sequences, and complete CI/CD"
 readme = "README.md"
 classifiers = [
