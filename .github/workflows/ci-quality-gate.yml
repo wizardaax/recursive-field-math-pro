@@ -3,8 +3,14 @@ name: CI Quality Gate
 on:
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '**/*.pdf'
+      - '**/*.docx'
   push:
     branches: [main]
+    paths-ignore:
+      - '**/*.pdf'
+      - '**/*.docx'
   workflow_dispatch:
 
 permissions:
