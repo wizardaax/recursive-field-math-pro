@@ -28,12 +28,12 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install numpy matplotlib pandas pytest ruff black flake8 mypy
+          pip install numpy matplotlib pandas pytest ruff flake8 mypy
 
       - name: Lint
         run: |
           ruff check .
-          black --check .
+          ruff format --check .
           flake8 .
 
       - name: Type check
