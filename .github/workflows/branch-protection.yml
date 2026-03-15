@@ -1,0 +1,105 @@
+name: Enforce Branch Protection
+
+on:
+  # Run manually from the Actions tab.
+  # The GITHUB_TOKEN cannot update branch-protection rules; a repository secret
+  # named ADMIN_TOKEN must be created with a PAT that has the "repo" scope
+  # (classic) or "administration: write" (fine-grained) for this repository.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  enforce-branch-protection:
+    name: Apply main branch protection rules
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply branch protection to main
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.ADMIN_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo  = context.repo.repo;
+            const branch = 'main';
+
+            // Required status-check contexts that must pass before merge.
+            // These names match the "workflow / job-name (matrix)" format shown
+            // in the GitHub UI for the CI Quality Gate and PR Repro workflows.
+            const requiredChecks = [
+              'CI Quality Gate / Lint/Type/Test (ubuntu-latest / py3.11)',
+              'CI Quality Gate / Reproducibility Figures + Manifest',
+              'PR Reproducibility Check / repro-check',
+            ];
+
+            await github.rest.repos.updateBranchProtection({
+              owner,
+              repo,
+              branch,
+              // ── Status checks ────────────────────────────────────────────
+              required_status_checks: {
+                strict: true,          // branch must be up-to-date before merge
+                contexts: requiredChecks,
+              },
+              // ── PR reviews ───────────────────────────────────────────────
+              required_pull_request_reviews: {
+                dismiss_stale_reviews:          true,  // re-review on new commits
+                require_code_owner_reviews:     true,  // CODEOWNERS must approve
+                required_approving_review_count: 1,
+              },
+              // ── Admin enforcement ────────────────────────────────────────
+              enforce_admins: true,
+              // ── Push / delete restrictions ───────────────────────────────
+              restrictions: null,       // no team/user push restrictions beyond PR
+              allow_force_pushes: false,
+              allow_deletions:    false,
+            });
+
+            core.info(`✅ Branch protection applied to ${branch}`);
+
+      - name: Enable auto-merge for repository
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.ADMIN_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo  = context.repo.repo;
+
+            // Enable auto-merge at the repository level so individual PRs
+            // can opt in via "Enable auto-merge" in the GitHub UI.
+            try {
+              await github.rest.repos.update({
+                owner,
+                repo,
+                allow_auto_merge: true,
+              });
+              core.info('✅ Auto-merge enabled for repository');
+            } catch (err) {
+              core.warning(`Could not enable auto-merge: ${err.message}`);
+            }
+
+      - name: Summary
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" << 'EOF'
+          ## Branch Protection Applied ✅
+
+          The following rules are now active on `main`:
+
+          | Setting | Value |
+          |---------|-------|
+          | Require pull request before merge | ✅ |
+          | Required approving reviews | 1 |
+          | Require review from Code Owners | ✅ |
+          | Dismiss stale reviews on new commits | ✅ |
+          | Require branches to be up to date | ✅ |
+          | Restrict force pushes | ✅ |
+          | Allow branch deletion | ❌ |
+          | Enforce on admins | ✅ |
+          | Auto-merge | ✅ |
+
+          ### Required status checks
+          - `CI Quality Gate / Lint/Type/Test (ubuntu-latest / py3.11)`
+          - `CI Quality Gate / Reproducibility Figures + Manifest`
+          - `PR Reproducibility Check / repro-check`
+          EOF
