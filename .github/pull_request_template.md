@@ -9,6 +9,7 @@
 - [ ] refactor
 - [ ] test
 - [ ] chore
+- [ ] security
 
 ## Quality checks
 - [ ] `ruff check .`
@@ -27,6 +28,10 @@
 - [ ] No hardcoded secrets/API keys
 - [ ] No weak crypto changes introduced
 - [ ] Dependency changes reviewed
+
+## Docs checklist
+- [ ] README/docs updated (if user-facing behavior changed)
+- [ ] CHANGELOG/RELEASE_NOTES updated (if release-impacting)
 
 ## Notes for reviewers
 <!-- Risk areas, migration notes, rollout concerns -->
