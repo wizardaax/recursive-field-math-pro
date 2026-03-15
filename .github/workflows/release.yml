@@ -77,16 +77,33 @@ jobs:
             python -c "import recursive_field_math; print('✓ Installation successful')"
             ```
 
-            ### Features
-            - Complete cross-platform build, test, and release setup
-            - CI: lint/type/test across multiple Python versions
-            - Release-on-tag workflow with artifact uploads
-            - PyPI publishing with PYPI_API_TOKEN (when configured)
-            - Pre-commit hooks and development scripts
-            - Enhanced packaging metadata and documentation
+            ### What's in this release
+            **5-module substrate stack** with numerically hardened harmonic metrics:
 
-            For more details, see [CHANGELOG.md](CHANGELOG.md).
+            | Module | Public API | Description |
+            |--------|-----------|-------------|
+            | `eval_api` | `score()` | Deterministic RFF sequence scoring (`rff_v1` profile) |
+            | `phi_ucb` | `phi_ucb_score()`, `select_best()` | φ-UCB exploration/exploitation for tree search |
+            | `structural_detector` | `detect()` | φ-harmonic structural signature + anomaly index |
+            | `containment_validator` | `validate()` | Layered-architecture containment geometry audit |
+            | `xdomain_bridge` | `encode()`, `decode()`, `bridge()` | Bidirectional φ-latent cross-domain bridge (`xbridge_v1`) |
+
+            All modules are fail-closed: degenerate or too-short inputs return
+            `ok=False` with a human-readable `reason` rather than raising silently.
+
+            ### Numeric hardening
+            `math.hypot()` replaces manual `sqrt(a²+b²)` in `structural_detector`
+            to avoid intermediate overflow and satisfy CodeQL's numeric-safety rules.
+
+            ### Coverage
+            **91.6 % total / 96.6 % Python** on the substrate stack.
+
+            ### Usage docs
+            See [`docs/usage/`](https://github.com/wizardaax/recursive-field-math-pro/tree/main/docs/usage)
+            for per-module guides with worked examples.
+
+            For the full change history, see [CHANGELOG.md](CHANGELOG.md).
           files: |
             dist/*
           draft: false
-          prerelease: ${{ contains(env.TAG_NAME, 'rc') || contains(env.TAG_NAME, 'alpha') || contains(env.TAG_NAME, 'beta') }}
+          prerelease: ${{ contains(env.TAG_NAME, 'rc') || contains(env.TAG_NAME, 'alpha') || contains(env.TAG_NAME, 'beta') || contains(env.TAG_NAME, 'substrate') }}
