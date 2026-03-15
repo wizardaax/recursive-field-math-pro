@@ -1,0 +1,32 @@
+ci:
+  - changed-files:
+      - any-glob-to-any-file: ".github/workflows/**"
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file: "docs/**"
+      - any-glob-to-any-file: "README.md"
+      - any-glob-to-any-file: "CHANGELOG.md"
+      - any-glob-to-any-file: "RELEASE_NOTES.md"
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file: "tests/**"
+
+python:
+  - changed-files:
+      - any-glob-to-any-file: "**/*.py"
+
+research:
+  - changed-files:
+      - any-glob-to-any-file: "paper/**"
+      - any-glob-to-any-file: "scripts/generate_figures.py"
+      - any-glob-to-any-file: "scripts/validate_stats.py"
+      - any-glob-to-any-file: "scripts/figure_manifest.py"
+      - any-glob-to-any-file: "docs/rff_phi_mod_verification.md"
+
+security:
+  - changed-files:
+      - any-glob-to-any-file: ".github/dependabot.yml"
+      - any-glob-to-any-file: "pyproject.toml"
+      - any-glob-to-any-file: "requirements*.txt"

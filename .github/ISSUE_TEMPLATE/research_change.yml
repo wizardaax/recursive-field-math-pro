@@ -1,0 +1,33 @@
+name: Research/reproducibility change
+description: Track changes affecting figures, datasets, stats, or paper outputs.
+title: "research: "
+labels: ["research", "reproducibility"]
+body:
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Hypothesis / intent
+      description: What mathematical or experimental change is being made?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Files/modules impacted.
+    validations:
+      required: true
+  - type: checkboxes
+    id: repro
+    attributes:
+      label: Reproducibility checklist
+      options:
+        - label: Updated trial-level data if needed
+        - label: Regenerated figures
+        - label: Updated manifest.sha256
+        - label: Updated docs/paper text
+  - type: textarea
+    id: risk
+    attributes:
+      label: Risk assessment
+      description: Potential regressions or interpretability risks.
