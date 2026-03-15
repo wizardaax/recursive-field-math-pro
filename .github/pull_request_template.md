@@ -32,6 +32,11 @@
 ## Docs checklist
 - [ ] README/docs updated (if user-facing behavior changed)
 - [ ] CHANGELOG/RELEASE_NOTES updated (if release-impacting)
+- [ ] [COMPATIBILITY_MATRIX.md](../docs/COMPATIBILITY_MATRIX.md) updated (if public API or dep versions changed)
+
+## Standards
+This repository is governed by [aeon-standards](https://github.com/wizardaax/aeon-standards).
+See [ENGINEERING_STANDARDS.md](../docs/ENGINEERING_STANDARDS.md) for the full policy.
 
 ## Notes for reviewers
 <!-- Risk areas, migration notes, rollout concerns -->

@@ -1,0 +1,45 @@
+# =============================================================================
+# aeon-security.yml  —  Thin wrapper → wizardaax/aeon-standards security
+# =============================================================================
+# This workflow delegates shared security scanning (pip-audit, npm audit,
+# dependency review) to the centralised reusable workflow in the aeon-standards
+# control repo.
+#
+# Prerequisites:
+#   - wizardaax/aeon-standards must be bootstrapped and contain
+#     .github/workflows/security.yml with a `workflow_call` trigger.
+#   - Update the `@main` ref below to a stable tag (e.g. @v1) once available.
+#
+# See: https://github.com/wizardaax/aeon-standards
+#      docs/ENGINEERING_STANDARDS.md
+# =============================================================================
+
+name: Security (aeon-standards)
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  schedule:
+    # Daily at 03:15 UTC (offset from security.yml to avoid queue contention)
+    - cron: '15 3 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: aeon-security-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Delegate shared security scanning to aeon-standards reusable workflow.
+  # Update `@main` to `@v1` once the control repo is tagged.
+  # ---------------------------------------------------------------------------
+  security:
+    name: Security Scan (shared)
+    uses: wizardaax/aeon-standards/.github/workflows/security.yml@main
+    secrets: inherit
