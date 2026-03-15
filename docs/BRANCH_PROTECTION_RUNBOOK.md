@@ -13,10 +13,9 @@ Settings → Branches → Add rule (or rulesets) for `main`.
 
 ## 3) Require status checks to pass
 Select these checks as **required**:
-- `CI Quality Gate / Lint/Type/Test (ubuntu-latest / py3.11)`
-- `CI Quality Gate / Reproducibility Figures + Manifest`
+- `CI Quality Gate / CI Gate`
 - `PR Reproducibility Check / repro-check`
-- Coverage check (if present and stable name)
+- `Security (aeon-standards) / Security Scan (shared)`
 
 Also enable:
 - ✅ Require branches to be up to date before merging

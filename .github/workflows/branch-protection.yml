@@ -6,6 +6,12 @@ on:
   # named ADMIN_TOKEN must be created with a PAT that has the "repo" scope
   # (classic) or "administration: write" (fine-grained) for this repository.
   workflow_dispatch:
+  # Also re-apply automatically whenever this workflow file changes on main,
+  # so that any config update is immediately enforced without a manual trigger.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/branch-protection.yml'
 
 permissions:
   contents: read

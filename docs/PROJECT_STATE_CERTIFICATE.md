@@ -29,6 +29,7 @@ All checks below must pass before a PR can merge:
 |---|---|---|
 | `CI Quality Gate / CI Gate` | `ci-quality-gate.yml` | `ci-gate` (stable fan-in; depends on matrix + repro jobs) |
 | `PR Reproducibility Check / repro-check` | `pr-repro-check.yml` | `repro-check` |
+| `Security (aeon-standards) / Security Scan (shared)` | `aeon-security.yml` | `security` (delegates to `wizardaax/aeon-standards` @v1) |
 
 > **Note:** `ci-gate` is a non-matrix fan-in job whose name never changes
 > regardless of OS/Python version matrix evolution.  This prevents required-check
@@ -58,13 +59,15 @@ All files default to `@wizardaax`. Additional explicit owners are set for:
 
 | Workflow file | Trigger | Purpose |
 |---|---|---|
+| `aeon-python-ci.yml` | PR, push to `main`/`master`, `workflow_dispatch` | Shared Python CI (lint + type-check + test) delegated to `wizardaax/aeon-standards` @v1; plus repo-specific reproducibility figures |
+| `aeon-security.yml` | PR, push to `main`/`master`, schedule, `workflow_dispatch` | Shared security scanning (pip-audit, npm audit, dep review) delegated to `wizardaax/aeon-standards` @v1 |
 | `ci-quality-gate.yml` | PR to `main`, push to `main`, `workflow_dispatch` | Lint + type-check + test (matrix: ubuntu/windows × py3.10/3.11/3.12) + reproducibility figures & manifest |
 | `pr-repro-check.yml` | PR to `main` (path-filtered) | Regenerate figures and diff against committed manifest |
 | `ci.yml` | Push to `main`/`master`, PR, `workflow_dispatch` | Full Python/JS/shell lint and test matrix |
 | `ci-python.yml` | — | Python-specific CI |
 | `ci-node.yml` | — | Node.js-specific CI |
 | `coverage.yml` | — | Coverage reporting |
-| `branch-protection.yml` | `workflow_dispatch` | Applies all branch protection rules via GitHub API (requires `ADMIN_TOKEN` secret) |
+| `branch-protection.yml` | `workflow_dispatch`; push to `main` (on self-change) | Applies all branch protection rules via GitHub API (requires `ADMIN_TOKEN` secret); auto-triggered when this file changes on `main` |
 | `release.yml` / `publish.yml` | Tag push (`v*`) | Build, release, and publish |
 | `publish-docker.yml` | — | Docker image publish |
 | `publish-pypi.yml` | — | PyPI publish |
@@ -116,7 +119,7 @@ After running the workflow, verify:
 
 - [ ] Direct push to `main` is blocked (except via approved PR)
 - [ ] PRs require 1 approval + CODEOWNERS review
-- [ ] Required status checks are enforced (see Section 1)
+- [ ] Required status checks are enforced (see Section 1): `CI Quality Gate / CI Gate`, `PR Reproducibility Check / repro-check`, `Security (aeon-standards) / Security Scan (shared)`
 - [ ] Force push to `main` is disabled
 - [ ] Branch deletion for `main` is disabled
 - [ ] Repository auto-merge is enabled
