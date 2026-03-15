@@ -86,7 +86,7 @@ def _phi_harmonic_coefficients(values: list[float], n_harmonics: int = N_HARMONI
         freq = PHI**k / n
         cos_sum = sum(centred[i] * math.cos(2 * math.pi * freq * i) for i in range(n))
         sin_sum = sum(centred[i] * math.sin(2 * math.pi * freq * i) for i in range(n))
-        magnitude = math.sqrt(cos_sum**2 + sin_sum**2) / max(n, 1)
+        magnitude = math.hypot(cos_sum, sin_sum) / max(n, 1)
         coeffs.append(magnitude)
 
     # Normalise to [0, 1] relative to the max coefficient

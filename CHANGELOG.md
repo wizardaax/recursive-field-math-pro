@@ -6,6 +6,15 @@ The format loosely follows:
 - Keep a Changelog (https://keepachangelog.com/en/1.1.0/)
 - Conventional Commits categories (https://www.conventionalcommits.org/)
 
+## [v0.5.0-substrate] - 2026-03-15
+
+### Fixed
+- **Numeric robustness** (`structural_detector.py`): replaced
+  `math.sqrt(cos_sum**2 + sin_sum**2)` with `math.hypot(cos_sum, sin_sum)` in
+  `_phi_harmonic_coefficients`.  `math.hypot` avoids intermediate overflow for
+  large operands and is the idiomatic, CodeQL-clean form.  No behaviour change
+  for normal-range inputs.
+
 ## [v0.4.1-pages-integration] - 2026-03-15
 
 This release finalizes the RFF φ-modulation reproducibility and publishing pipeline.
