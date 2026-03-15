@@ -142,3 +142,16 @@ make paper
 - Figure 1 uses 95% CI error bars (t=2.776, df=4, n=5 trials/config).
 - Scale-invariance figure compares precise φ against quantized φ≈1.618.
 - CI workflow uploads generated figures as build artifacts for traceability.
+
+## Published Figure Artifacts (GitHub Pages)
+
+Research figure outputs are automatically published after successful `Research Paper Build` runs.
+
+- Latest snapshot: `https://wizardaax.github.io/recursive-field-math-pro/research/latest/`
+- Historical runs: `https://wizardaax.github.io/recursive-field-math-pro/research/runs/`
+
+Each run page includes:
+- generated figures (`nodes_vs_entropy`, `phi_scale_invariance`, `radar_metrics`, `coherence_scale`)
+- source branch + commit SHA
+- actor + workflow run URL
+- UTC publish timestamp
