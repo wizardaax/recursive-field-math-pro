@@ -1,0 +1,167 @@
+name: Docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: docs-pages-main
+  cancel-in-progress: false
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy matplotlib pandas
+
+      - name: Generate research figures
+        run: |
+          mkdir -p paper/figures
+          python scripts/generate_figures.py --theme light --format png --outdir paper/figures
+
+      - name: Build docs/research pages content
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          RUN="${{ github.run_number }}"
+          RUN_ID="${{ github.run_id }}"
+          SHA="${{ github.sha }}"
+          SHORT_SHA="${SHA:0:7}"
+          BRANCH="${{ github.ref_name }}"
+          ACTOR="${{ github.actor }}"
+          TS="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          REPO="${{ github.repository }}"
+
+          mkdir -p docs/research/runs/"$RUN"
+          mkdir -p docs/research/latest
+
+          # Copy generated figures into versioned run folder
+          cp -f paper/figures/*.png docs/research/runs/"$RUN"/
+
+          # Per-run metadata JSON
+          cat > docs/research/runs/"$RUN"/metadata.json <<EOF
+          {
+            "repository": "$REPO",
+            "run_number": "$RUN",
+            "run_id": "$RUN_ID",
+            "run_url": "$RUN_URL",
+            "source_sha": "$SHA",
+            "source_branch": "$BRANCH",
+            "actor": "$ACTOR",
+            "published_at_utc": "$TS"
+          }
+          EOF
+
+          # Per-run HTML page
+          cat > docs/research/runs/"$RUN"/index.html <<EOF
+          <!doctype html>
+          <html>
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>RFF Research Figures — Run $RUN</title>
+            <style>
+              body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 2rem; line-height: 1.5; }
+              .meta { color: #555; margin-bottom: 1rem; }
+              .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+              .card { border: 1px solid #ddd; border-radius: 10px; padding: .8rem; }
+              img { width: 100%; height: auto; border-radius: 8px; background: #fafafa; }
+              code { background: #f4f4f4; padding: .1rem .35rem; border-radius: .25rem; }
+            </style>
+          </head>
+          <body>
+            <h1>RFF φ-Modulation Figures — Run $RUN</h1>
+            <p class="meta">
+              Repo: <code>$REPO</code><br/>
+              Branch: <code>$BRANCH</code> · SHA: <code>$SHORT_SHA</code><br/>
+              Actor: <code>$ACTOR</code><br/>
+              Published (UTC): <code>$TS</code><br/>
+              Actions run: <a href="$RUN_URL">$RUN_URL</a>
+            </p>
+            <p><a href="../">← All runs</a> · <a href="../../latest/">Latest snapshot</a></p>
+            <div class="grid">
+              <div class="card"><h3>nodes_vs_entropy</h3><a href="./nodes_vs_entropy.png"><img src="./nodes_vs_entropy.png" alt="nodes_vs_entropy"/></a></div>
+              <div class="card"><h3>phi_scale_invariance</h3><a href="./phi_scale_invariance.png"><img src="./phi_scale_invariance.png" alt="phi_scale_invariance"/></a></div>
+              <div class="card"><h3>radar_metrics</h3><a href="./radar_metrics.png"><img src="./radar_metrics.png" alt="radar_metrics"/></a></div>
+              <div class="card"><h3>coherence_scale</h3><a href="./coherence_scale.png"><img src="./coherence_scale.png" alt="coherence_scale"/></a></div>
+            </div>
+          </body>
+          </html>
+          EOF
+
+          # Update latest snapshot
+          rm -rf docs/research/latest/*
+          cp -rf docs/research/runs/"$RUN"/. docs/research/latest/
+
+          # Build runs listing page
+          {
+            echo "<!doctype html><html><head><meta charset='utf-8'/>"
+            echo "<meta name='viewport' content='width=device-width, initial-scale=1'/>"
+            echo "<title>RFF Research Runs</title>"
+            echo "<style>body{font-family:ui-sans-serif,system-ui;margin:2rem} li{margin:.4rem 0} code{background:#f4f4f4;padding:.1rem .3rem;border-radius:.2rem}</style>"
+            echo "</head><body>"
+            echo "<h1>RFF Research Figure Runs</h1>"
+            echo "<p>Latest: <a href='../latest/'>/research/latest/</a></p>"
+            echo "<ul>"
+            for d in $(find docs/research/runs -maxdepth 1 -type d -regex '.*/[0-9]+' -printf '%f\n' | sort -nr); do
+              echo "<li><a href='./$d/'>Run $d</a></li>"
+            done
+            echo "</ul></body></html>"
+          } > docs/research/runs/index.html
+
+          # Optional root docs index helper
+          if [ ! -f docs/index.html ]; then
+            cat > docs/index.html <<EOF
+          <!doctype html>
+          <html>
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>recursive-field-math-pro Docs</title>
+          </head>
+          <body>
+            <h1>recursive-field-math-pro Docs</h1>
+            <ul>
+              <li><a href="./research/latest/">Research figures (latest)</a></li>
+              <li><a href="./research/runs/">Research figures (all runs)</a></li>
+            </ul>
+          </body>
+          </html>
+          EOF
+          fi
+
+      - name: Commit docs updates
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs/research docs/index.html
+          if git diff --cached --quiet; then
+            echo "No docs changes to commit."
+            exit 0
+          fi
+
+          git commit -m "docs(pages): publish research figures for run ${{ github.run_number }}"
+          git push
