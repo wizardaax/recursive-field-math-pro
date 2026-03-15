@@ -1,0 +1,35 @@
+name: Tag Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag name (e.g. v0.4.1-pages-integration)'
+        required: true
+        default: 'v0.4.1-pages-integration'
+      message:
+        description: 'Annotated tag message'
+        required: true
+        default: 'RFF reproducibility + Pages integration (PR #73, #74, #75)'
+
+permissions:
+  contents: write
+
+jobs:
+  create-tag:
+    name: Create and Push Tag
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Create annotated tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ github.event.inputs.tag }}" \
+            -m "${{ github.event.inputs.message }}"
+          git push origin "${{ github.event.inputs.tag }}"
+          echo "Tag ${{ github.event.inputs.tag }} created and pushed successfully."
