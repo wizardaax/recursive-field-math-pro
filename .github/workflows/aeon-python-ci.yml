@@ -22,7 +22,13 @@ name: Python CI (aeon-standards)
 on:
   push:
     branches: [main, master]
+    paths-ignore:
+      - '**/*.pdf'
+      - '**/*.docx'
   pull_request:
+    paths-ignore:
+      - '**/*.pdf'
+      - '**/*.docx'
   workflow_dispatch:
 
 concurrency:
