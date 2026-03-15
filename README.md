@@ -145,10 +145,10 @@ make paper
 
 ## Published Figure Artifacts (GitHub Pages)
 
-Research figure outputs are automatically published after successful `Research Paper Build` runs.
+Research figure outputs are automatically published by the `Docs` workflow on every push to `main`.
 
-- Latest snapshot: `https://wizardaax.github.io/recursive-field-math-pro/research/latest/`
-- Historical runs: `https://wizardaax.github.io/recursive-field-math-pro/research/runs/`
+- Latest snapshot: https://wizardaax.github.io/recursive-field-math-pro/research/latest/
+- Historical runs: https://wizardaax.github.io/recursive-field-math-pro/research/runs/
 
 Each run page includes:
 - generated figures (`nodes_vs_entropy`, `phi_scale_invariance`, `radar_metrics`, `coherence_scale`)
