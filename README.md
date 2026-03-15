@@ -190,3 +190,14 @@ Maintainers:
 - Branch protection setup: `docs/BRANCH_PROTECTION_RUNBOOK.md`
 - Daily operations: `docs/MAINTAINER_QUICKSTART.md`
 - Reproducibility policy: `docs/QUALITY_GATES.md`
+
+
+## Engineering Standards
+
+This repository follows shared standards for CI quality gates, security baseline,
+dependency automation, and release hygiene.
+
+- Security policy: `SECURITY.md`
+- Contributing guide: `CONTRIBUTING.md`
+- Standards: `docs/ENGINEERING_STANDARDS.md`
+- Release checklist: `docs/RELEASE_CHECKLIST.md`

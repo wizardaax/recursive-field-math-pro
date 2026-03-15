@@ -17,6 +17,11 @@ python:
   - changed-files:
       - any-glob-to-any-file: "**/*.py"
 
+javascript:
+  - changed-files:
+      - any-glob-to-any-file: "**/*.js"
+      - any-glob-to-any-file: "**/*.ts"
+
 research:
   - changed-files:
       - any-glob-to-any-file: "paper/**"
@@ -30,3 +35,4 @@ security:
       - any-glob-to-any-file: ".github/dependabot.yml"
       - any-glob-to-any-file: "pyproject.toml"
       - any-glob-to-any-file: "requirements*.txt"
+      - any-glob-to-any-file: "package*.json"
