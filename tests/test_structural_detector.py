@@ -148,8 +148,7 @@ def test_fibonacci_lower_anomaly_than_random():
 
 
 def test_phi_harmonic_coefficients_hypot_equivalence():
-    """math.hypot(a, b) must agree with sqrt(a**2+b**2) for normal-range inputs
-    and should be numerically more stable for very large values.
+    """math.hypot is numerically stable for large values where squaring overflows.
 
     This regression test guards the CodeQL fix: replacing
     ``math.sqrt(cos_sum**2 + sin_sum**2)`` with ``math.hypot(cos_sum, sin_sum)``.
@@ -166,9 +165,9 @@ def test_phi_harmonic_coefficients_hypot_equivalence():
     large_val = 1e200
     hypot_result = math.hypot(large_val, large_val)
     assert math.isfinite(hypot_result)
-    # Confirm the old expression would overflow (raises OverflowError or returns inf)
+    # Confirm that squaring large_val alone already overflows (inf or OverflowError),
+    # demonstrating the instability that math.hypot avoids.
     try:
-        old_result = math.sqrt(large_val**2 + large_val**2)
-        assert math.isinf(old_result)
+        assert math.isinf(large_val**2)
     except OverflowError:
         pass  # Also acceptable — demonstrates the instability hypot avoids
