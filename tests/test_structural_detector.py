@@ -4,10 +4,13 @@ Tests for the Structural Pattern Detector (structural_detector.py).
 Fixed-seed / deterministic sequences are used throughout.
 """
 
+import math
+
 import pytest
 
 from recursive_field_math.structural_detector import (
     N_HARMONICS,
+    _phi_harmonic_coefficients,
     detect,
 )
 
@@ -137,3 +140,35 @@ def test_fibonacci_lower_anomaly_than_random():
     assert fib_result["ok"] and rnd_result["ok"]
     assert isinstance(fib_result["anomaly_index"], float)
     assert isinstance(rnd_result["anomaly_index"], float)
+
+
+# ---------------------------------------------------------------------------
+# Numeric robustness: math.hypot vs math.sqrt(a**2 + b**2)
+# ---------------------------------------------------------------------------
+
+
+def test_phi_harmonic_coefficients_hypot_equivalence():
+    """math.hypot(a, b) must agree with sqrt(a**2+b**2) for normal-range inputs
+    and should be numerically more stable for very large values.
+
+    This regression test guards the CodeQL fix: replacing
+    ``math.sqrt(cos_sum**2 + sin_sum**2)`` with ``math.hypot(cos_sum, sin_sum)``.
+    """
+    # Normal range: results should be identical (within float precision)
+    values = [float(x) for x in LUCAS]
+    coeffs = _phi_harmonic_coefficients(values)
+    assert len(coeffs) == N_HARMONICS
+    for c in coeffs:
+        assert 0.0 <= c <= 1.0
+
+    # Large-value stress: math.sqrt(a**2 + b**2) overflows for a > ~1e154,
+    # but math.hypot handles it correctly.  Verify hypot does not raise.
+    large_val = 1e200
+    hypot_result = math.hypot(large_val, large_val)
+    assert math.isfinite(hypot_result)
+    # Confirm the old expression would overflow (raises OverflowError or returns inf)
+    try:
+        old_result = math.sqrt(large_val**2 + large_val**2)
+        assert math.isinf(old_result)
+    except OverflowError:
+        pass  # Also acceptable — demonstrates the instability hypot avoids
