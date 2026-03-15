@@ -33,6 +33,7 @@ jobs:
             const requiredChecks = [
               'CI Quality Gate / CI Gate',
               'PR Reproducibility Check / repro-check',
+              'Security (aeon-standards) / Security Scan (shared)',
             ];
 
             await github.rest.repos.updateBranchProtection({
@@ -103,4 +104,5 @@ jobs:
           ### Required status checks
           - `CI Quality Gate / CI Gate`
           - `PR Reproducibility Check / repro-check`
+          - `Security (aeon-standards) / Security Scan (shared)`
           EOF

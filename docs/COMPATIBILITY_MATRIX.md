@@ -16,7 +16,7 @@ with other `wizardaax` repositories and their key dependencies.
 
 | `recursive-field-math-pro` version | PyPI: `regen88-codex` | Python | `glyph_phase_engine` | `aeon-standards` workflows | Notes |
 |---|---|---|---|---|---|
-| `v0.5.x` | `0.5.x` | `>=3.9, <3.14` | `>=0.1.0` (TBD) | `@main` / `@v1` (pending) | Current stable |
+| `v0.5.x` | `0.5.x` | `>=3.9, <3.14` | `>=0.1.0` (TBD) | `@v1` | Current stable |
 | `v0.4.x` | `0.4.x` | `>=3.9, <3.13` | N/A | N/A | Legacy |
 
 ---
@@ -36,14 +36,8 @@ matplotlib    >=3.8
 
 | aeon-standards ref | Reusable workflow | Min caller version | Status |
 |---|---|---|---|
-| `@main` | `python-ci.yml` | GitHub Actions runner `ubuntu-latest` | ⏳ Pending bootstrap |
-| `@main` | `security.yml` | GitHub Actions runner `ubuntu-latest` | ⏳ Pending bootstrap |
-| `@v1` | `python-ci.yml` | GitHub Actions runner `ubuntu-latest` | ⏳ Pending tag |
-| `@v1` | `security.yml` | GitHub Actions runner `ubuntu-latest` | ⏳ Pending tag |
-
-> Once `wizardaax/aeon-standards` is bootstrapped and tagged `v1`, update the
-> `uses:` lines in `.github/workflows/aeon-python-ci.yml` and
-> `.github/workflows/aeon-security.yml` from `@main` to `@v1`.
+| `@v1` | `python-ci.yml` | GitHub Actions runner `ubuntu-latest` | ✅ Active |
+| `@v1` | `security.yml` | GitHub Actions runner `ubuntu-latest` | ✅ Active |
 
 ---
 
