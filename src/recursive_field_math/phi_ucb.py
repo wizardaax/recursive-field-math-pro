@@ -28,9 +28,9 @@ What φ-UCB does NOT guarantee
 
 Fail-closed behaviour
 ~~~~~~~~~~~~~~~~~~~~~~
-``phi_ucb_score`` returns ``-inf`` (which will never be selected) for nodes
-that have never been visited (N=0) at t > 0 is handled by promoting unexplored
-nodes; see docstring.  Invalid inputs raise ``ValueError``.
+``phi_ucb_score`` returns ``+inf`` for unvisited nodes (``N=0``), guaranteeing
+they are selected at least once before any visited node is re-selected.
+Invalid inputs raise ``ValueError``.
 
 Examples::
 
