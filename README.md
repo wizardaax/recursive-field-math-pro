@@ -176,3 +176,17 @@ make figures
 make manifest
 make verify-manifest
 ```
+
+## Governance & Quality Automation (Easy Mode)
+
+This repository uses enforced quality gates and reproducibility controls:
+- Required CI checks on pull requests
+- Code owner review on critical paths
+- Auto-labeling for faster triage
+- Weekly stale hygiene
+- Deterministic research artifact manifests
+
+Maintainers:
+- Branch protection setup: `docs/BRANCH_PROTECTION_RUNBOOK.md`
+- Daily operations: `docs/MAINTAINER_QUICKSTART.md`
+- Reproducibility policy: `docs/QUALITY_GATES.md`

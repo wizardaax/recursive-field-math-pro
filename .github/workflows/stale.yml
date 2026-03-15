@@ -1,0 +1,35 @@
+name: Stale Issue/PR Hygiene
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          stale-issue-message: >
+            This issue has been inactive for 30 days and is marked stale.
+            Comment/update to keep it active.
+          stale-pr-message: >
+            This PR has been inactive for 21 days and is marked stale.
+            Rebase/update when ready.
+          close-issue-message: >
+            Closing stale issue due to inactivity. Reopen if still relevant.
+          close-pr-message: >
+            Closing stale PR due to inactivity. Reopen with updated branch if still needed.
+          days-before-stale: 30
+          days-before-close: 14
+          days-before-pr-stale: 21
+          days-before-pr-close: 14
+          stale-issue-label: stale
+          stale-pr-label: stale
+          exempt-issue-labels: security,priority:high,research
+          exempt-pr-labels: security,priority:high,research

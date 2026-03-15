@@ -1,9 +1,23 @@
-# Default owner
-*       @wizardaax
+# Global fallback owner
+* @wizardaax
 
-# Docs
-/docs/  @wizardaax
-/mkdocs.yml  @wizardaax
+# Critical CI / release / governance
+.github/workflows/* @wizardaax
+.github/CODEOWNERS @wizardaax
+.github/labeler.yml @wizardaax
+.github/dependabot.yml @wizardaax
+.github/pull_request_template.md @wizardaax
+docs/QUALITY_GATES.md @wizardaax
+CHANGELOG.md @wizardaax
+RELEASE_NOTES.md @wizardaax
+CITATION.cff @wizardaax
+pyproject.toml @wizardaax
 
-# Workflows
-/.github/workflows/  @wizardaax
+# Research-critical reproducibility assets
+scripts/generate_figures.py @wizardaax
+scripts/validate_stats.py @wizardaax
+scripts/figure_manifest.py @wizardaax
+paper/data/ablation_metrics.csv @wizardaax
+paper/figures/manifest.sha256 @wizardaax
+paper/rff_phi_mod_verification.tex @wizardaax
+docs/rff_phi_mod_verification.md @wizardaax

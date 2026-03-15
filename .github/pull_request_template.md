@@ -1,27 +1,32 @@
-<!--- Please fill out the following template to create your pull request. -->
+## Summary
+<!-- What changed and why? -->
 
-## Description
+## Change type
+- [ ] feat
+- [ ] fix
+- [ ] docs
+- [ ] ci
+- [ ] refactor
+- [ ] test
+- [ ] chore
 
-<!--- Provide a short summary of your changes and the purpose of this pull request. -->
+## Quality checks
+- [ ] `ruff check .`
+- [ ] `black --check .`
+- [ ] `flake8 .`
+- [ ] `mypy scripts --ignore-missing-imports`
+- [ ] `pytest -q`
 
-## Related Issues
+## Reproducibility checks (if research/figure paths touched)
+- [ ] `python scripts/validate_stats.py`
+- [ ] `python scripts/generate_figures.py --theme light --format png --outdir paper/figures`
+- [ ] `python scripts/figure_manifest.py write --dir paper/figures --out paper/figures/manifest.sha256`
+- [ ] `python scripts/figure_manifest.py verify --dir paper/figures --manifest paper/figures/manifest.sha256`
 
-<!--- Link any related issues or pull requests here. -->
+## Security checklist
+- [ ] No hardcoded secrets/API keys
+- [ ] No weak crypto changes introduced
+- [ ] Dependency changes reviewed
 
-## Docs Preview
-
-Once CI runs, a bot comment will post a **Docs preview URL** for this PR.
-- [ ] I opened the preview and checked formatting/layout
-- [ ] Screenshots (if relevant): …
-
-## Checklist
-
-- [ ] I have read the [contributing guidelines](CONTRIBUTING.md) and followed them.
-- [ ] My code follows the style guidelines of this project.
-- [ ] I have performed a self-review of my code.
-- [ ] I have added tests that prove my fix is effective or that my feature works.
-- [ ] I have added documentation for any public functions or APIs.
-
-## Additional Notes
-
-<!--- Add any other context about the pull request here. -->
+## Notes for reviewers
+<!-- Risk areas, migration notes, rollout concerns -->
