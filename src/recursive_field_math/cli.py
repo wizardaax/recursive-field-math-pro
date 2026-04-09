@@ -7,6 +7,7 @@ from typing import Any
 
 from .continued_fraction import lucas_ratio_cfrac
 from .egyptian_fraction import egypt_4_7_11
+from .evolution.meta_engine import EvolutionEngine
 from .fibonacci import F
 from .field import r_theta
 from .lucas import L
@@ -92,6 +93,31 @@ def main():
         help="Lucas weights (default: 4 7 11)",
     )
     sp.add_argument("--markdown", action="store_true", help="Output as markdown (default: JSON)")
+
+    # Evolve subcommand — recursive self-evolution engine
+    sp = sub.add_parser("evolve", help="Recursive self-evolution engine for agent federation mesh")
+    evolve_group = sp.add_mutually_exclusive_group(required=True)
+    evolve_group.add_argument(
+        "--scan", action="store_true", default=False, help="Scan agent performance, return gaps"
+    )
+    evolve_group.add_argument(
+        "--propose",
+        action="store_true",
+        default=False,
+        help="Generate candidate improvement patches",
+    )
+    evolve_group.add_argument(
+        "--simulate",
+        action="store_true",
+        default=False,
+        help="Run sandbox validation on proposals",
+    )
+    evolve_group.add_argument(
+        "--apply",
+        action="store_true",
+        default=False,
+        help="Output versioned change-set with provenance",
+    )
 
     args = p.parse_args()
     out: Any
@@ -207,6 +233,21 @@ def main():
                 }
             except (FileNotFoundError, json.JSONDecodeError) as e:
                 out = {"error": f"Cannot load results file: {e}"}
+    elif args.cmd == "evolve":
+        engine = EvolutionEngine()
+        if args.scan:
+            out = engine.observe()
+        elif args.propose:
+            out = {"proposals": engine.propose()}
+        elif args.simulate:
+            proposals = engine.propose()
+            out = engine.simulate(proposals)
+        elif args.apply:
+            proposals = engine.propose()
+            engine.simulate(proposals)
+            out = engine.apply()
+        else:
+            out = {"error": "evolve requires --scan, --propose, --simulate, or --apply"}
     else:
         out = {"error": "unknown command"}
 
