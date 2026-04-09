@@ -14,6 +14,7 @@ from .lucas import L
 from .ratios import ratio, ratio_error_bounds
 from .self_model import SelfModel
 from .signatures import signature_summary
+from .swarm import SwarmOrchestrator
 
 
 def main():
@@ -55,6 +56,31 @@ def main():
         "--integrate", type=str, default=None, help="Integrate new data (JSON string)"
     )
     sm_group.add_argument("--state", action="store_true", default=False, help="Show current state")
+
+    # Swarm subcommand
+    sp = sub.add_parser("swarm", help="Cellular swarm orchestrator")
+    swarm_group = sp.add_mutually_exclusive_group(required=True)
+    swarm_group.add_argument("--status", action="store_true", help="Show swarm status")
+    swarm_group.add_argument(
+        "--scale",
+        choices=["auto"],
+        default=None,
+        help="Enable hardware-aware dynamic scaling",
+    )
+    swarm_group.add_argument("--run", type=str, default=None, help="Run a batch of inputs (JSON)")
+    sp.add_argument("--shards", type=int, default=4, help="Number of shards (default: 4)")
+    sp.add_argument(
+        "--workers-per-shard", type=int, default=4, help="Workers per shard (default: 4)"
+    )
+    sp.add_argument(
+        "--pipeline-batch-size", type=int, default=16, help="Pipeline batch size (default: 16)"
+    )
+    sp.add_argument(
+        "--efficiency-mode",
+        choices=["balanced", "throughput", "coherence-strict"],
+        default="balanced",
+        help="Efficiency mode (default: balanced)",
+    )
 
     # Add entropy pump evaluation command
     sp = sub.add_parser("eval", help="Evaluate entropy pump results against acceptance rules")
@@ -132,6 +158,33 @@ def main():
             out = sm.state()
         else:
             out = {"error": "self-model requires --observe, --ask, --integrate, or --state"}
+    elif args.cmd == "swarm":
+        orch = SwarmOrchestrator(
+            num_shards=args.shards,
+            workers_per_shard=args.workers_per_shard,
+            pipeline_batch_size=args.pipeline_batch_size,
+            efficiency_mode=args.efficiency_mode,
+        )
+        if args.status:
+            out = orch.status()
+        elif args.scale == "auto":
+            orch.start()
+            out = orch.scale_auto()
+            orch.stop()
+        elif args.run is not None:
+            try:
+                inputs = json.loads(args.run)
+                if not isinstance(inputs, list):
+                    inputs = [inputs]
+            except (json.JSONDecodeError, TypeError):
+                inputs = [args.run]
+            inputs_str = [str(i) for i in inputs]
+            orch.start()
+            results = orch.execute_batch(lambda x: x, inputs_str)
+            orch.stop()
+            out = {"inputs": inputs_str, "results": results, "status": orch.status()}
+        else:
+            out = {"error": "swarm requires --status, --scale auto, or --run"}
     elif args.cmd == "eval":
         # Import here to avoid circular imports
         try:
