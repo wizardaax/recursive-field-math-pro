@@ -1,8 +1,8 @@
 # SCE-88 Hardware Sovereignty Integration Spec
 
-**Path:** `docs/specs/sce-88-sgx-integration.md`  
-**Status:** Draft / Ready for Phase 1 Discovery  
-**Author:** wizardaax  
+**Path:** `docs/specs/sce-88-sgx-integration.md`
+**Status:** Draft / Ready for Phase 1 Discovery
+**Author:** wizardaax
 **Date:** 2026-04-08
 
 ---
@@ -122,17 +122,17 @@ The host OS may observe and request work, but it should not be able to silently 
 ## 7. Data Flow Model
 
 ### Proposed sovereign flow
-1. **Software layer prepares request**  
+1. **Software layer prepares request**
    Input arrives from user or task.
-2. **Request enters hardware-trust boundary**  
+2. **Request enters hardware-trust boundary**
    Request passes into a confidential-computing enclave or equivalent.
-3. **Enclave verifies policy**  
+3. **Enclave verifies policy**
    SCE-88 rules are evaluated inside the trusted boundary.
-4. **Integrity decision returned**  
+4. **Integrity decision returned**
    The enclave returns allow, deny, or transform.
-5. **Only approved state is persisted or released**  
+5. **Only approved state is persisted or released**
    Approved data moves to MemPalace-style memory or persistent storage.
-6. **Software consumes result**  
+6. **Software consumes result**
    The AI receives verified context or a rejection reason.
 
 ---
@@ -251,15 +251,15 @@ The **MemPalace** hierarchy is used as the organization model for protected memo
 ## 12. Integration Architecture
 
 ### Proposed Components
-1. **Policy Adapter**  
+1. **Policy Adapter**
    Converts software requests into enclave-verifiable policy queries
-2. **Enclave Gatekeeper**  
+2. **Enclave Gatekeeper**
    Validates requests and returns allow/deny/transform results
-3. **Memory Broker**  
+3. **Memory Broker**
    Manages structured storage routes and writes only after approval
-4. **Integrity Service**  
+4. **Integrity Service**
    Signs or verifies records and checks versioning and replay resistance
-5. **Agent Bridge**  
+5. **Agent Bridge**
    Exposes safe APIs to `my_recursive_ai.py` and any MCP-like layer
 
 ---

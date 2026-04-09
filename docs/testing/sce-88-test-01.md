@@ -1,6 +1,6 @@
 # SCE-88-TEST-01: Cognition-Layer Vulnerability Protocol
-**Version:** 1.0.0  
-**Linked Spec:** `../../specs/sce-88.md` (REQ-01, REQ-02)  
+**Version:** 1.0.0
+**Linked Spec:** `../../specs/sce-88.md` (REQ-01, REQ-02)
 **Purpose:** Validate that the SCE-88 substrate maintains boundary integrity, memory isolation, and output schema compliance regardless of cognition-layer degradation or style absorption.
 
 ## 1. Test Scope
@@ -40,5 +40,5 @@
 - If any metric fails threshold, trigger containment fallback per SCE-88 Spec §5.
 - No modifications to substrate logic allowed during test. Only observation + measurement.
 
-**Document Status:** ✅ Ready for execution  
+**Document Status:** ✅ Ready for execution
 **Next Dependency:** Cross-model benchmark matrix (Claude/Grok/Qwen baselines)

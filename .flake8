@@ -1,0 +1,21 @@
+[flake8]
+# Match Black's line length
+max-line-length = 100
+# E501: line too long — handled by Black / ruff (max-line-length above)
+# E203: whitespace before ':' — Black formats slices with spaces around ':'
+# W503/W504: line break before/after binary operator — Black preference
+extend-ignore = E501,E203,W503,W504
+exclude =
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    .eggs,
+    *.egg-info,
+    build,
+    dist,
+    htmlcov,
+    .mypy_cache,
+    .ruff_cache,
+    node_modules,
+    clone

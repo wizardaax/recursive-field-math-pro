@@ -1,7 +1,7 @@
 # Ruff configuration for Python linting and formatting
 target-version = "py310"
 line-length = 100
-exclude = ["clone/"]
+exclude = ["clone/", "node_modules/"]
 
 [lint]
 select = [
