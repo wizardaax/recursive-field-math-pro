@@ -183,7 +183,7 @@ jobs:
           echo "✓ Artifact integrity verified"
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/
@@ -201,7 +201,7 @@ jobs:
       url: https://test.pypi.org/project/regen88-codex/
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: dist
           path: dist/
@@ -235,7 +235,7 @@ jobs:
       url: https://pypi.org/project/regen88-codex/
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: dist
           path: dist/

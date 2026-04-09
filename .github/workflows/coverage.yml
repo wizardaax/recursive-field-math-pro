@@ -90,7 +90,7 @@ jobs:
           echo "Python coverage: $COVERAGE%"
 
       - name: Upload Python coverage report
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: python-coverage-report
           path: |
@@ -152,7 +152,7 @@ jobs:
           echo "JavaScript coverage: $COVERAGE%"
 
       - name: Upload JS coverage report
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: js-coverage-report
           path: |
@@ -172,7 +172,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download Python coverage
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: python-coverage-report
           path: python-coverage/
@@ -249,7 +249,7 @@ jobs:
           echo "Badge generated: ${TOTAL_COV}% ($COLOR)"
 
       - name: Upload coverage badge
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-badge
           path: badges/
