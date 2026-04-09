@@ -62,7 +62,8 @@ def _detect_available_ram_mb() -> int:
                     kb = int(line.split()[1])
                     return max(1, kb // 1024)
     except (OSError, ValueError, IndexError):
-        # Best-effort detection: /proc may be unavailable or unparsable.
+        # OSError: /proc not available (Windows, macOS, containers)
+        # ValueError/IndexError: unexpected meminfo format
         pass
     return _FALLBACK_RAM_MB
 
