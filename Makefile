@@ -14,12 +14,12 @@ clean:
 
 lint:
 	ruff check .
-	black --check .
+	ruff format --check .
 	flake8 .
 	mypy scripts --ignore-missing-imports
 
 format:
-	black .
+	ruff format .
 	ruff check --fix .
 
 test:
