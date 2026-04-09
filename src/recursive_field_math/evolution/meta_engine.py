@@ -495,6 +495,8 @@ class EvolutionEngine:
             provenance = {
                 "engine_version": "1.0.0",
                 "phase": self._phase,
+                # Deterministic timestamp (epoch) for reproducibility; real
+                # timestamps are added by the CI/PR layer, not the engine.
                 "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(0)),
                 "observation_count": len(self._observations),
                 "simulation_coherence_before": simulation.get("coherence_before", 0.0),

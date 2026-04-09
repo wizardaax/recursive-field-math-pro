@@ -11,7 +11,7 @@ Covers:
 - CLI evolve subcommand end-to-end
 - Edge cases and error paths
 
-60+ deterministic tests, zero flakiness.
+81 deterministic tests, zero flakiness.
 """
 
 import copy
