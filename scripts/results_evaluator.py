@@ -66,7 +66,8 @@ def evaluate_acceptance_rules(result: dict[str, Any]) -> dict[str, Any]:
 
                 # Check if within ±PHI_CLAMP_TOLERANCE_DEG of PHI_CLAMP_TARGET_DEG
                 phi_clamp_peak_pass = (
-                    abs(phi_clamp_peak_deg - PHI_CLAMP_TARGET_DEG) <= PHI_CLAMP_TOLERANCE_DEG
+                    abs(phi_clamp_peak_deg - PHI_CLAMP_TARGET_DEG)
+                    <= PHI_CLAMP_TOLERANCE_DEG
                 )
 
     # Overall pass: all three rules must pass

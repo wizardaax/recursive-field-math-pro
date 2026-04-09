@@ -148,7 +148,9 @@ def normalize_for_radar() -> np.ndarray:
     )
     arr[:, 2] = (BRANCHING.max() - BRANCHING) / (BRANCHING.max() - BRANCHING.min())
     arr[:, 3] = (DEPTH.max() - DEPTH) / (DEPTH.max() - DEPTH.min())
-    arr[:, 4] = (NODES_PER_SIM.max() - NODES_PER_SIM) / (NODES_PER_SIM.max() - NODES_PER_SIM.min())
+    arr[:, 4] = (NODES_PER_SIM.max() - NODES_PER_SIM) / (
+        NODES_PER_SIM.max() - NODES_PER_SIM.min()
+    )
     return arr
 
 

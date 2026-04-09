@@ -1,13 +1,13 @@
 # Recursive Field Framework (RFF) φ-Modulation: Three-System Verification
 
-**Authors:** Adam Snellman (wizardaax)  
-**License:** MIT  
-**Date:** March 16, 2026  
+**Authors:** Adam Snellman (wizardaax)
+**License:** MIT
+**Date:** March 16, 2026
 **Repository:** https://github.com/wizardaax/recursive-field-math-pro
 
 ## 1. Overview
 
-This report presents independent verification of φ-modulation in MCTS search spaces using the Recursive Field Framework (RFF).  
+This report presents independent verification of φ-modulation in MCTS search spaces using the Recursive Field Framework (RFF).
 Three AI systems contributed:
 
 - **GPT (Prediction):** Predicted relative gains and synergy behavior.

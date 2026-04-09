@@ -1,6 +1,6 @@
 # SCE-88 Specification Reference
-**Source repo:** [wizardaax/SCE-88](https://github.com/wizardaax/SCE-88)  
-**Version reflected here:** main @ 2026-01-19  
+**Source repo:** [wizardaax/SCE-88](https://github.com/wizardaax/SCE-88)
+**Version reflected here:** main @ 2026-01-19
 **Status:** Authoritative spec lives in the SCE-88 repo. This file is a requirements summary for cross-linking within recursive-field-math-pro.
 
 ---

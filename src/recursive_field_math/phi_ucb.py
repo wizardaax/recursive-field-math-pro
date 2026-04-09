@@ -262,10 +262,14 @@ def benchmark_phi_ucb_vs_ucb1(
         for step in range(1, n_steps + 1):
             t = step - 1
             if use_phi_ucb:
-                chosen = select_best(stats, t=t, alpha=alpha, beta=beta, rng=random.Random(step))
+                chosen = select_best(
+                    stats, t=t, alpha=alpha, beta=beta, rng=random.Random(step)
+                )
             else:
                 # UCB1: alpha=1.0, beta=0.0  (phi^0 = 1)
-                chosen = select_best(stats, t=t, alpha=alpha, beta=0.0, rng=random.Random(step))
+                chosen = select_best(
+                    stats, t=t, alpha=alpha, beta=0.0, rng=random.Random(step)
+                )
 
             reward = arm_means[chosen] + _r.gauss(0, 0.1)
             # Update running mean
