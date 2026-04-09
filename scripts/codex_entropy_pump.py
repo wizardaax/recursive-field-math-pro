@@ -25,7 +25,8 @@ def _rank_to_phase(x: np.ndarray) -> np.ndarray:
 def golden_refraction(theta: np.ndarray, n: float = PHI) -> np.ndarray:
     s = np.sin(theta) / float(n)
     s = np.clip(s, -1.0, 1.0)
-    return np.arcsin(s)  # type: ignore[no-any-return]
+    out: np.ndarray = np.arcsin(s)
+    return out
 
 
 def codex_pump_from_series(
