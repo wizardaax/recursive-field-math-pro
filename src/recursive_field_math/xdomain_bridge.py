@@ -305,7 +305,7 @@ def decode(
         orig_floats = [float(x) for x in original]
         orig_rms = _rms(orig_floats)
         if orig_rms > _EPS:
-            diff_rms = _rms([r - o for r, o in zip(reconstructed, orig_floats, strict=False)])
+            diff_rms = _rms([r - o for r, o in zip(reconstructed, orig_floats)])
             rel_error = diff_rms / orig_rms
             if rel_error > ERROR_BOUND:
                 raise BridgeError(
