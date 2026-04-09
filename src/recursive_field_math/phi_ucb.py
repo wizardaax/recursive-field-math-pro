@@ -131,7 +131,7 @@ def phi_ucb_score(
         # No simulations run yet; exploration bonus is undefined – return q only.
         return q
 
-    phi_mod = PHI**beta
+    phi_mod: float = float(PHI**beta)
     bonus = alpha * phi_mod * math.sqrt(math.log(t) / n)
     return q + bonus
 

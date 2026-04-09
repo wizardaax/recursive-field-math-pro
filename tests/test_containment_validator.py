@@ -2,6 +2,8 @@
 Tests for the Containment Geometry Validator (containment_validator.py).
 """
 
+from typing import Any
+
 from recursive_field_math.containment_validator import MIN_LAYERS, validate
 
 # ---------------------------------------------------------------------------
@@ -149,7 +151,7 @@ def test_validate_is_deterministic():
 
 def test_dangling_dep_ignored():
     """A dependency on a non-existent layer should be silently ignored."""
-    spec = {
+    spec: dict[str, Any] = {
         "layers": {
             "a": {"depends_on": ["nonexistent"]},
             "b": {"depends_on": ["a"]},
@@ -167,7 +169,7 @@ def test_dangling_dep_ignored():
 
 def test_fully_isolated_high_containment():
     """Layers with no dependencies should yield a high containment score."""
-    spec = {
+    spec: dict[str, Any] = {
         "layers": {
             "island1": {"depends_on": []},
             "island2": {"depends_on": []},

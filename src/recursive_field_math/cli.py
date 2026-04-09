@@ -1,4 +1,5 @@
 import argparse
+import contextlib
 import json
 import os
 import sys
@@ -16,10 +17,8 @@ from .signatures import signature_summary
 def main():
     # Ensure UTF-8 stdout so emoji in markdown output doesn't crash on Windows
     if hasattr(sys.stdout, "reconfigure"):
-        try:
+        with contextlib.suppress(Exception):
             sys.stdout.reconfigure(encoding="utf-8")
-        except Exception:
-            pass
 
     p = argparse.ArgumentParser(
         prog="rfm", description="Recursive Field Math — Projex X1"

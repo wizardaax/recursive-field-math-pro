@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Sequence
+from typing import Any
 
 from .constants import PHI
 
@@ -300,7 +301,7 @@ def score(
 
 
 def calibration_report(
-    sequences: list[Sequence], *, profile: str = PROFILE_NAME
+    sequences: Sequence[Sequence[Any]], *, profile: str = PROFILE_NAME
 ) -> dict:
     """
     Generate a calibration report for a batch of sequences.
