@@ -1,8 +1,10 @@
 import math
 
-import numpy as np
+import pytest
 
-from scripts.codex_entropy_pump import (
+np = pytest.importorskip("numpy")
+
+from scripts.codex_entropy_pump import (  # noqa: E402
     PHI,
     _rank_to_phase,
     codex_pump_from_series,

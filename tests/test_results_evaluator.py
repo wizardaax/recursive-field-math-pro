@@ -3,7 +3,11 @@ import math
 import os
 import tempfile
 
-from scripts.results_evaluator import (
+import pytest
+
+pytest.importorskip("numpy")
+
+from scripts.results_evaluator import (  # noqa: E402
     evaluate_acceptance_rules,
     evaluate_and_summarize_results,
     generate_summary_comment,
