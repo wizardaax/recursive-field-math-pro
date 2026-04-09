@@ -102,9 +102,9 @@ class SwarmMemory:
             return {
                 "size": len(self._store),
                 "max_entries": self._max_entries,
-                "utilisation": round(len(self._store) / self._max_entries, 6)
-                if self._max_entries > 0
-                else 0.0,
+                "utilisation": (
+                    round(len(self._store) / self._max_entries, 6) if self._max_entries > 0 else 0.0
+                ),
             }
 
     def get_or_put(self, key: str, default_factory: Any | None = None) -> Any:

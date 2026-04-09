@@ -61,7 +61,8 @@ def _detect_available_ram_mb() -> int:
                 if line.startswith("MemAvailable"):
                     kb = int(line.split()[1])
                     return max(1, kb // 1024)
-    except Exception:
+    except (OSError, ValueError, IndexError):
+        # Best-effort detection: /proc may be unavailable or unparsable.
         pass
     return _FALLBACK_RAM_MB
 

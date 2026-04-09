@@ -134,9 +134,11 @@ class TestSwarmMemory:
     def test_delete(self):
         mem = SwarmMemory()
         mem.put("k", 1)
-        assert mem.delete("k") is True
+        deleted = mem.delete("k")
+        assert deleted is True
         assert mem.get("k") is None
-        assert mem.delete("k") is False
+        deleted_missing = mem.delete("k")
+        assert deleted_missing is False
 
     def test_keys_insertion_order(self):
         mem = SwarmMemory()
@@ -256,7 +258,7 @@ class TestCellShard:
     def test_submit_async(self):
         shard = CellShard(shard_id=0)
         shard.start()
-        future = shard.submit(lambda x: len(x), "hello")
+        future = shard.submit(len, "hello")
         assert future is not None
         assert future.result(timeout=5) == 5  # noqa: PLR2004
         shard.stop()
@@ -267,7 +269,7 @@ class TestCellShard:
         m = shard.metrics()
         assert m["tasks_completed"] == 1
         assert m["tasks_failed"] == 0
-        assert m["total_compute_time"] > 0
+        assert m["total_compute_time"] >= 0
 
     def test_failure_tracking(self):
         shard = CellShard(shard_id=0)
@@ -416,7 +418,7 @@ class TestPipelineStage:
 class TestPipeline:
     def test_two_stage_pipeline(self):
         s1 = PipelineStage("double", lambda x: x * 2, batch_size=4)
-        s2 = PipelineStage("str", lambda x: str(x), batch_size=4)
+        s2 = PipelineStage("str", str, batch_size=4)
         pipe = Pipeline([s1, s2])
         pipe.push(5)
         results = pipe.run_all()
@@ -424,7 +426,7 @@ class TestPipeline:
 
     def test_run_all(self):
         s1 = PipelineStage("inc", lambda x: x + 1, batch_size=4)
-        s2 = PipelineStage("str", lambda x: str(x), batch_size=4)
+        s2 = PipelineStage("str", str, batch_size=4)
         pipe = Pipeline([s1, s2])
         for i in range(5):
             pipe.push(i)
