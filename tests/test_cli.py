@@ -15,6 +15,16 @@ import tempfile
 import pytest
 
 
+def _has_numpy() -> bool:
+    """Return True when numpy is importable (eval CLI needs it)."""
+    try:
+        import numpy  # noqa: F401
+
+        return True
+    except ImportError:
+        return False
+
+
 # Helper: run the CLI and return (stdout, stderr, returncode)
 def _run(*args: str) -> tuple[str, str, int]:
     repo_root = os.path.dirname(os.path.dirname(__file__))
@@ -148,6 +158,10 @@ class TestCfracCommand:
 # ---------------------------------------------------------------------------
 # eval (JSON output)
 # ---------------------------------------------------------------------------
+@pytest.mark.skipif(
+    not _has_numpy(),
+    reason="eval command requires numpy (via scripts/results_evaluator)",
+)
 class TestEvalCommand:
     def _make_results_file(self, results: list, suffix: str = ".json") -> str:
         """Write results list to a temp JSON file, return path."""
