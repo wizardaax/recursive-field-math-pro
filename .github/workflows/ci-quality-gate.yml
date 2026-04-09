@@ -49,13 +49,13 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install -e .
-          pip install pytest ruff black flake8 mypy numpy pandas matplotlib
+          pip install pytest ruff flake8 mypy numpy pandas matplotlib
 
-      - name: Ruff
+      - name: Ruff check
         run: ruff check .
 
-      - name: Black (check)
-        run: black --check .
+      - name: Ruff format (check)
+        run: ruff format --check .
 
       - name: Flake8
         run: flake8 .
