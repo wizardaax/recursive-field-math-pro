@@ -134,9 +134,7 @@ def _phi_coherence(values: list[float]) -> float:
     # Pearson correlation (protected against zero std)
     mean_o = sum(original) / len(original)
     mean_s = sum(shifted) / len(shifted)
-    cov = sum(
-        (o - mean_o) * (s - mean_s) for o, s in zip(original, shifted, strict=False)
-    )
+    cov = sum((o - mean_o) * (s - mean_s) for o, s in zip(original, shifted, strict=False))
     var_o = sum((o - mean_o) ** 2 for o in original)
     var_s = sum((s - mean_s) ** 2 for s in shifted)
 
@@ -257,9 +255,7 @@ def score(
     False
     """
     if profile != PROFILE_NAME:
-        raise ValueError(
-            f"Unknown profile {profile!r}; only {PROFILE_NAME!r} is supported."
-        )
+        raise ValueError(f"Unknown profile {profile!r}; only {PROFILE_NAME!r} is supported.")
 
     allowed_modes = {"numeric", "tokens", "actions"}
     if mode not in allowed_modes:
@@ -300,9 +296,7 @@ def score(
     }
 
 
-def calibration_report(
-    sequences: Sequence[Sequence[Any]], *, profile: str = PROFILE_NAME
-) -> dict:
+def calibration_report(sequences: Sequence[Sequence[Any]], *, profile: str = PROFILE_NAME) -> dict:
     """
     Generate a calibration report for a batch of sequences.
 

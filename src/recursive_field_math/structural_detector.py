@@ -68,9 +68,7 @@ def _to_floats(sequence: Sequence) -> list[float]:
     return [float(x) for x in sequence]
 
 
-def _phi_harmonic_coefficients(
-    values: list[float], n_harmonics: int = N_HARMONICS
-) -> list[float]:
+def _phi_harmonic_coefficients(values: list[float], n_harmonics: int = N_HARMONICS) -> list[float]:
     """
     Project *values* onto a basis of φ-harmonic sinusoids.
 
@@ -118,9 +116,7 @@ def _window_coherence(window: list[float]) -> float:
 
     mean_o = sum(original) / len(original)
     mean_s = sum(shifted) / len(shifted)
-    cov = sum(
-        (o - mean_o) * (s - mean_s) for o, s in zip(original, shifted, strict=False)
-    )
+    cov = sum((o - mean_o) * (s - mean_s) for o, s in zip(original, shifted, strict=False))
     var_o = sum((o - mean_o) ** 2 for o in original)
     var_s = sum((s - mean_s) ** 2 for s in shifted)
 
@@ -218,9 +214,7 @@ def detect(
     False
     """
     if window_size < _MIN_WINDOW_COHERENCE:
-        raise ValueError(
-            f"window_size must be >= {_MIN_WINDOW_COHERENCE}, got {window_size}"
-        )
+        raise ValueError(f"window_size must be >= {_MIN_WINDOW_COHERENCE}, got {window_size}")
 
     values = _to_floats(sequence)
     n = len(values)

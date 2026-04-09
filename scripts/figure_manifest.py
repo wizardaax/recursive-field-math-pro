@@ -47,9 +47,7 @@ def write_manifest(fig_dir: Path, out_file: Path) -> int:
 
 def read_manifest(path: Path) -> dict[str, str]:
     data: dict[str, str] = {}
-    for lineno, raw in enumerate(
-        path.read_text(encoding="utf-8").splitlines(), start=1
-    ):
+    for lineno, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
         raw = raw.strip()
         if not raw:
             continue
