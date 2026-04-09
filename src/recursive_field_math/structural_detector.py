@@ -116,7 +116,7 @@ def _window_coherence(window: list[float]) -> float:
 
     mean_o = sum(original) / len(original)
     mean_s = sum(shifted) / len(shifted)
-    cov = sum((o - mean_o) * (s - mean_s) for o, s in zip(original, shifted, strict=False))
+    cov = sum((o - mean_o) * (s - mean_s) for o, s in zip(original, shifted))
     var_o = sum((o - mean_o) ** 2 for o in original)
     var_s = sum((s - mean_s) ** 2 for s in shifted)
 
