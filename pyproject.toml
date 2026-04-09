@@ -29,3 +29,7 @@ rfm = "recursive_field_math.cli:main"
 [tool.pytest.ini_options]
 addopts = "-q"
 pythonpath = ["src", "."]
+
+[tool.black]
+line-length = 100
+target-version = ["py39", "py310", "py311", "py312"]

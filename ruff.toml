@@ -1,5 +1,5 @@
 # Ruff configuration for Python linting and formatting
-target-version = "py310"
+target-version = "py39"
 line-length = 100
 exclude = ["clone/", "node_modules/"]
 
@@ -17,6 +17,7 @@ select = [
 ]
 ignore = [
     "E501",  # line too long (handled by formatter)
+    "B905",  # zip() strict= requires Python 3.10+; project supports >=3.9
 ]
 
 [lint.isort]
