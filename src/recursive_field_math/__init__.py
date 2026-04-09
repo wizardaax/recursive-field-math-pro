@@ -4,6 +4,7 @@ from .continued_fraction import lucas_ratio_cfrac
 from .egyptian_fraction import egypt_4_7_11
 from .eval_api import PROFILE_NAME as RFF_PROFILE
 from .eval_api import calibration_report, score
+from .evolution import EvolutionEngine
 from .fibonacci import F
 from .field import r_theta
 from .generating_functions import GF_F, GF_L
@@ -42,6 +43,8 @@ __all__ = [
     "detect_structure",
     # --- Self-Model ---
     "SelfModel",
+    # --- Evolution Engine ---
+    "EvolutionEngine",
     # --- Containment Geometry Validator ---
     "validate_containment",
     # --- Cross-Domain Bridge ---
