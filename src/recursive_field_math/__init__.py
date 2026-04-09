@@ -10,6 +10,7 @@ from .generating_functions import GF_F, GF_L
 from .lucas import L
 from .phi_ucb import benchmark_phi_ucb_vs_ucb1, phi_ucb_score, select_best
 from .ratios import ratio, ratio_error_bounds
+from .self_model import SelfModel
 from .signatures import signature_summary
 from .structural_detector import detect as detect_structure
 from .xdomain_bridge import BridgeError, bridge, decode, encode, register_adapter
@@ -39,6 +40,8 @@ __all__ = [
     "benchmark_phi_ucb_vs_ucb1",
     # --- Structural Detector ---
     "detect_structure",
+    # --- Self-Model ---
+    "SelfModel",
     # --- Containment Geometry Validator ---
     "validate_containment",
     # --- Cross-Domain Bridge ---

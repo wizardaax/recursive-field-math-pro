@@ -11,6 +11,7 @@ from .fibonacci import F
 from .field import r_theta
 from .lucas import L
 from .ratios import ratio, ratio_error_bounds
+from .self_model import SelfModel
 from .signatures import signature_summary
 
 
@@ -43,6 +44,16 @@ def main():
     sub.add_parser("cfrac", help="Continued fraction meta for L_{n+1}/L_n (n>=1)").add_argument(
         "n", type=int
     )
+
+    # Self-model subcommand
+    sp = sub.add_parser("self-model", help="Sentience seed self-model interface")
+    sm_group = sp.add_mutually_exclusive_group(required=True)
+    sm_group.add_argument("--observe", type=str, default=None, help="Observe an input pattern")
+    sm_group.add_argument("--ask", action="store_true", default=False, help="Query for data needs")
+    sm_group.add_argument(
+        "--integrate", type=str, default=None, help="Integrate new data (JSON string)"
+    )
+    sm_group.add_argument("--state", action="store_true", default=False, help="Show current state")
 
     # Add entropy pump evaluation command
     sp = sub.add_parser("eval", help="Evaluate entropy pump results against acceptance rules")
@@ -81,6 +92,20 @@ def main():
         n = args.n
         num, den, meta = lucas_ratio_cfrac(n)
         out = {"n": n, "ratio": [num, den], "cfrac_meta": meta}
+    elif args.cmd == "self-model":
+        sm = SelfModel()
+        if args.observe is not None:
+            delta = sm.observe(args.observe)
+            out = {"delta": delta, "state": sm.state()}
+        elif args.ask:
+            query = sm.ask()
+            out = query if query is not None else {"query": None}
+        elif args.integrate is not None:
+            out = sm.integrate(args.integrate)
+        elif args.state:
+            out = sm.state()
+        else:
+            out = {"error": "self-model requires --observe, --ask, --integrate, or --state"}
     elif args.cmd == "eval":
         # Import here to avoid circular imports
         try:
