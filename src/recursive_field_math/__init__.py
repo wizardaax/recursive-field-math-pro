@@ -13,6 +13,14 @@ from .ratios import ratio, ratio_error_bounds
 from .self_model import SelfModel
 from .signatures import signature_summary
 from .structural_detector import detect as detect_structure
+from .swarm import (
+    CellShard,
+    CoherenceGovernor,
+    Pipeline,
+    PipelineStage,
+    SwarmMemory,
+    SwarmOrchestrator,
+)
 from .xdomain_bridge import BridgeError, bridge, decode, encode, register_adapter
 
 __all__ = [
@@ -50,4 +58,11 @@ __all__ = [
     "bridge",
     "register_adapter",
     "BridgeError",
+    # --- Cellular Swarm ---
+    "CellShard",
+    "CoherenceGovernor",
+    "Pipeline",
+    "PipelineStage",
+    "SwarmMemory",
+    "SwarmOrchestrator",
 ]
