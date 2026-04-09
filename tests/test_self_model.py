@@ -26,11 +26,14 @@ from recursive_field_math.self_model import (
 # Helper: run the CLI and return (stdout, stderr, returncode)
 # ---------------------------------------------------------------------------
 def _run(*args: str) -> tuple[str, str, int]:
+    repo_root = os.path.dirname(os.path.dirname(__file__))
+    env = {**os.environ, "PYTHONPATH": os.path.join(repo_root, "src")}
     result = subprocess.run(
         [sys.executable, "-m", "recursive_field_math.cli", *args],
         capture_output=True,
         text=True,
-        cwd=os.path.dirname(os.path.dirname(__file__)),
+        cwd=repo_root,
+        env=env,
     )
     return result.stdout, result.stderr, result.returncode
 
