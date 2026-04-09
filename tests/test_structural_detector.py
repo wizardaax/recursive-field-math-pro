@@ -5,6 +5,7 @@ Fixed-seed / deterministic sequences are used throughout.
 """
 
 import math
+from contextlib import suppress
 
 import pytest
 
@@ -167,7 +168,5 @@ def test_phi_harmonic_coefficients_hypot_equivalence():
     assert math.isfinite(hypot_result)
     # Confirm that squaring large_val alone already overflows (inf or OverflowError),
     # demonstrating the instability that math.hypot avoids.
-    try:
+    with suppress(OverflowError):
         assert math.isinf(large_val**2)
-    except OverflowError:
-        pass  # Also acceptable — demonstrates the instability hypot avoids
