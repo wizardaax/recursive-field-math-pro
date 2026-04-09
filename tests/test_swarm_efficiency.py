@@ -678,10 +678,14 @@ class TestSwarmOrchestrator:
 class TestShardIsolationFailover:
     def test_auto_isolate_on_low_coherence(self):
         shard = CellShard(shard_id=0)
+
+        def _always_fail(x):
+            raise RuntimeError("simulated failure")
+
         # Simulate many failures to decay coherence below floor
         for _ in range(20):
             with contextlib.suppress(RuntimeError):
-                shard.execute_sync(lambda x: (_ for _ in ()).throw(RuntimeError("f")), "x")
+                shard.execute_sync(_always_fail, "x")
         assert shard.isolated is True
 
     def test_isolated_shard_metrics(self):

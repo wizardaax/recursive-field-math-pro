@@ -69,7 +69,9 @@ def deterministic_route(input_data: str, num_shards: int) -> int:
 def deterministic_worker_slot(input_data: str, workers_per_shard: int) -> int:
     """Map *input_data* to a worker slot within a shard.
 
-    Uses MD5 for a second independent hash (still deterministic).
+    Uses MD5 (not SHA-256) intentionally so shard routing and worker slot
+    routing are computed from two independent hash functions.  MD5 is NOT
+    used for security — only for deterministic distribution.
     """
     if workers_per_shard < 1:
         raise ValueError("workers_per_shard must be >= 1")
