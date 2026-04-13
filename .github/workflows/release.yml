@@ -65,7 +65,7 @@ jobs:
         run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: "Regen88 Codex ${{ env.TAG_NAME }}"
           body: |
