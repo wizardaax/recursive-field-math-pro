@@ -62,14 +62,14 @@ jobs:
     needs: python-ci
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           persist-credentials: true
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
@@ -91,7 +91,7 @@ jobs:
         run: python scripts/figure_manifest.py verify --dir paper/figures --manifest paper/figures/manifest.sha256
 
       - name: Upload figure artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: rff-figures-with-manifest
           path: |
