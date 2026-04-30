@@ -12,7 +12,6 @@
     "ternary",
     "cpu"
   ],
-  "author": "Commander X (Wizard)",
   "license": "MIT",
   "devDependencies": {
     "eslint": "^9.39.4"
