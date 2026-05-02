@@ -2,11 +2,26 @@
 """Simple registry module for xova/evolve.py"""
 
 import json
+import os
 from pathlib import Path
 
+# Default location AES auto-evolve looks for plugin manifests when no
+# explicit plugins_dir is passed. Adam's machine: C:\Xova\plugins. The
+# AGI stack documents Xova's plugin host living there. Override via
+# the XOVA_PLUGINS_DIR environment variable if needed.
+DEFAULT_PLUGINS_DIR = os.environ.get("XOVA_PLUGINS_DIR", r"C:\Xova\plugins")
 
-def load_registry(plugins_dir):
-    """Load plugin registry from plugins directory"""
+
+def load_registry(plugins_dir=None):
+    """Load plugin registry from plugins directory.
+
+    plugins_dir defaults to ``DEFAULT_PLUGINS_DIR`` (C:\\Xova\\plugins or the
+    XOVA_PLUGINS_DIR env override). This closes the gap surfaced by the
+    2026-05-02 federation audit — auto-evolve had nothing to rank/sandbox
+    when callers omitted the arg.
+    """
+    if plugins_dir is None:
+        plugins_dir = DEFAULT_PLUGINS_DIR
     registry = {}
     plugins_path = Path(plugins_dir)
     if plugins_path.exists():
