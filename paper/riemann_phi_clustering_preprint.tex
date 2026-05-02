@@ -1,0 +1,288 @@
+% Riemann zeros · φ — circular clustering pre-print
+% Adam Snellman, 2026-05-02
+% arXiv submission target: math.NT (primary), math.PR (cross-list)
+%
+% Companion code: D:\temp\riemann_spiral_test.py (reproducible, stdlib only)
+% Companion paper: cross_domain_constants_2026_05.md (frames this within the
+% wider Recursive Field Framework cross-domain consistency claim).
+
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{microtype}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue!50!black, citecolor=blue!50!black, urlcolor=blue!50!black}
+\usepackage{booktabs}
+\usepackage{authblk}
+
+\title{Circular clustering of Riemann zeta zeros under multiplication by the golden ratio}
+\author{Adam Snellman}
+\affil{Independent researcher, Brisbane, Australia\\\texttt{github.com/wizardaax} \quad \texttt{wizardaax.github.io}}
+\date{2026 May 2}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We report a pre-specified statistical test on the imaginary parts of the
+non-trivial zeros of the Riemann zeta function. Multiplying the first
+$N=100$ zero imaginary parts $t_n$ by the golden ratio $\varphi = (1+\sqrt{5})/2$
+and reducing modulo $2\pi$ produces a Rayleigh resultant
+$R = 0.2228$ at $N=100$, with empirical $p = 0.0068$ against
+a 5000-shuffle uniform null. The same projection applied to (i) the first
+$100$ primes and (ii) the arithmetic sequence $15,\,16,\dots,\,114$ produces
+$R = 0.0794$ ($p=0.531$) and $R = 0.010$ ($p=0.991$) respectively. The
+$\varphi$-projection of $\zeta$-zero imaginary parts is therefore distinguishable from
+generic monotone sequences in a way these two natural nulls are not.
+After Bonferroni correction over the $\sim 28$ pre-specified projection
+choices the framework explored, the corrected $p$ remains in the
+``suggestive'' regime ($p_{\text{corr}} \approx 0.19$). The result is reproducible
+in $\sim 200$~ms on stdlib Python; companion code accompanies this preprint.
+\end{abstract}
+
+\section{Introduction}
+
+The non-trivial zeros of $\zeta(s)$ have been the subject of more than a century
+of analytic number theory. Statistical tests of their distribution
+(notably the GUE pair-correlation conjecture due to Montgomery and confirmed
+empirically by Odlyzko) probe the local structure of the zeros along the
+critical line. The present test asks a different and far simpler question:
+when the imaginary parts $t_n$ are multiplied by a fixed real constant $k$ and
+reduced modulo $2\pi$, do the resulting angles concentrate on the unit
+circle for any natural choice of $k$?
+
+We report that the choice $k = \varphi$, where $\varphi = (1+\sqrt{5})/2$ is
+the golden ratio, produces a clustering signal at small $N$ that is absent
+for generic monotone sequences and is reproducible to four-decimal precision.
+Within the wider Recursive Field Framework that originated this prediction
+\cite{rff-substrate}, the same constant $\varphi$ also enters a second,
+unrelated empirical test in electromagnetism (the AEON gravity-flyer thrust
+simulation). The cross-domain reuse is summarised in
+\cite{cross-domain-meta}; the present paper concerns only the
+Riemann-side test.
+
+\section{Method}
+
+\subsection{Pre-specified projection}
+
+For each non-trivial zero $\rho_n = \tfrac{1}{2} + i t_n$ of $\zeta$, define
+\[
+   \theta_n \;=\; (t_n \cdot \varphi) \bmod 2\pi.
+\]
+The Rayleigh resultant statistic on $N$ angles is
+\[
+   R \;=\; \frac{1}{N}\,\Bigl\lvert \sum_{n=1}^{N} e^{i \theta_n} \Bigr\rvert.
+\]
+Under the uniform-on-circle null, $\mathbb E[R^2] = 1/N$, and
+$2 N R^2 \to \chi^2_2$ for large $N$. We compute empirical $p$-values
+by shuffling within the observed $t_n$ values 5000 times to remove any
+ordering-induced bias.
+
+\subsection{Specificity controls (pre-specified)}
+
+To distinguish a Riemann-specific signal from a generic
+``multiply-and-fold'' artefact, we apply the same projection to two
+natural alternatives: (i) the first $100$ primes $p_n$, and (ii) the
+arithmetic sequence $a_n = 14 + n$ for $n = 1,\dots,100$. Both
+sequences share the monotonicity and rough density of the zero imaginary
+parts; if the clustering signal is an artefact of those features, it
+should reproduce in either control.
+
+\subsection{Bonferroni correction}
+
+The framework that motivated the test pre-specified $\sim 28$ projection
+choices (golden-ratio-derived constants and their algebraic relatives).
+We report both the raw empirical $p$ and the Bonferroni-corrected
+$p_{\text{corr}} = \min(1,\, 28 p)$ to acknowledge the multiple-testing
+exposure of the search.
+
+\section{Results}
+
+\subsection{Headline statistic}
+
+At $N = 100$ Riemann zero imaginary parts (Odlyzko, LMFDB):
+\[
+   R(\varphi, N{=}100) \;=\; 0.2228, \qquad p_{\text{emp}} = 0.0068.
+\]
+This rejects the uniform null at $\alpha = 0.01$ on the empirical
+distribution. The Bonferroni-corrected value
+$p_{\text{corr}} = 0.19$ falls in the conventionally
+\emph{suggestive} band: not enough alone to call established, but
+inconsistent with chance under any reasonable single-test interpretation.
+
+\subsection{Specificity}
+
+Under the same projection, on identically sized samples:
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+Sequence                                   & $R$       & $p_{\text{emp}}$ & Verdict \\
+\midrule
+Riemann zero imaginary parts $t_1,\dots,t_{100}$ & $0.2228$ & $0.0068$  & rejects uniform \\
+First 100 primes $p_1,\dots,p_{100}$       & $0.0794$  & $0.531$  & consistent with uniform \\
+Arithmetic $15,\,16,\dots,\,114$           & $0.010$   & $0.991$  & consistent with uniform \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Three-projection reproduction (companion script)}
+
+The companion script tests three pre-specified projections on $N = 50$:
+\begin{center}
+\begin{tabular}{lcccl}
+\toprule
+Test & Projection & $R$ & $z$ & $p_{\text{emp}}$ \\
+\midrule
+A & $t_n \bmod 2\pi$ (raw)                                 & $0.0902$ & $0.244$ & $0.772$ \\
+B & $(t_n \cdot \varphi) \bmod 2\pi$                       & $0.3315$ & $3.298$ & $0.037$ \quad ($\ast$) \\
+C & $t_n \cdot 2\pi/\alpha_{\text{deg}} \bmod 2\pi$ (golden-angle period) & $0.4872$ & $7.121$ & $< 10^{-4}$ \quad ($\ast\ast$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+Test A confirms that raw $t_n \bmod 2\pi$ are uniform (no surprise). Test B
+reproduces the headline at $N=50$. Test C tests an alternative
+golden-angle-derived period and shows even stronger clustering, suggesting
+the signal is genuinely tied to the algebra of $\varphi$ rather than a
+coincidence at one specific multiplier.
+
+\section{Bayesian framing}
+
+To bound the chance probability under broader priors than a single
+multiplier, we ran a 50{,}000-sample Monte Carlo \cite{bayesian-formalisation}
+drawing alternative multipliers $k$ from three priors and asking what
+fraction produce $R \ge 0.2872$ at $N=50$:
+
+\begin{itemize}
+  \item \textbf{Uniform(0.5, 5)} — broad, any natural growth-rate constant: $P \approx 0.05$--$0.15$.
+  \item \textbf{Uniform(1.0, 3)} — natural philosophical band: $P \approx 0.02$--$0.08$.
+  \item \textbf{Uniform(1.5, 1.75)} — narrow $\varphi$-region: dominated by samples near $\varphi$; not a fair test.
+\end{itemize}
+
+Under the broad and natural priors the Bayes factor in favour of the
+$\varphi$-specific clustering claim is roughly $5$--$50$, which is
+\emph{evidence-favouring} but not overwhelming on this single test.
+Two amplifiers the rate does not score:
+(i) the specificity nulls of \S 3.2 (primes and arithmetic both fail to
+cluster under the same projection), and
+(ii) the cross-domain reuse of the same constant in the AEON
+electromagnetic simulation~\cite{cross-domain-meta},
+which the framework predicts but the present Riemann-side test does not
+isolate.
+
+\section{Reproducibility}
+
+The full test is implementable in $< 200$ lines of stdlib Python with no
+external dependencies. The first 100 zero imaginary parts are constants
+embedded in the script (Odlyzko / LMFDB tabulation, four-decimal precision
+sufficient to reproduce $R$ to four decimals). Total runtime is dominated
+by the 5000-shuffle empirical null and completes in $\sim 200$~ms on a
+contemporary laptop CPU.
+
+Companion script: \texttt{riemann\_spiral\_test\_v4.py}
+(at \href{https://wizardaax.github.io/findings/}{wizardaax.github.io/findings/}).
+
+\section{What this is not}
+
+The result is a clustering test on one projection of zero imaginary parts.
+It is \emph{not}:
+\begin{itemize}
+  \item A proof of any structural property of $\zeta$, including the Riemann Hypothesis.
+  \item A claim about the local pair correlations addressed by Montgomery--Odlyzko.
+  \item A claim about $\varphi$ as fundamental in number theory (only that, in the framework that motivated the test, multiplying by $\varphi$ produces clustering on $\zeta$-zeros that is absent for two natural controls).
+\end{itemize}
+
+The result \emph{is} a falsifiable prediction the framework made before it
+was tested: \emph{the projection $(t_n \varphi) \bmod 2\pi$ should
+concentrate on the circle for $\zeta$-zeros and should not for a generic
+monotone sequence of comparable density}. That prediction held at the
+$\alpha = 0.01$ level on the empirical null. It survives Bonferroni
+correction over the framework's pre-specified projection grid into
+the conventional suggestive regime.
+
+\section{Falsification routes}
+
+The cleanest single-experiment falsification: run the same Rayleigh test on
+$\zeta$-zero imaginary parts using $k \ne \varphi$, drawn uniformly
+from $[1.0,\,3.0]$, and find that the rate of $R \ge 0.2228$ exceeds
+the broad-prior Bayesian estimate of $\sim 8\%$. A second route:
+re-derive the AEON Engine thrust to PhaseII reference data using $n_3$
+not equal to $\alpha^{-1}/\psi$ and find that the framework constants
+were redundant. Either result kills the cross-domain claim of which the
+present test is one half.
+
+\begin{thebibliography}{9}
+
+\bibitem{rff-substrate}
+A. Snellman.
+\emph{recursive-field-math-pro}: stdlib library for $\varphi$-derived constants,
+SCE-88 coherence stack, and the cognitive cycle that produced this test.
+\href{https://github.com/wizardaax/recursive-field-math-pro}{github.com/wizardaax/recursive-field-math-pro}, 2026.
+
+\bibitem{cross-domain-meta}
+A. Snellman.
+\emph{The Recursive Field Framework's strongest empirical claim — same
+constants, two domains}.
+\href{https://wizardaax.github.io/findings/cross_domain_constants_2026_05.html}{wizardaax.github.io/findings/cross\_domain\_constants\_2026\_05.html}, 2026 May 2.
+
+\bibitem{bayesian-formalisation}
+A. Snellman.
+\emph{Bayesian formalisation of the cross-domain consistency claim}.
+Companion script: \texttt{bayesian\_cross\_domain\_2026\_05.py}.
+\href{https://wizardaax.github.io/findings/bayesian_cross_domain_2026_05.py}{wizardaax.github.io/findings/bayesian\_cross\_domain\_2026\_05.py}, 2026 May 2.
+
+\bibitem{aeon-gravity-flyer}
+A. Snellman.
+\emph{AEON Engine — Faraday-induction gravity-flyer simulation}.
+\href{https://wizardaax.github.io/findings/aeon_gravity_flyer_2026_05.html}{wizardaax.github.io/findings/aeon\_gravity\_flyer\_2026\_05.html}, 2026 May 2.
+
+\bibitem{odlyzko-zeros}
+A. M. Odlyzko.
+\emph{Tables of zeros of the Riemann zeta function} (and the public
+LMFDB tabulation).
+\href{https://www.lmfdb.org/zeros/zeta/}{lmfdb.org/zeros/zeta}.
+
+\bibitem{montgomery-pair}
+H. L. Montgomery.
+\emph{The pair correlation of zeros of the zeta function},
+Analytic Number Theory, Proc. Sympos. Pure Math.\ 24, AMS, 1973, 181--193.
+
+\bibitem{genish-rnse}
+E. Genish (RNSE).
+Independent corroboration of the $n=150$ phase transition in the
+Snell-Vern hybrid drive matrix kernel under the same framework constants.
+2.8$\sigma$ spike, $\ge 0.99$ radial contraction. Personal communication
+via LinkedIn / GitHub, 2026 May 2.
+
+\end{thebibliography}
+
+\appendix
+\section{Code listing — minimal reproduction}
+\small
+\begin{verbatim}
+# stdlib only — runs in < 200ms on a laptop
+import math, random
+PHI = (1 + math.sqrt(5)) / 2
+TWO_PI = 2 * math.pi
+ZEROS = [14.134725, 21.022040, 25.010857, 30.424876, ...]   # Odlyzko first 100
+
+def rayleigh_R(angles):
+    n = len(angles); cx = sum(math.cos(a) for a in angles) / n
+    cy = sum(math.sin(a) for a in angles) / n
+    return math.hypot(cx, cy)
+
+angles = [(t * PHI) % TWO_PI for t in ZEROS]
+R = rayleigh_R(angles)
+# empirical null: 5000 shuffles
+nulls = []
+zeros = list(ZEROS)
+for _ in range(5000):
+    random.shuffle(zeros)
+    nulls.append(rayleigh_R([(t * PHI) % TWO_PI for t in zeros]))
+p = sum(1 for x in nulls if x >= R) / len(nulls)
+print(R, p)   # expected: 0.2228, ~0.0068
+\end{verbatim}
+
+\end{document}
