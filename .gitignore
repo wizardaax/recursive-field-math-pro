@@ -34,3 +34,7 @@ evolution_output.json
 # Evolution test artifacts (don't commit)
 docs/history/*/
 docs/aes_badge.json
+
+# Local working copies / scratch clones
+clone/
+ziltrix/
