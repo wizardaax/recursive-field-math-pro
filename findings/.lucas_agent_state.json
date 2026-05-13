@@ -23,11 +23,19 @@
       },
       "topic": "signature_4_7_11",
       "ts": 1778661051.527495
+    },
+    {
+      "file": "findings/20260513T085907Z_cfrac-structure_29b39ecc.md",
+      "params": {
+        "n": 3
+      },
+      "topic": "cfrac_structure",
+      "ts": 1778662747.70137
     }
   ],
   "param_cursor": {
     "cassini_lucas": 1,
-    "cfrac_structure": 0,
+    "cfrac_structure": 1,
     "doubling_formula": 0,
     "gf_evaluation": 0,
     "ratio_convergence": 1,
@@ -35,7 +43,7 @@
   },
   "topic_pulls": {
     "cassini_lucas": 1,
-    "cfrac_structure": 0,
+    "cfrac_structure": 1,
     "doubling_formula": 0,
     "gf_evaluation": 0,
     "ratio_convergence": 1,
@@ -43,12 +51,12 @@
   },
   "topic_q": {
     "cassini_lucas": 1.0,
-    "cfrac_structure": 0.0,
+    "cfrac_structure": 1.0,
     "doubling_formula": 0.0,
     "gf_evaluation": 0.0,
     "ratio_convergence": 1.0,
     "signature_4_7_11": 1.0
   },
-  "total_pulls": 3,
+  "total_pulls": 4,
   "version": 1
 }
