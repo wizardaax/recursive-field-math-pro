@@ -1,0 +1,54 @@
+{
+  "history": [
+    {
+      "file": "findings/20260513T082824Z_cassini-lucas_4cd0d4da.md",
+      "params": {
+        "n": 3
+      },
+      "topic": "cassini_lucas",
+      "ts": 1778660904.4314506
+    },
+    {
+      "file": "findings/20260513T082944Z_ratio-convergence_d2e82bd0.md",
+      "params": {
+        "n": 4
+      },
+      "topic": "ratio_convergence",
+      "ts": 1778660984.2956023
+    },
+    {
+      "file": "findings/20260513T083051Z_signature-4-7-11_7fdeedff.md",
+      "params": {
+        "variant": 0
+      },
+      "topic": "signature_4_7_11",
+      "ts": 1778661051.527495
+    }
+  ],
+  "param_cursor": {
+    "cassini_lucas": 1,
+    "cfrac_structure": 0,
+    "doubling_formula": 0,
+    "gf_evaluation": 0,
+    "ratio_convergence": 1,
+    "signature_4_7_11": 0
+  },
+  "topic_pulls": {
+    "cassini_lucas": 1,
+    "cfrac_structure": 0,
+    "doubling_formula": 0,
+    "gf_evaluation": 0,
+    "ratio_convergence": 1,
+    "signature_4_7_11": 1
+  },
+  "topic_q": {
+    "cassini_lucas": 1.0,
+    "cfrac_structure": 0.0,
+    "doubling_formula": 0.0,
+    "gf_evaluation": 0.0,
+    "ratio_convergence": 1.0,
+    "signature_4_7_11": 1.0
+  },
+  "total_pulls": 3,
+  "version": 1
+}
