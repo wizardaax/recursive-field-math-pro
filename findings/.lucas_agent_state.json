@@ -63,6 +63,14 @@
       },
       "topic": "ratio_convergence",
       "ts": 1778749148.6210234
+    },
+    {
+      "file": "findings/20260516T032144Z_signature-4-7-11_7fdeedff.md",
+      "params": {
+        "variant": 0
+      },
+      "topic": "signature_4_7_11",
+      "ts": 1778901704.4720726
     }
   ],
   "param_cursor": {
@@ -79,7 +87,7 @@
     "doubling_formula": 1,
     "gf_evaluation": 1,
     "ratio_convergence": 2,
-    "signature_4_7_11": 1
+    "signature_4_7_11": 2
   },
   "topic_q": {
     "cassini_lucas": 1.0,
@@ -89,6 +97,6 @@
     "ratio_convergence": 1.0,
     "signature_4_7_11": 1.0
   },
-  "total_pulls": 8,
+  "total_pulls": 9,
   "version": 1
 }
