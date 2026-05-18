@@ -135,12 +135,20 @@
       },
       "topic": "gf_evaluation",
       "ts": 1779065949.0220027
+    },
+    {
+      "file": "findings/20260518T045909Z_doubling-formula_99f40f6e.md",
+      "params": {
+        "n": 11
+      },
+      "topic": "doubling_formula",
+      "ts": 1779080349.0441449
     }
   ],
   "param_cursor": {
     "cassini_lucas": 3,
     "cfrac_structure": 3,
-    "doubling_formula": 2,
+    "doubling_formula": 3,
     "gf_evaluation": 3,
     "ratio_convergence": 3,
     "signature_4_7_11": 0
@@ -148,7 +156,7 @@
   "topic_pulls": {
     "cassini_lucas": 3,
     "cfrac_structure": 3,
-    "doubling_formula": 2,
+    "doubling_formula": 3,
     "gf_evaluation": 3,
     "ratio_convergence": 3,
     "signature_4_7_11": 3
@@ -161,6 +169,6 @@
     "ratio_convergence": 1.0,
     "signature_4_7_11": 1.0
   },
-  "total_pulls": 17,
+  "total_pulls": 18,
   "version": 1
 }
