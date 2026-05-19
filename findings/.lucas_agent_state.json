@@ -215,11 +215,19 @@
       },
       "topic": "signature_4_7_11",
       "ts": 1779209949.8416374
+    },
+    {
+      "file": "findings/20260519T205908Z_cfrac-structure_8114fe15.md",
+      "params": {
+        "n": 17
+      },
+      "topic": "cfrac_structure",
+      "ts": 1779224348.8306918
     }
   ],
   "param_cursor": {
     "cassini_lucas": 5,
-    "cfrac_structure": 4,
+    "cfrac_structure": 0,
     "doubling_formula": 4,
     "gf_evaluation": 4,
     "ratio_convergence": 5,
@@ -227,7 +235,7 @@
   },
   "topic_pulls": {
     "cassini_lucas": 5,
-    "cfrac_structure": 4,
+    "cfrac_structure": 5,
     "doubling_formula": 4,
     "gf_evaluation": 4,
     "ratio_convergence": 5,
@@ -241,6 +249,6 @@
     "ratio_convergence": 1.0,
     "signature_4_7_11": 1.0
   },
-  "total_pulls": 27,
+  "total_pulls": 28,
   "version": 1
 }
