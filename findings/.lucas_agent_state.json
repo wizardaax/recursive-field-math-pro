@@ -175,13 +175,21 @@
       },
       "topic": "cfrac_structure",
       "ts": 1779137948.6841776
+    },
+    {
+      "file": "findings/20260519T005908Z_gf-evaluation_4ea48142.md",
+      "params": {
+        "x_recip": 7
+      },
+      "topic": "gf_evaluation",
+      "ts": 1779152348.5571353
     }
   ],
   "param_cursor": {
     "cassini_lucas": 4,
     "cfrac_structure": 4,
     "doubling_formula": 3,
-    "gf_evaluation": 3,
+    "gf_evaluation": 4,
     "ratio_convergence": 4,
     "signature_4_7_11": 0
   },
@@ -189,7 +197,7 @@
     "cassini_lucas": 4,
     "cfrac_structure": 4,
     "doubling_formula": 3,
-    "gf_evaluation": 3,
+    "gf_evaluation": 4,
     "ratio_convergence": 4,
     "signature_4_7_11": 4
   },
@@ -201,6 +209,6 @@
     "ratio_convergence": 1.0,
     "signature_4_7_11": 1.0
   },
-  "total_pulls": 22,
+  "total_pulls": 23,
   "version": 1
 }
